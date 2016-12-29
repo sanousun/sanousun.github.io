@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <!-- Title -->
+    
+    <title>
+        Behavior原理简析 | 森林
+    </title>
+    
+    <!-- Favicons -->
+    <link rel="icon shortcut" type="image/ico" href="/img/favicon.png">
+    <link rel="icon" sizes="192x192" href="/img/favicon.png">
+    <link rel="apple-touch-icon" href="/img/favicon.png">
+    
+    <!-- Meta & INfo -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0097A7">
+    <meta name="author" content="大树">
+    <meta name="description" content="大树的博客">
+    <meta name="keywords" content="null">
+    
+    <!--iOS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-title" content="Title">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="480">
+    
+    <!-- Add to homescreen for Chrome on Android -->
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- Add to homescreen for Safari on iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="森林">
+    
+    <!-- The Open Graph protocol -->
+    <meta property="og:url" content="http://sanousun.github.io">
+    <meta property="og:type" content="blog">
+    <meta property="og:title" content="Behavior原理简析 | 森林">
+    <meta property="og:description" content="大树的博客">
+    
+     <!--[if lte IE 9]>
+        <link rel="stylesheet" href="/css/ie-blocker.css">
+        
+        
+            <script src="/js/ie-blocker.zhCN.js"></script>
+        
+    <![endif]-->
+    
+    <!-- Import CSS -->
+    <link rel="stylesheet" href="/css/material.min.css">
+    <link rel="stylesheet" href="/css/style.min.css">
+    <!-- Config CSS -->
+
+
+<!-- Other Styles -->
+<style>
+	body, html{
+		font-family: Roboto, "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+	}
+	
+    a{
+        color: #00838F
+    }
+    
+    .mdl-card__media,
+    #search-label,
+    #search-form-label:after,
+    #scheme-Paradox .hot_tags-count,
+    #scheme-Paradox .sidebar_archives-count,
+    #scheme-Paradox .sidebar-colored .sidebar-header,
+    #scheme-Paradox .sidebar-colored .sidebar-badge{
+        background-color: #0097A7 !important
+    }
+    
+	/* Sidebar User Drop Down Menu Text Color */
+	#scheme-Paradox .sidebar-colored .sidebar-nav>.dropdown>.dropdown-menu>li>a:hover,
+    #scheme-Paradox .sidebar-colored .sidebar-nav>.dropdown>.dropdown-menu>li>a:focus{
+        color: #0097A7 !important
+    }
+    
+    #post_entry-right-info,
+    .sidebar-colored .sidebar-nav li:hover > a,
+    .sidebar-colored .sidebar-nav li:hover > a i,
+    .sidebar-colored .sidebar-nav li > a:hover,
+    .sidebar-colored .sidebar-nav li > a:hover i,
+    .sidebar-colored .sidebar-nav li > a:focus i,
+    .sidebar-colored .sidebar-nav > .open > a,
+    .sidebar-colored .sidebar-nav > .open > a:hover,
+    .sidebar-colored .sidebar-nav > .open > a:focus,
+    #ds-reset #ds-ctx .ds-ctx-entry .ds-ctx-head a{
+        color: #0097A7 !important
+    }
+    
+    .toTop{
+        background: #757575 !important
+    }
+		
+	.material-layout .material-post>.material-nav,
+	.material-layout .material-index>.material-nav,
+	.material-nav a{
+		color: #757575;
+	}
+		
+	#scheme-Paradox .MD-burger-layer {
+		background-color: #757575;
+	}
+
+	#scheme-Paradox #post-toc-trigger-btn{
+		color: #757575;
+	}
+	
+	.post-toc a:hover{
+		color: #00838F;
+		text-decoration: underline;
+	}
+</style>
+
+
+<!-- Theme Background Related-->
+
+    <style>
+        body{
+            background-color: #F5F5F5
+        }
+		
+		/* blog_info bottom background */
+        #scheme-Paradox .material-layout .something-else .mdl-card__supporting-text{
+            background-color: #fff;
+        }
+    </style>
+
+
+
+
+<!-- Fade Effect -->
+
+    <style>
+        .fade {
+            transition: all 800ms linear;
+            -webkit-transform: translate3d(0,0,0);
+            -moz-transform: translate3d(0,0,0);
+            -ms-transform: translate3d(0,0,0);
+            -o-transform: translate3d(0,0,0);
+            transform: translate3d(0,0,0);
+            opacity: 1;
+        }
+
+        .fade.out{
+            opacity: 0;
+        }
+    </style>
+
+	<script src="/js/jquery.min.js"></script>
+	
+	<link rel="stylesheet" href="/css/highlight/solarized-white.css">
+	
+	<!-- UC Browser Compatible-->
+	<script>
+		var agent = navigator.userAgent.toLowerCase();
+		if(agent.indexOf('ucbrowser')>0) {
+			document.write('<link rel="stylesheet" href="/css/uc.css">');
+		   alert('由于 UC 浏览器使用极旧的内核，而本网站使用了一些新的特性。\n为了您能更好的浏览，推荐使用 Chrome 或 Firefox 浏览器。');
+		}
+	</script>
+    
+    <!-- Custom Head -->
+    
+</head>
+	
+	
+
+    <body id="scheme-Paradox">
+
+		
+        <div class="material-layout  mdl-js-layout has-drawer is-upgraded">
+				
+			
+			
+            <!-- Main Container -->
+            <main class="material-layout__content" id="main">
+				
+                <!-- Top Anchor -->
+                <div id="top"></div>
+				
+				
+                <!-- Hamburger Button -->
+                <button class="MD-burger-icon sidebar-toggle">
+                    <span class="MD-burger-layer"></span>
+                </button>
+				
+				
+                <!-- Post TOC -->
+
+    
+	<!-- Back Button -->
+<!--
+	<div class="material-back" id="backhome-div" tabindex="0">
+		<a class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" href="#" onclick="window.history.back();return false;" target="_self" role="button" data-upgraded=",MaterialButton,MaterialRipple">
+			<i class="material-icons" role="presentation">arrow_back</i>
+			<span class="mdl-button__ripple-container">
+				<span class="mdl-ripple"></span>
+			</span>
+		</a>
+	</div>			
+-->
+	<!-- Left aligned menu below button -->
+	<button id="post-toc-trigger-btn"
+			class="mdl-button mdl-js-button mdl-button--icon">
+	  <i class="material-icons">format_list_numbered</i>
+	</button>
+
+	<ul class="post-toc-wrap mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect"
+		for="post-toc-trigger-btn">
+			
+			<ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#前言"><span class="post-toc-number">1.</span> <span class="post-toc-text">前言</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#引入"><span class="post-toc-number">2.</span> <span class="post-toc-text">引入</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#简介"><span class="post-toc-number">3.</span> <span class="post-toc-text">简介</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#Behavior简介"><span class="post-toc-number">4.</span> <span class="post-toc-text">Behavior简介</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#CoordinatorLayout-和-Behavior-配合"><span class="post-toc-number">5.</span> <span class="post-toc-text">CoordinatorLayout 和 Behavior 配合</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#behavior-的简单使用"><span class="post-toc-number">6.</span> <span class="post-toc-text">behavior 的简单使用</span></a></li></ol>
+		
+<!--			<li class="mdl-menu__item">Some Action</li>-->
+	</ul>
+
+
+
+<!-- Layouts -->
+
+    <!-- Post Module -->
+    <div class="material-post_container">
+		
+        <div class="material-post mdl-grid">
+            <div class="mdl-card mdl-shadow--4dp mdl-cell mdl-cell--12-col">
+
+                <!-- Post Header(Thumbnail & Title) -->
+                
+	<!-- Paradox Post Header -->
+	
+		
+			<!-- Random Thumbnail -->
+			<div class="post_thumbnail-random mdl-card__media mdl-color-text--grey-50">
+				<script>
+    
+    var randomNum;
+    randomNum = Math.floor(Math.random() * 5 + 1);
+    
+    $(".post_thumbnail-random").css('background-image', 'url(' + '/img/random/' + randomNum + '.png' + ')');
+    
+</script>
+
+		
+	
+        <p class="article-headline-p">
+            Behavior原理简析
+        </p>
+    </div>
+
+	
+
+				
+				
+					<!-- Paradox Post Info -->
+					<div class="mdl-color-text--grey-700 mdl-card__supporting-text meta">
+    
+    <!-- Author Avatar -->
+    <div id="author-avatar">
+        <img src="/img/avatar.png" width="44px" height="44px" alt="Author Avatar"/>
+    </div>
+    <!-- Author Name & Date -->
+    <div>
+        <strong>大树</strong>
+        <span>12月 03, 2016</span>
+    </div>
+    
+    <div class="section-spacer"></div>
+	
+    <!-- Favorite -->
+<!--
+    <button id="article-functions-like-button" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon btn-like">
+        <i class="material-icons" role="presentation">favorite</i>
+        <span class="visuallyhidden">favorites</span>
+    </button>
+-->
+    
+    <!-- Tags (bookmark) -->
+    <button id="article-functions-viewtags-button" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
+        <i class="material-icons" role="presentation">bookmark</i>
+        <span class="visuallyhidden">bookmark</span>
+    </button>
+    <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="article-functions-viewtags-button">
+        <li class="mdl-menu__item">
+        <a class="post_tag-link" href="/tags/CoordinatorLayout-Behavior-简单系列/">CoordinatorLayout,Behavior,简单系列</a>
+    </ul>
+    
+    <!-- Share -->
+    <button id="article-fuctions-share-button" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
+    <i class="material-icons" role="presentation">share</i>
+    <span class="visuallyhidden">share</span>
+</button>
+<ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="article-fuctions-share-button">
+    
+    
+    
+    
+    
+    <!-- Share Twitter -->
+    <a class="post_share-link" href="https://twitter.com/intent/tweet?text=Behavior原理简析&url=http://sanousun.github.io//2016/12/03/14807721975846/index.html&via=大树" target="_blank">
+        <li class="mdl-menu__item">
+            分享到 Twitter
+        </li>
+    </a>
+    
+    <!-- Share Google+ -->
+    <a class="post_share-link" href="https://plus.google.com/share?url=http://sanousun.github.io//2016/12/03/14807721975846/index.html" target="_blank">
+        <li class="mdl-menu__item">
+            分享到 Google+
+        </li>
+    </a>
+    
+    <!-- Share Weibo -->
+    <a class="post_share-link" href="http://service.weibo.com/share/share.php?appkey=&title=Behavior原理简析&url=http://sanousun.github.io//2016/12/03/14807721975846/index.html&pic=&searchPic=false&style=simple" target="_blank">
+        <li class="mdl-menu__item">
+            分享到微博
+        </li>
+    </a>
+</ul>
+</div>
+				
+
+                <!-- Post Content -->
+                <div id="post-content" class="markdown-Github mdl-color-text--grey-700 mdl-card__supporting-text fade out">
+	
+		<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>2014 年 Google I/O 推出了 Material Design 的设计规范，Android 也顺应推出了相关的 Support Design 支持库。库中包含 AppBarLayout，FloatingActionButton 等符合设计规范的控件，但其中最重要的是一个 CoordinatorLayout 的容器，最大的作用就是为子 View 间交互提供便利，我们可以在各大app上（知乎，uc等看到它的身影）</p>
+<h2 id="引入"><a href="#引入" class="headerlink" title="引入"></a>引入</h2><p>gradle配置</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">dependencies</span> &#123;</div><div class="line"></div><div class="line">    ......</div><div class="line">    <span class="keyword">compile</span> <span class="string">'com.android.support:design:23.4.2'</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><a href="https://developer.android.com/reference/android/support/design/widget/CoordinatorLayout.html" target="_blank" rel="external">CoordinatorLayout 官方介绍（需要科学上网）</a></p>
+<blockquote>
+<p>CoordinatorLayout is a super-powered FrameLayout.<br>CoordinatorLayout is intended for two primary use cases:</p>
+<pre><code>1. As a top-level application decor or chrome layout
+2. As a container for a specific interaction with one or more child views
+</code></pre></blockquote>
+<p>CoordinatorLayout 可以作为一个布局文件的根部局，方便子 View 间的相互作用。CoordinatorLayout 的继承结构如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CoordinatorLayout</span> </span></div><div class="line"><span class="keyword">extends</span> <span class="title">ViewGroup</span> <span class="keyword">implements</span> <span class="title">NestedScrollingParent</span></div></pre></td></tr></table></figure>
+<p>CoordinatorLayout 只实现了 NestedScrollingParent 接口，而没有 NestedScrollingChild 接口，那么</p>
+<ul>
+<li>这个布局控件不适用于作为一个子 View 做嵌套布局</li>
+<li>5.0 以下版本的 ScrollView 和 ListView 因为没有实现 NestedScrollingChild 接口而无法在 CoordinatorLayout 布局上运用，推荐使用 RecyclerView 和 NestedScrollView</li>
+</ul>
+<p>而 CoordinatorLayout 实现子 View 间交互的最大功臣就是 <code>Behavior</code> —— 一个 CoordinatorLayout 的内部类</p>
+<h2 id="Behavior简介"><a href="#Behavior简介" class="headerlink" title="Behavior简介"></a>Behavior简介</h2><p><a href="https://developer.android.com/reference/android/support/design/widget/CoordinatorLayout.Behavior.html" target="_blank" rel="external">CoordinatorLayout.Behavior 官方介绍（需要科学上网）</a></p>
+<p>该类比较简单，只是定义一些方法，需要时我们可以自定义 behavior 类继承该类，通过复写相关方法来完成子 View 的代理</p>
+<ul>
+<li>View 的绘制 <ul>
+<li>onMeasureChild</li>
+<li>onLayoutChild</li>
+</ul>
+</li>
+<li>View 的事件分发 <ul>
+<li>onInterceptTouchEvent</li>
+<li>onTouchEvent</li>
+</ul>
+</li>
+<li>child 的嵌套滑动响应 <ul>
+<li>onStartNestedScroll</li>
+<li>onNestedPreScroll</li>
+<li>onNestedScroll</li>
+<li>onStopNestedScroll</li>
+<li>…</li>
+</ul>
+</li>
+<li>child 间的依赖 <ul>
+<li>layoutDependsOn</li>
+<li>onDependentViewChanged</li>
+</ul>
+</li>
+</ul>
+<p>在 Support Design 库中有以下几个类 AppBarLayout.Behavior, AppBarLayout.ScrollingViewBehavior, BottomSheetBehavior<v extends="" view="">, FloatingActionButton.Behavior, SwipeDismissBehavior<v extends="" view=""> 是直接继承 Behavior 的，至于内部添加哪些方法的具体逻辑要看具体的 View 使用场景而定</v></v></p>
+<h2 id="CoordinatorLayout-和-Behavior-配合"><a href="#CoordinatorLayout-和-Behavior-配合" class="headerlink" title="CoordinatorLayout 和 Behavior 配合"></a>CoordinatorLayout 和 Behavior 配合</h2><p>那他们之间是如何协同工作的呢？<br>在 CoordinatorLayout 的自定义 LayoutParams 中有 Behavior 变量对象，在它的构造函数中有获取 behavior 实例的相关代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">LayoutParams(Context context, AttributeSet attrs) &#123;</div><div class="line">    <span class="keyword">super</span>(context, attrs);</div><div class="line">    </div><div class="line">    .........</div><div class="line">    <span class="keyword">if</span> (mBehaviorResolved) &#123;</div><div class="line">        mBehavior = parseBehavior(context, attrs, a.getString(</div><div class="line">                R.styleable.CoordinatorLayout_LayoutParams_layout_behavior));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    a.recycle();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>parseBehavior 方法通过布局文件中设置的相关字符串解析得到实例，值得一提的是<strong>只有 CoordinatorLayout 的子 View 设置了 behavior 才有用</strong>，CoordinatorLayout 就可以在合适的时机通过这些设置在 lp 中的 behavior 来管理对应的子 View<br>比如说：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onLayout</span><span class="params">(<span class="keyword">boolean</span> changed, <span class="keyword">int</span> l, <span class="keyword">int</span> t, <span class="keyword">int</span> r, <span class="keyword">int</span> b)</span> </span>&#123;</div><div class="line">    <span class="keyword">final</span> <span class="keyword">int</span> layoutDirection = ViewCompat.getLayoutDirection(<span class="keyword">this</span>);</div><div class="line">    <span class="keyword">final</span> <span class="keyword">int</span> childCount = mDependencySortedChildren.size();</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; childCount; i++) &#123;</div><div class="line">        <span class="keyword">final</span> View child = mDependencySortedChildren.get(i);</div><div class="line">        <span class="keyword">final</span> LayoutParams lp = (LayoutParams) child.getLayoutParams();</div><div class="line">        <span class="keyword">final</span> Behavior behavior = lp.getBehavior();</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (behavior == <span class="keyword">null</span> || !behavior.onLayoutChild(<span class="keyword">this</span>, child, layoutDirection)) &#123;</div><div class="line">            onLayoutChild(child, layoutDirection);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>只有当子 View 对应的 behavior 的 onLayoutChild 方法返回 false 的时候才会调用父 View 的方法。由此可见，behavior 的优先级是高于父类方法的，Behaivor 的触摸分发，绘制类似，具体代码不在此展示，有兴趣可以直接看源码</p>
+<ul>
+<li>滑动处理：CoordinatorLayout 继承了 NestedScrollingParent，而 behavior 代理实现 NestedScrollingChild 的相关方法实现嵌套滑动，当子View在处理滑动事件之前，先告诉自己的父 View 是否需要先处理这次滑动事件，父 View 处理完之后，告诉子 View 它处理的多少滑动距离，剩下的还是交给子 View 自己来处理，当然具体逻辑也是比较复杂的</li>
+<li>子 View 间的交互代理：主要用于监听同级别子 view 的大小、位置、显示状态的改变，通过一下几个方法实现的</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * 确定所提供的子视图是否有另一个特定的同级视图作为布局从属          </div><div class="line"> */</div><div class="line">public boolean layoutDependsOn(CoordinatorLayout parent, V child, View dependency) &#123;</div><div class="line">    return false;</div><div class="line">&#125;</div><div class="line"></div><div class="line">/**</div><div class="line"> * 用于响应从属布局的变化</div><div class="line"> */</div><div class="line">public boolean onDependentViewChanged(CoordinatorLayout parent, V child, View dependency) &#123;</div><div class="line">    return false;</div><div class="line">&#125;</div><div class="line"></div><div class="line">/**</div><div class="line"> * 用于响应从属布局的移除</div><div class="line"> */</div><div class="line">public void onDependentViewRemoved(CoordinatorLayout parent, V child, View dependency) &#123;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在自定义的 behavior 中，layoutDependsOn 方法可以定义索要依赖的同级控件类型，比如我们需要依赖 Button，那么就需要<code>return dependency instanceof Button;</code>而一般而言如何响应从属布局的变化，则需要我们在 onDependentViewChanged 中书写具体的逻辑。视线转回 CoordinatorLayout 中， onChildViewsChanged 方法中会有这 behavior 的三个方法相关调用，具体代码如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">onChildViewsChanged</span><span class="params">(@DispatchChangeEvent <span class="keyword">final</span> <span class="keyword">int</span> type)</span> </span>&#123;</div><div class="line">    <span class="keyword">final</span> View child = mDependencySortedChildren.get(i);</div><div class="line"></div><div class="line">    ......</div><div class="line">        </div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; childCount; i++) &#123;</div><div class="line">            </div><div class="line">        ......</div><div class="line"></div><div class="line">        <span class="comment">// 更新有通过 behavior 依赖关系的 View</span></div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = i + <span class="number">1</span>; j &lt; childCount; j++) &#123;</div><div class="line">            <span class="keyword">final</span> View checkChild = mDependencySortedChildren.get(j);</div><div class="line">            <span class="keyword">final</span> LayoutParams checkLp = (LayoutParams) checkChild.getLayoutParams();</div><div class="line">            <span class="keyword">final</span> Behavior b = checkLp.getBehavior();</div><div class="line"></div><div class="line">            <span class="keyword">if</span> (b != <span class="keyword">null</span> &amp;&amp; b.layoutDependsOn(<span class="keyword">this</span>, checkChild, child)) &#123;</div><div class="line">                <span class="keyword">if</span> (type == EVENT_PRE_DRAW &amp;&amp; checkLp.getChangedAfterNestedScroll()) &#123;</div><div class="line">                    checkLp.resetChangedAfterNestedScroll();</div><div class="line">                    <span class="keyword">continue</span>;</div><div class="line">                &#125;</div><div class="line"></div><div class="line">                <span class="keyword">final</span> <span class="keyword">boolean</span> handled;</div><div class="line">                <span class="keyword">switch</span> (type) &#123;</div><div class="line">                    <span class="keyword">case</span> EVENT_VIEW_REMOVED:</div><div class="line">                        <span class="comment">// 如果是 view 移除事件，需要调用 onDependentViewRemoved 方法</span></div><div class="line">                        b.onDependentViewRemoved(<span class="keyword">this</span>, checkChild, child);</div><div class="line">                        handled = <span class="keyword">true</span>;</div><div class="line">                        <span class="keyword">break</span>;</div><div class="line">                    <span class="keyword">default</span>:</div><div class="line">                        <span class="comment">// 否则就需要调用 onDependentViewChanged 方法</span></div><div class="line">                        handled = b.onDependentViewChanged(<span class="keyword">this</span>, checkChild, child);</div><div class="line">                        <span class="keyword">break</span>;</div><div class="line">                &#125;</div><div class="line"></div><div class="line">                <span class="keyword">if</span> (type == EVENT_NESTED_SCROLL) &#123;</div><div class="line">                    checkLp.setChangedAfterNestedScroll(handled);</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>值得注意的是该方法的调用是在 view 进行绘制之前</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">class OnPreDrawListener implements ViewTreeObserver.OnPreDrawListener &#123;</div><div class="line">    @Override</div><div class="line">    public boolean onPreDraw() &#123;</div><div class="line">        onChildViewsChanged(EVENT_PRE_DRAW);</div><div class="line">        return true;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>而在 onNestedScroll，onNestedPreScroll，onNestedFling 方法中也会调用到 onChildViewsChanged(EVENT_NESTED_SCROLL) 方法<br>，所以在该方法中也会进行两个状态冲突的处理<br><strong>值得注意的是两个 view 之间并不能相互依赖</strong> mDependencySortedChildren 是类中确定依赖关系顺序的变量，在 prepareChildren 方法中，系统会按照依赖关系对所有的子 View 进行排序。因为使用的是有向无环图，所以不会产生相互依赖的情况产生，同时这个变量会影响测量和绘制的顺序。’</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">prepareChildren</span><span class="params">()</span> </span>&#123;</div><div class="line">    mDependencySortedChildren.clear();</div><div class="line">    mChildDag.clear();</div><div class="line"></div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>, count = getChildCount(); i &lt; count; i++) &#123;</div><div class="line">        <span class="keyword">final</span> View view = getChildAt(i);</div><div class="line"></div><div class="line">        <span class="keyword">final</span> LayoutParams lp = getResolvedLayoutParams(view);</div><div class="line">        lp.findAnchorView(<span class="keyword">this</span>, view);</div><div class="line"></div><div class="line">        mChildDag.addNode(view);</div><div class="line"></div><div class="line">        <span class="comment">// 遍历其他的除自己以外的同级 view，判断是否有依赖关系，有的话会将两个 view 在无环有向图中添加指向</span></div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; count; j++) &#123;</div><div class="line">            <span class="keyword">if</span> (j == i) &#123;</div><div class="line">                <span class="keyword">continue</span>;</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">final</span> View other = getChildAt(j);</div><div class="line">            <span class="keyword">final</span> LayoutParams otherLp = getResolvedLayoutParams(other);</div><div class="line">            <span class="keyword">if</span> (otherLp.dependsOn(<span class="keyword">this</span>, other, view)) &#123;</div><div class="line">                <span class="keyword">if</span> (!mChildDag.contains(other)) &#123;</div><div class="line">                    <span class="comment">// 确保 view 已经被添加进图中成为一个节点</span></div><div class="line">                    mChildDag.addNode(other);</div><div class="line">                &#125;</div><div class="line">                <span class="comment">// 添加图中依赖关系</span></div><div class="line">                mChildDag.addEdge(view, other);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// 最后，把生成的图添加到我们的mDependencySortedChildren中，感兴趣的可以去查找DAG的dfs方法，然后进行一次翻转使view的顺序为后者依赖前者</span></div><div class="line">    Collections.reverse(mDependencySortedChildren);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这个方法会在 onMeasure 中调用，所以在一开始 CoordinatorLayout 就确定由依赖关系确定子 view 的调用关系</p>
+<h2 id="behavior-的简单使用"><a href="#behavior-的简单使用" class="headerlink" title="behavior 的简单使用"></a>behavior 的简单使用</h2><p>behavior 定义在 CoordinatorLayout 子 view 的布局文件中，用<code>app:layout_behavior</code>命名空间修饰，传入定义好的 behavior 全路径名即可，当然你可也可以自定义 Behavior</p>
+
+	
+	
+	
+	
+</div>
+				
+				
+
+                <!-- Post Comments -->
+                
+                    
+
+
+                
+            </div>
+
+            <!-- Post Prev & Next Nav -->
+            <nav class="material-nav mdl-color-text--grey-50 mdl-cell mdl-cell--12-col">
+    
+    <!-- Prev Nav -->
+    
+
+    <!-- Section Spacer -->
+    <div class="section-spacer"></div>
+
+    <!-- Next Nav -->
+    
+        <a href="/2016/11/24/DataBinding简单使用/" id="post_nav-older" class="next-content">
+            旧篇
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
+                <i class="material-icons">arrow_forward</i>
+            </button>
+        </a>
+    
+</nav>
+        </div>
+    </div>
+
+				
+				
+					<!-- Overlay For Active Sidebar -->
+<div class="sidebar-overlay "></div>
+
+<!-- Material sidebar -->
+<aside id="sidebar" class="sidebar sidebar-colored  sidebar-fixed-left" role="navigation">
+	<div id="sidebar-main">
+	    <!-- Sidebar Header -->
+		<div class="sidebar-header header-cover" style="background-image: url(/img/sidebar_header.png);">
+    <!-- Top bar -->
+    <div class="top-bar"></div>
+
+    <!-- Sidebar toggle button -->
+    <button type="button" class="sidebar-toggle mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" style="display: initial;" data-upgraded=",MaterialButton,MaterialRipple">
+    <i class="material-icons">clear_all</i>
+    <span class="mdl-button__ripple-container"><span class="mdl-ripple"></span></span></button>
+
+    <!-- Sidebar Avatar -->
+    <div class="sidebar-image">
+        <img src="/img/avatar.png" alt="大树's avatar">
+    </div>
+
+    <!-- Sidebar Email -->
+    <a data-toggle="dropdown" class="sidebar-brand" href="#settings-dropdown">
+        youremail@email.com
+        <b class="caret"></b>
+    </a>
+</div>
+
+		<!-- Sidebar Navigation  -->
+		<ul class="nav sidebar-nav">
+    <!-- User dropdown  -->
+    <li class="dropdown">
+        <ul id="settings-dropdown" class="dropdown-menu">
+			
+                <li>
+                    <a href="#" target="_blank" title="Email Me">
+						<i class="material-icons sidebar-material-icons sidebar-indent-left1pc-element">email</i>
+                        Email Me
+                    </a>
+                </li>
+            
+        </ul>
+    </li>
+
+    <!-- Homepage -->
+    <li id="sidebar-first-li">
+        <a href="/" target="_self">
+            <i class="material-icons sidebar-material-icons">home</i>
+             主页
+        </a>
+    </li>
+
+    <!-- I'm Feeling Lucky -->
+<!--
+    <li class="dropdown">
+        <a href="" target="_self">
+            <i class="material-icons sidebar-material-icons">explore</i>
+             sidebar.imlucky
+        </a>
+    </li>
+-->
+
+	
+    <!-- Archives  -->
+    <li class="dropdown">
+        <a href="#" class="ripple-effect dropdown-toggle" data-toggle="dropdown">
+            <i class="material-icons sidebar-material-icons">inbox</i>
+             归档
+            <b class="caret"></b>
+        </a>
+        <ul class="dropdown-menu">
+            <li>
+            <a class="sidebar_archives-link" href="/archives/2016/12/">十二月 2016<span class="sidebar_archives-count">1</span></a></li><li><a class="sidebar_archives-link" href="/archives/2016/11/">十一月 2016<span class="sidebar_archives-count">1</span></a></li><li><a class="sidebar_archives-link" href="/archives/2016/06/">六月 2016<span class="sidebar_archives-count">1</span></a>
+        </ul>
+    </li>
+
+    <!-- Divider -->
+    <li class="divider"></li>
+
+
+    <!-- Pages  -->
+	
+
+    <!-- Article Numebr  -->
+    <li>
+        <a href="/archives">
+             文章总数
+             <span class="sidebar-badge">3</span>
+        </a>
+    </li>
+</ul>
+
+		<!-- Sidebar Divider -->
+		<div class="sidebar-divider"></div>
+
+		<!-- Sidebar Footer -->
+		<!-- 
+I'm glad you use this theme, the development is no so easy, I hope you can keep the copyright, I will thank you so much.
+If you still want to delete the copyrights, could you still retain the first one? Which namely "Theme Material"
+It will not impact the appearance and can give developers a lot of support :)
+
+很高兴您使用并喜欢该主题，开发不易 十分谢谢与希望您可以保留一下版权声明。
+如果您仍然想删除的话 能否只保留第一项呢？即 "Theme Material"
+它不会影响美观并可以给开发者很大的支持。 :) 
+-->
+
+<!-- Theme Material -->
+<a href="https://github.com/viosey/hexo-theme-material"  class="sidebar-footer-text-a" target="_blank">
+	<div class="sidebar-text mdl-button mdl-js-button mdl-js-ripple-effect sidebar-footer-text-div" data-upgraded=",MaterialButton,MaterialRipple">
+		主题 - Material
+		<span class="sidebar-badge badge-circle">i</span>
+	</div>
+</a>
+
+<!-- Help & Support -->
+<!--
+<a href="mailto:hiviosey@gmail.com" class="sidebar-footer-text-a">
+    <div class="sidebar-text mdl-button mdl-js-button mdl-js-ripple-effect sidebar-footer-text-div" data-upgraded=",MaterialButton,MaterialRipple">
+		sidebar.help
+		<span class="mdl-button__ripple-container">
+			<span class="mdl-ripple"></span>
+		</span>
+	</div>
+</a>
+-->
+
+<!-- Feedback -->
+<!--
+<a href="https://github.com/viosey/hexo-theme-material/issues" target="_blank" class="sidebar-footer-text-a">
+    <div class="sidebar-text mdl-button mdl-js-button mdl-js-ripple-effect sidebar-footer-text-div" data-upgraded=",MaterialButton,MaterialRipple">
+         sidebar.feedback
+                    <span class="mdl-button__ripple-container"><span class="mdl-ripple"></span></span></div>
+</a>
+-->
+
+<!-- Abount Theme -->
+<!--
+<a href="https://blog.viosey.com/index.php/Material.html" target="_blank" class="sidebar-footer-text-a">
+    <div class="sidebar-text mdl-button mdl-js-button mdl-js-ripple-effect sidebar-footer-text-div" data-upgraded=",MaterialButton,MaterialRipple">
+         sidebar.about_theme
+        <span class="mdl-button__ripple-container"><span class="mdl-ripple"></span></span></div>
+</a>-->
+
+	</div>
+    
+    <!-- Sidebar Sponsor -->
+    
+
+
+</aside>
+
+				
+				
+				
+					<!-- Footer Top Button -->
+					<div class="toTop-wrap">
+    <a href="#top" class="toTop">
+        <i class="material-icons footer_top-i">expand_less</i>
+    </a>
+</div>
+				
+				
+				<!--Footer-->
+<footer class="mdl-mini-footer" id="bottom">
+	
+	
+		<!-- Paradox Footer Left Section -->
+		<div class="mdl-mini-footer--left-section sns-list">
+    <!-- Twitter -->
+    
+    <a href="https://twitter.com/twitter" target="view_window"><button class="mdl-mini-footer--social-btn social-btn" style="background-image: url(/img/footer/footer_ico-twitter.png);">
+        <span class="visuallyhidden">Twitter</span>
+    </button></a>
+    
+    
+    <!-- Facebook -->
+    
+    <a href="https://www.facebook.com/facebook" target="view_window"><button class="mdl-mini-footer--social-btn social-btn" style="background-image: url(/img/footer/footer_ico-facebook.png);">
+        <span class="visuallyhidden">Facebook</span>
+    </button></a>
+    
+    
+    <!-- Google + -->
+    
+    <a href="https://www.google.com/" target="view_window"><button class="mdl-mini-footer--social-btn social-btn" style="background-image: url(/img/footer/footer_ico-gplus.png);">
+        <span class="visuallyhidden">Google Plus</span>
+    </button></a>
+    
+    
+    <!-- Weibo -->
+    
+    
+    
+    <!-- Instagram -->
+    
+    
+    
+    <!-- Tumblr -->
+    
+    
+    
+    <!-- Github -->
+    
+    
+</div>
+
+
+		<!--Copyright-->
+		<div id="copyright">Copyright&nbsp;©&nbsp;<script type="text/javascript">var fd = new Date();document.write(fd.getFullYear());</script>&nbsp;森林</div>
+
+		<!-- Paradox Footer Right Section -->
+
+		<!-- 
+		I'm glad you use this theme, the development is no so easy, I hope you can keep the copyright.
+		It will not impact the appearance and can give developers a lot of support :)
+
+		很高兴您使用该主题，开发不易，希望您可以保留一下版权声明。
+		它不会影响美观并可以给开发者很大的支持。 :) 
+		-->
+
+		<div class="mdl-mini-footer--right-section">
+			<div>
+				<div class="footer-develop-div">Powered by <a href="https://hexo.io" target="_blank" class="footer-develop-a">Hexo</a></div>
+				<div class="footer-develop-div">Theme - <a href="https://github.com/viosey/hexo-theme-material" target="_blank" class="footer-develop-a">Material</a></div>
+			</div>
+		</div>
+	
+    
+</footer>
+                
+				<!-- Import File -->
+<script src="/js/highlight.min.js"></script>
+<script src="/js/js.min.js"></script>
+<script src="/js/nprogress.js"></script>
+
+<script type="text/javascript">
+    NProgress.configure({
+        showSpinner: true
+    });
+    NProgress.start();
+    
+    $('#nprogress .bar').css({
+        'background': '#FF4081'
+    });
+    $('#nprogress .peg').css({
+        'box-shadow': '0 0 10px #FF4081, 0 0 15px #FF4081'
+    });
+    $('#nprogress .spinner-icon').css({
+        'border-top-color': '#FF4081',
+        'border-left-color': '#FF4081'
+    });
+    
+    setTimeout(function() {
+        NProgress.done();
+        $('.fade').removeClass('out');
+    }, 800);
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<!-- Swiftye -->
+
+
+<!-- Local Search-->
+
+
+<!-- Window Load-->
+<script>
+    $(window).load(function() {
+        // Post_Toc parent position fixed
+        $(".post-toc-wrap").parent(".mdl-menu__container").css("position", "fixed");
+    });
+</script>
+
+<!-- MathJax Load-->
+
+            </main>
+        </div>
+		
+    </body>
+		
+	
+</html>
