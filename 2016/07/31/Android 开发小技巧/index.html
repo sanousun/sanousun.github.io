@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="小技巧," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前言做了许久的开发，常常有些小细节会打动到我，希望这篇文章可以记录这些分享给大家
+布局文件tools命名空间在预览布局时的应用在布局编写时常常因查看布局效果会添加一些正式环境不会初始化的属性，比如说 text，visibility… 但是为了初始化效果，这些属性一般会在完成后删除，有时候在维护时为了方便预览再写上，这时可以使用 tools 的命名空间。如
+1234&amp;lt;TextView    a">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android 开发小技巧">
+<meta property="og:url" content="http://sanousun.github.io/2016/07/31/Android 开发小技巧/index.html">
+<meta property="og:site_name" content="sanousun">
+<meta property="og:description" content="前言做了许久的开发，常常有些小细节会打动到我，希望这篇文章可以记录这些分享给大家
+布局文件tools命名空间在预览布局时的应用在布局编写时常常因查看布局效果会添加一些正式环境不会初始化的属性，比如说 text，visibility… 但是为了初始化效果，这些属性一般会在完成后删除，有时候在维护时为了方便预览再写上，这时可以使用 tools 的命名空间。如
+1234&amp;lt;TextView    a">
+<meta property="og:updated_time" content="2018-04-11T08:44:50.442Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android 开发小技巧">
+<meta name="twitter:description" content="前言做了许久的开发，常常有些小细节会打动到我，希望这篇文章可以记录这些分享给大家
+布局文件tools命名空间在预览布局时的应用在布局编写时常常因查看布局效果会添加一些正式环境不会初始化的属性，比如说 text，visibility… 但是为了初始化效果，这些属性一般会在完成后删除，有时候在维护时为了方便预览再写上，这时可以使用 tools 的命名空间。如
+1234&amp;lt;TextView    a">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://sanousun.github.io/2016/07/31/Android 开发小技巧/"/>
+
+
+
+
+
+  <title>Android 开发小技巧 | sanousun</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">sanousun</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">sanousun的博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://sanousun.github.io/2016/07/31/Android 开发小技巧/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sanousun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="sanousun">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android 开发小技巧</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-07-31T13:45:10+08:00">
+                2016-07-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>做了许久的开发，常常有些小细节会打动到我，希望这篇文章可以记录这些分享给大家</p>
+<h2 id="布局文件"><a href="#布局文件" class="headerlink" title="布局文件"></a>布局文件</h2><h4 id="tools命名空间在预览布局时的应用"><a href="#tools命名空间在预览布局时的应用" class="headerlink" title="tools命名空间在预览布局时的应用"></a>tools命名空间在预览布局时的应用</h4><p>在布局编写时常常因查看布局效果会添加一些正式环境不会初始化的属性，比如说 text，visibility… 但是为了初始化效果，这些属性一般会在完成后删除，有时候在维护时为了方便预览再写上，这时可以使用 tools 的命名空间。如</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">TextView</span></span></div><div class="line">    <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></div><div class="line">    <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></div><div class="line">    <span class="attr">tools:text</span>=<span class="string">"这段话只在预览时展示，正式环境不会显示"</span> /&gt;</div></pre></td></tr></table></figure>
+<p>在运行的状态下解析布局文件时就会忽略 tools 属性</p>
+<h4 id="android-widget-Space-占位控件"><a href="#android-widget-Space-占位控件" class="headerlink" title="android.widget.Space 占位控件"></a><a href="https://developer.android.com/reference/android/widget/Space.html" target="_blank" rel="external">android.widget.Space</a> 占位控件</h4><p>一个占位轻量级控件，绘制过程中会跳过 onDraw() 步骤，使用与分隔不同的控件展示一片空白</p>
+<h4 id="Merge-合并标签"><a href="#Merge-合并标签" class="headerlink" title="Merge 合并标签"></a><a href="https://developer.android.com/training/improving-layouts/reusing-layouts.html%23Merge" target="_blank" rel="external">Merge</a> 合并标签</h4><p>此标签可以节省一层布局深度。常常运用在 include 标签之中，一般情况下我们将 include 的根标签用 merge 代替，而不用再新建一个 ViewGroup，同时在自定义继承自系统 ViewGroups 时在写布局文件时也需要用到，可以避免一层布局深度；可以通过载入一个带有标签的布局文件来自动定义它的子部件</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">merge</span></span></div><div class="line">    <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></div><div class="line">    <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></div><div class="line">    <span class="attr">tools:parentTag</span>=<span class="string">"android.widget.RelativeLayout"</span></div></pre></td></tr></table></figure>
+<p>通过 tools:parentTag 可以预览富布局效果</p>
+<h4 id="android-duplicateParentState-View属性"><a href="#android-duplicateParentState-View属性" class="headerlink" title="android:duplicateParentState (View属性)"></a><a href="https://developer.android.com/reference/android/view/View.html%23attr_android%3AduplicateParentState" target="_blank" rel="external">android:duplicateParentState (View属性)</a></h4><p>当改属性设置为 true 时，子 View 可以复制父 View 的状态（selected, focused 等状态）。比如如果一个 ViewGroup 是可点击的，那么可以用这个属性在它被点击的时候让它的子 View 都改变状态</p>
+<h4 id="android-clipChildren-ViewGroup属性"><a href="#android-clipChildren-ViewGroup属性" class="headerlink" title="android:clipChildren (ViewGroup属性)"></a><a href="https://developer.android.com/reference/android/view/ViewGroup.html%23attr_android%3AclipChildren" target="_blank" rel="external">android:clipChildren (ViewGroup属性)</a></h4><p>定义了子 View 是否仅限于在 Padding 里绘制。此属性默认设置为 true 即子 View 绘制无法超过 ViewGroup 的 padding 区域，当设置为 false 时，那么 ViewGroup 的子 View 在绘制的时候会超出它的范围，往往会在做动画的时候需要用到</p>
+<h4 id="android-clipToPadding-ViewGroup属性"><a href="#android-clipToPadding-ViewGroup属性" class="headerlink" title="android:clipToPadding (ViewGroup属性)"></a><a href="https:/developer.android.com/reference/android/view/ViewGroup.html%23attr_android%3AclipToPadding" target="_blank" rel="external">android:clipToPadding (ViewGroup属性)</a></h4><p>定义了 ViewGroup 是否会裁剪子 View 调整边缘效果保证 padding 效果，当 ViewGroup 设置了 padding 后该属性默认为 true。<br>运用场景：有时 ScrollView, RecyclerView 等会设置一个离顶部 toolbar 及屏幕底部一定距离来留白，默认情况下，滚动是在 padding 范围内的，会出现内容的上下滚动边界离真正的边界有一定的距离。此时只需要将该属性设置为 false，滚动时子控件就能绘制到父控件的 padding 区域</p>
+<h4 id="android-animateLayoutChanges-ViewGroup属性"><a href="#android-animateLayoutChanges-ViewGroup属性" class="headerlink" title="android:animateLayoutChanges (ViewGroup属性)"></a><a href="https://developer.android.com/reference/android/view/ViewGroup.html#attr_android:animateLayoutChanges" target="_blank" rel="external">android:animateLayoutChanges (ViewGroup属性)</a></h4><p>ViewGroup 中添加或移除 View 时(对 Visibility 设置也起作用)设置动画的办法，支持通过 setLayoutTransition() 自定义动画</p>
+<h4 id="android-fillViewport-ScrollView属性"><a href="#android-fillViewport-ScrollView属性" class="headerlink" title="android:fillViewport (ScrollView属性)"></a><a href="https://developer.android.com/reference/android/widget/ScrollView.html%23attr_android%3AfillViewport" target="_blank" rel="external">android:fillViewport (ScrollView属性)</a></h4><p>该属性决定了滚动视图是否应该伸展它的内容填补视窗。就是要让 ScrollView 内部元素的 match_parent 起作用将该属性设置为 true</p>
+<h4 id="app-layoutManager-RecyclerView属性"><a href="#app-layoutManager-RecyclerView属性" class="headerlink" title="app:layoutManager (RecyclerView属性)"></a><a href="https://developer.android.com/reference/android/support/v7/widget/RecyclerView.html#attr_android.support.v7.recyclerview:layoutManager" target="_blank" rel="external">app:layoutManager (RecyclerView属性)</a></h4><p>RecyclerView 可以在 xml 布局文件中设置 LayoutManager，可以不用在代码中创建新的 LayoutManager 实例，RecyclerView 在 style 中已定义</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&lt;declare-styleable name=&quot;RecyclerView&quot;&gt;</div><div class="line">    &lt;attr name=&quot;layoutManager&quot; format=&quot;string&quot;/&gt;</div><div class="line">    &lt;attr name=&quot;android:orientation&quot;/&gt;</div><div class="line">    &lt;attr name=&quot;spanCount&quot; format=&quot;integer&quot;/&gt;</div><div class="line">    &lt;attr name=&quot;reverseLayout&quot; format=&quot;boolean&quot;/&gt;</div><div class="line">    &lt;attr name=&quot;stackFromEnd&quot; format=&quot;boolean&quot;/&gt;</div><div class="line">&lt;/declare-styleable&gt;</div></pre></td></tr></table></figure>
+<h2 id="TextView"><a href="#TextView" class="headerlink" title="TextView"></a>TextView</h2><h4 id="TextView-setError"><a href="#TextView-setError" class="headerlink" title="TextView.setError()"></a>TextView.setError()</h4><p>可以设置文字或者文字加上图片，展示一个 popupWindow 效果非常好</p>
+<h4 id="TextView去除上下留白"><a href="#TextView去除上下留白" class="headerlink" title="TextView去除上下留白"></a>TextView去除上下留白</h4><p>TextView 默认上下是有一定的 padding 的，有时候我们可能不需要上下这部分留白，在 xml 布局文件中加上 <code>includeFontPadding=&quot;false&quot;</code> 即可</p>
+<h4 id="TextView设置图片"><a href="#TextView设置图片" class="headerlink" title="TextView设置图片"></a>TextView设置图片</h4><p>xml布局文件中设置：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">TextView</span></span></div><div class="line">    <span class="attr">......</span></div><div class="line">    <span class="attr">android:drawableLeft</span> = <span class="string">"@drawable/icon"</span>/&gt;</div></pre></td></tr></table></figure>
+<p>或者可以在 java 代码文件中设置：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">Drawable img = ContextCompat.getDrawable(<span class="keyword">this</span>, R.drawable.icon);</div><div class="line">img.setBounds(<span class="number">0</span>,<span class="number">0</span>,<span class="number">100</span>,<span class="number">100</span>);</div><div class="line">textView.setCompoundDrawables(img,<span class="keyword">null</span>,<span class="keyword">null</span>,<span class="keyword">null</span>);</div><div class="line"></div><div class="line"><span class="comment">/* ********* or ********* */</span></div><div class="line">Drawable img = ContextCompat.getDrawable(<span class="keyword">this</span>, R.drawable.icon);</div><div class="line">textView.setCompoundDrawablesWithIntrinsicBounds(img,<span class="keyword">null</span>,<span class="keyword">null</span>,<span class="keyword">null</span>);</div><div class="line"></div><div class="line"><span class="comment">/* ********* or ********* */</span></div><div class="line">textView.setCompoundDrawablesWithIntrinsicBounds(resId,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>);</div></pre></td></tr></table></figure>
+<h4 id="TextView在文中设置特殊格式"><a href="#TextView在文中设置特殊格式" class="headerlink" title="TextView在文中设置特殊格式"></a>TextView在文中设置特殊格式</h4><p><code>setText(CharSequence text)</code> 方法可以传入 SpannableString 类展示特殊格式，该类通过 <code>setSpan(Object what, int start, int end, int flags)</code> 方法可以设置各种不同的效果，比如说颜色，背景，点击事件等等，建议通过 SpannableStringBuilder 类得到实例或者 <code>fromHtml(String source)</code> 方法得到。</p>
+<h2 id="EditView"><a href="#EditView" class="headerlink" title="EditView"></a>EditView</h2><h4 id="InputType"><a href="#InputType" class="headerlink" title="InputType"></a><a href="https://developer.android.com/reference/android/text/InputType.html" target="_blank" rel="external">InputType</a></h4><p>可以定义软键盘弹出的类型，在xml布局文件中的EditText标签下直接定义，比如说定义带小数的数字输入</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">EditText</span> </span></div><div class="line">    <span class="attr">......</span></div><div class="line">    <span class="attr">android:inputType</span>=<span class="string">"number"</span> /&gt;</div></pre></td></tr></table></figure>
+<p>也可以在 java 代码中设置</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);</div></pre></td></tr></table></figure>
+<p>可以在 xml 文件中设置 <code>android:inputType=&quot;textUri&quot;</code> 或者代码中调用 <code>setInputType(InputType.TYPE_TEXT_VARIATION_URI)</code>实现英文键盘弹出</p>
+<h4 id="setKeyListener-KeyListener"><a href="#setKeyListener-KeyListener" class="headerlink" title="setKeyListener(KeyListener)"></a>setKeyListener(KeyListener)</h4><p>通过 DigitsKeyListener 类，使用 <code>getInstance(String accepted)</code> 方法即可指定EditText可输入字符集<br>同时也在代码中可以通过 <code>setFilters(InputFilter[] filters)</code> 设置过滤器来实现 EditText 的定向输入。比如说两位小数的输入的自定义 InputFilter</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DecFilter</span> <span class="keyword">implements</span> <span class="title">InputFilter</span> </span>&#123;</div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> CharSequence <span class="title">filter</span><span class="params">(CharSequence source,</span></span></div><div class="line">                               <span class="keyword">int</span> start, <span class="keyword">int</span> end, Spanned dest, <span class="keyword">int</span> dstart, <span class="keyword">int</span> dend) &#123;</div><div class="line">        <span class="comment">//不能在倒数第三位以前输入点</span></div><div class="line">        <span class="keyword">if</span> (<span class="string">"."</span>.equals(source.toString()) &amp;&amp; dstart + <span class="number">2</span> &lt; dest.length()) <span class="keyword">return</span> <span class="string">""</span>;</div><div class="line">        <span class="comment">//控制小数位数为两位</span></div><div class="line">        String[] splitArray = dest.toString().split(<span class="string">"\\."</span>);</div><div class="line">        <span class="keyword">if</span> (splitArray.length &gt; <span class="number">1</span>) &#123;</div><div class="line">            <span class="comment">//如果已经含有两位小数，判断插入的地方是否为小数位，是则过滤</span></div><div class="line">            <span class="keyword">if</span> (splitArray[<span class="number">1</span>].length() == <span class="number">2</span> &amp;&amp; dstart + <span class="number">2</span> &gt;= dest.length()) &#123;</div><div class="line">                <span class="keyword">return</span> <span class="string">""</span>;</div><div class="line">            &#125; <span class="keyword">else</span> &#123;</div><div class="line">                <span class="keyword">return</span> source;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> source;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>与InputType配合可以实现两位小数输入限制</p>
+<h4 id="软键盘适配"><a href="#软键盘适配" class="headerlink" title="软键盘适配"></a>软键盘适配</h4><p>为了解决弹出软键盘遮挡 EditText 的冲突，一般会在 manifests 文件对应 activity 标签下添加</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">activity</span></span></div><div class="line">    <span class="attr">......</span></div><div class="line">    <span class="attr">android:windowSoftInputMode</span>=<span class="string">"adjustPan|stateAlwaysHidden"</span>/&gt;</div></pre></td></tr></table></figure>
+<p>但在 EditView 为多行输入且文本高度超过控件高度时，当隐藏键盘后点击超过控件高度的文本位置时，软键盘的弹出会遮盖 EditText，此时需要将 adjustPan 替换成 adjustResize</p>
+<h4 id="点击外部隐藏软键盘"><a href="#点击外部隐藏软键盘" class="headerlink" title="点击外部隐藏软键盘"></a>点击外部隐藏软键盘</h4><p>可以在activity的基类的 <code>dispatchTouchEvent(MotionEvent ev)</code> 中添加如下方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">dispatchTouchEvent</span><span class="params">(MotionEvent ev)</span> </span>&#123;    </div><div class="line">    <span class="keyword">if</span> (ev.getAction() == MotionEvent.ACTION_DOWN) &#123;    </div><div class="line">        View v = getCurrentFocus();        </div><div class="line">        <span class="keyword">if</span> (v != <span class="keyword">null</span> &amp;&amp; (v <span class="keyword">instanceof</span> EditText)) &#123;           </div><div class="line">            <span class="keyword">int</span>[] point = &#123;<span class="number">0</span>, <span class="number">0</span>&#125;;            </div><div class="line">            v.getLocationOnScreen(point);            </div><div class="line">            <span class="keyword">int</span> left = point[<span class="number">0</span>], top = point[<span class="number">1</span>], bottom = top + v.getHeight(), right = left + v.getWidth();            </div><div class="line">            <span class="keyword">if</span> (!(ev.getRawX() &gt; left &amp;&amp; ev.getRawX() &lt; right &amp;&amp; ev.getRawY() &gt; top &amp;&amp; ev.getRawY() &lt; bottom)) &#123;                </div><div class="line">                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);                </div><div class="line">                imm.hideSoftInputFromWindow(<span class="keyword">this</span>.getCurrentFocus().getWindowToken(), <span class="number">0</span>);                </div><div class="line">                v.clearFocus();</div><div class="line">            &#125;       </div><div class="line">        &#125;    </div><div class="line">    &#125;    </div><div class="line"><span class="keyword">return</span> <span class="keyword">super</span>.dispatchTouchEvent(ev);&#125;</div></pre></td></tr></table></figure>
+<h4 id="软键盘的监听"><a href="#软键盘的监听" class="headerlink" title="软键盘的监听"></a>软键盘的监听</h4><p>Android 系统并没有提供软键盘监听接口，但某些场景却需要对键盘进行监听，此时可以采用特殊的办法，那就是采用 Activity 的</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onLayoutChange</span><span class="params">(View v, <span class="keyword">int</span> left, <span class="keyword">int</span> top, <span class="keyword">int</span> right, <span class="keyword">int</span> bottom, <span class="keyword">int</span> oldLeft, <span class="keyword">int</span> oldTop, <span class="keyword">int</span> oldRight, <span class="keyword">int</span> oldBottom)</span></span></div></pre></td></tr></table></figure>
+<p>当 Activity 的键盘属性是 adjustResize 时，键盘弹出会挤压 activity 的布局，此时可以通过 (bottom - oldBottom &gt; keyHeight) 方法来认为键盘是否弹出，keyHeight 一般认为是屏幕高度的 1/3 </p>
+<h2 id="RecyclerView"><a href="#RecyclerView" class="headerlink" title="RecyclerView"></a>RecyclerView</h2><h4 id="自动测量"><a href="#自动测量" class="headerlink" title="自动测量"></a>自动测量</h4><p>在 Support Library 23.2 以后支持自动测量，现在可以非常方便将 Recycler 嵌套在 ScrollView 及其他 ViewGroup 中，可以设置 warp_content 用来自动测量</p>
+<p>当嵌套在 ScrollView 中时，因为滑动方向一致导致 RecyclerView 部分会由粘滞感，需要调用方法 <code>setNestedScrollingEnabled(false)</code> 但在高 sdk 上有bug，此时的 RecyclerView 未加载的 item 将不会显示，解决办法是将 ScrollView 替换成 NestedScrollView</p>
+<h2 id="自定义View"><a href="#自定义View" class="headerlink" title="自定义View"></a>自定义View</h2><p>列举一些对自定义View有帮助的类或方法</p>
+<ul>
+<li><p>canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)<br>该方法可以用来清除画布上的内容</p>
+</li>
+<li><p>canvas.clipRect()、clipPath()<br>该方法可以用来剪切画布区域</p>
+</li>
+<li><p>onDetachedFromWindow<br>复写该方法中清理与 View 相关的资源</p>
+</li>
+<li><p>getParent().requestDisallowInterceptTouchEvent(true)<br>方法可以剥夺父 View 对 touch 事件的处理权，可用于滑动冲突</p>
+</li>
+<li><p>ArgbEvaluator.evaluate<br>用于根据一个起始颜色值和一个结束颜色值以及一个偏移量生成一个新的颜色，可用于自定义 View 的动画</p>
+</li>
+<li><p>ViewDragHelper<br>用于自定义 ViewGroup 处理各种事件</p>
+</li>
+<li><p>GestureDetector<br>用来监听和相应对应的手势事件，比如点击，长按，慢滑动，快滑动</p>
+</li>
+<li><p>ViewConfiguration.getScaledTouchSlop()<br>触发移动事件的最小距离，这是系统提供的用于自定义 View 处理 touch 事件的时候判断用户是否滑动的最小距离</p>
+</li>
+<li><p>StaticLayout<br>该类一般用于在自定义 View 中渲染文字</p>
+</li>
+<li><p>Paint.setXfermode(porterDuffXfermode)<br>在 ApiDemo 里面有专门的介绍，实现了穿透，叠加，覆盖等多种绘制效果，非常实用</p>
+</li>
+<li><p>performClick() 和 performLongClick()<br>方法可以分别模拟View的点击和长按</p>
+</li>
+<li><p>VelocityTracker<br>可用于 View 滑动事件速度跟踪</p>
+</li>
+</ul>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><h4 id="Fragment-类中的-onHiddenChanged-boolean-方法"><a href="#Fragment-类中的-onHiddenChanged-boolean-方法" class="headerlink" title="Fragment 类中的 onHiddenChanged(boolean) 方法"></a>Fragment 类中的 onHiddenChanged(boolean) 方法</h4><p>该会在 FragmentTransaction 的 hide() 和 show() 调用时被 Fragment 调用，而 Fragment 的其他生命周期方法并不会在此时被调用，所以一般的刷新等操作不能在 onResume() 方法中实现</p>
+<h4 id="Fragment-setArguments-Bundle-bundle"><a href="#Fragment-setArguments-Bundle-bundle" class="headerlink" title="Fragment.setArguments(Bundle bundle)"></a><a href="https://developer.android.com/reference/android/app/Fragment.html%23setArguments%2528android.os.Bundle%2529" target="_blank" rel="external">Fragment.setArguments(Bundle bundle)</a></h4><p>在构建 Fragment 的时候不能加参数，我们可以通过将参数传入 Bundle 中，通过此方法传入到 Fragment 实例中（即使在  configuration 改变的时候仍然会导致销毁/重建）</p>
+<h4 id="FragmentManager-enableDebugLogging"><a href="#FragmentManager-enableDebugLogging" class="headerlink" title="FragmentManager.enableDebugLogging()"></a><a href="https://developer.android.com/reference/android/app/FragmentManager.html%23enableDebugLogging%2528boolean%2529" target="_blank" rel="external">FragmentManager.enableDebugLogging()</a></h4><p>可以帮助观察 Fragment 状态 </p>
+<h4 id="PageTransformer-接口"><a href="#PageTransformer-接口" class="headerlink" title="PageTransformer 接口"></a>PageTransformer 接口</h4><p>可以用来定义 ViewPager 页面切换的动画，通过 setPageTransformer(boolean, PageTransformer) 方法实现</p>
+<h4 id="Resources-类中的-getIdentifier-name-defType-defPackage"><a href="#Resources-类中的-getIdentifier-name-defType-defPackage" class="headerlink" title="Resources 类中的 getIdentifier(name,defType,defPackage)"></a>Resources 类中的 getIdentifier(name,defType,defPackage)</h4><p>方法可以通过资源名称获取其ID，可以在多种不同类型资源获取中运用</p>
+<h4 id="ViewStub"><a href="#ViewStub" class="headerlink" title="ViewStub"></a><a href="https:developer.android.com/reference/android/view/ViewStub.html" target="_blank" rel="external">ViewStub</a></h4><p>该类是一个初始化不做任何事情的 View，但是之后可以载入一个布局文件。在慢加载 View 中很适合做占位符。唯一的缺点就是不支持标签，所以如果你不太小心的话，可能会在视图结构中加入不需要的嵌套</p>
+<h4 id="View保存为Bitmap"><a href="#View保存为Bitmap" class="headerlink" title="View保存为Bitmap"></a>View保存为Bitmap</h4><p>除了ScrollView外可以使用下面方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Bitmap <span class="title">createBitmap</span><span class="params">(View v)</span> </span>&#123;</div><div class="line">    v.setDrawingCacheEnabled(<span class="keyword">true</span>);</div><div class="line">    v.buildDrawingCache();</div><div class="line">    Bitmap bitmap = Bitmap.createBitmap(v.getDrawingCache());</div><div class="line">    v.setDrawingCacheEnabled(<span class="keyword">false</span>);</div><div class="line">    <span class="keyword">return</span> bitmap;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>而ScrollView则需要使用下面方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Bitmap <span class="title">createBitmap</span><span class="params">(ScrollView v)</span> </span>&#123;</div><div class="line">    <span class="keyword">int</span> width = <span class="number">0</span>, height = <span class="number">0</span>;</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; v.getChildCount(); i++) &#123;</div><div class="line">        width += v.getChildAt(i).getWidth();</div><div class="line">        height += v.getChildAt(i).getHeight();</div><div class="line">    &#125;</div><div class="line">    Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);</div><div class="line">    Canvas canvas = <span class="keyword">new</span> Canvas(bitmap);</div><div class="line">    v.draw(canvas);</div><div class="line">    <span class="keyword">return</span> bitmap;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="android-text-TextUtils"><a href="#android-text-TextUtils" class="headerlink" title="android.text.TextUtils"></a>android.text.TextUtils</h4><p>该类集成了许多关于字符串的常用方法。比如说判断字符串是否为 null 或 “” 的 isEmpty(CharSequence) 方法；判断字符串是否相同的 equals(CharSequence a, CharSequence b) 方法（使用 a.equals(b) 方法需要对 a 做非空判断)等</p>
+<h4 id="android-util-Pair"><a href="#android-util-Pair" class="headerlink" title="android.util.Pair"></a>android.util.Pair</h4><p>该类可以存储一组数据，但并不是以key-value形式存在，而是两个参数单独存在</p>
+<h4 id="android-graphics-PointF"><a href="#android-graphics-PointF" class="headerlink" title="android.graphics.PointF"></a>android.graphics.PointF</h4><p>该类可以用来描述坐标点，比起单独的x,y更加方便简洁，还包括了一些简单的坐标计算函数</p>
+<h4 id="android-util-SparseArray"><a href="#android-util-SparseArray" class="headerlink" title="android.util.SparseArray"></a>android.util.SparseArray</h4><p>当 key 为 int 类型时，SparseArray 可以用来替换 hashMap，它可以避免操作数据池时的大量装箱拆箱过程以便节省内存，提高性能。还有一些继承类 SparseBooleanArray、SparseIntArray 和 SparseLongArray</p>
+<h4 id="android-database-DatabaseUtils"><a href="#android-database-DatabaseUtils" class="headerlink" title="android.database.DatabaseUtils"></a><a href="https://developer.android.com/reference/android/database/DatabaseUtils.html" target="_blank" rel="external">android.database.DatabaseUtils</a></h4><p>类是用于提供操作数据库的通用方法</p>
+<h4 id="java-math-BigDecimal"><a href="#java-math-BigDecimal" class="headerlink" title="java.math.BigDecimal"></a>java.math.BigDecimal</h4><p>该类是用于高精度计算的类，可以直接传入字符串，返回类型和格式可以通过相关方法自定义，较复杂的计算推荐这个类。这个类有一个相关的 DecimalFormat 类，用于字串格式化包括指定位数、百分数、科学计数法等</p>
+<p>##感谢<br><strong><a href="https://www.zhihu.com/question/33636939" target="_blank" rel="external">Android开发中，有哪些让你觉得相见恨晚的方法、类或接口</a></strong><br><strong><a href="https://github.com/jiang111/awesome-android-tips" target="_blank" rel="external">awesome-android-tips</a></strong></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/小技巧/" rel="tag"># 小技巧</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/06/14/RxJava 简单使用/" rel="next" title="RxJava 简单运用">
+                <i class="fa fa-chevron-left"></i> RxJava 简单运用
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/11/24/DataBinding 简单使用/" rel="prev" title="DataBinding 简单运用">
+                DataBinding 简单运用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">sanousun</p>
+              <p class="site-description motion-element" itemprop="description">随便写写，随缘</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#布局文件"><span class="nav-number">2.</span> <span class="nav-text">布局文件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#tools命名空间在预览布局时的应用"><span class="nav-number">2.0.1.</span> <span class="nav-text">tools命名空间在预览布局时的应用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#android-widget-Space-占位控件"><span class="nav-number">2.0.2.</span> <span class="nav-text">android.widget.Space 占位控件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Merge-合并标签"><span class="nav-number">2.0.3.</span> <span class="nav-text">Merge 合并标签</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#android-duplicateParentState-View属性"><span class="nav-number">2.0.4.</span> <span class="nav-text">android:duplicateParentState (View属性)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#android-clipChildren-ViewGroup属性"><span class="nav-number">2.0.5.</span> <span class="nav-text">android:clipChildren (ViewGroup属性)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#android-clipToPadding-ViewGroup属性"><span class="nav-number">2.0.6.</span> <span class="nav-text">android:clipToPadding (ViewGroup属性)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#android-animateLayoutChanges-ViewGroup属性"><span class="nav-number">2.0.7.</span> <span class="nav-text">android:animateLayoutChanges (ViewGroup属性)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#android-fillViewport-ScrollView属性"><span class="nav-number">2.0.8.</span> <span class="nav-text">android:fillViewport (ScrollView属性)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#app-layoutManager-RecyclerView属性"><span class="nav-number">2.0.9.</span> <span class="nav-text">app:layoutManager (RecyclerView属性)</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TextView"><span class="nav-number">3.</span> <span class="nav-text">TextView</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#TextView-setError"><span class="nav-number">3.0.1.</span> <span class="nav-text">TextView.setError()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TextView去除上下留白"><span class="nav-number">3.0.2.</span> <span class="nav-text">TextView去除上下留白</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TextView设置图片"><span class="nav-number">3.0.3.</span> <span class="nav-text">TextView设置图片</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TextView在文中设置特殊格式"><span class="nav-number">3.0.4.</span> <span class="nav-text">TextView在文中设置特殊格式</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#EditView"><span class="nav-number">4.</span> <span class="nav-text">EditView</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#InputType"><span class="nav-number">4.0.1.</span> <span class="nav-text">InputType</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#setKeyListener-KeyListener"><span class="nav-number">4.0.2.</span> <span class="nav-text">setKeyListener(KeyListener)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#软键盘适配"><span class="nav-number">4.0.3.</span> <span class="nav-text">软键盘适配</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#点击外部隐藏软键盘"><span class="nav-number">4.0.4.</span> <span class="nav-text">点击外部隐藏软键盘</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#软键盘的监听"><span class="nav-number">4.0.5.</span> <span class="nav-text">软键盘的监听</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RecyclerView"><span class="nav-number">5.</span> <span class="nav-text">RecyclerView</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#自动测量"><span class="nav-number">5.0.1.</span> <span class="nav-text">自动测量</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自定义View"><span class="nav-number">6.</span> <span class="nav-text">自定义View</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他"><span class="nav-number">7.</span> <span class="nav-text">其他</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Fragment-类中的-onHiddenChanged-boolean-方法"><span class="nav-number">7.0.1.</span> <span class="nav-text">Fragment 类中的 onHiddenChanged(boolean) 方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Fragment-setArguments-Bundle-bundle"><span class="nav-number">7.0.2.</span> <span class="nav-text">Fragment.setArguments(Bundle bundle)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#FragmentManager-enableDebugLogging"><span class="nav-number">7.0.3.</span> <span class="nav-text">FragmentManager.enableDebugLogging()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#PageTransformer-接口"><span class="nav-number">7.0.4.</span> <span class="nav-text">PageTransformer 接口</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Resources-类中的-getIdentifier-name-defType-defPackage"><span class="nav-number">7.0.5.</span> <span class="nav-text">Resources 类中的 getIdentifier(name,defType,defPackage)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ViewStub"><span class="nav-number">7.0.6.</span> <span class="nav-text">ViewStub</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#View保存为Bitmap"><span class="nav-number">7.0.7.</span> <span class="nav-text">View保存为Bitmap</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#android-text-TextUtils"><span class="nav-number">7.0.8.</span> <span class="nav-text">android.text.TextUtils</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#android-util-Pair"><span class="nav-number">7.0.9.</span> <span class="nav-text">android.util.Pair</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#android-graphics-PointF"><span class="nav-number">7.0.10.</span> <span class="nav-text">android.graphics.PointF</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#android-util-SparseArray"><span class="nav-number">7.0.11.</span> <span class="nav-text">android.util.SparseArray</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#android-database-DatabaseUtils"><span class="nav-number">7.0.12.</span> <span class="nav-text">android.database.DatabaseUtils</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#java-math-BigDecimal"><span class="nav-number">7.0.13.</span> <span class="nav-text">java.math.BigDecimal</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">sanousun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
