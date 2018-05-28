@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Glide,内存优化,集合框架," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="内存优化 —— bitmap pool前言图片是 Android 中占用内存比较大的模块，对于一张使用 ARGB_8888（一个像素低占用32位，即4个字节），480 x 800 大小的 bitmap 来说，内存就要占用 480 x 800 x 8 / 1024 = 1500kb 的内存大小，就算使用 RGB_565 也还是需要 750kb 的内存，而且失去了透明度和一些细节。尤其是针对一些图片列">
+<meta property="og:type" content="article">
+<meta property="og:title" content="内存优化 —— bitmap pool">
+<meta property="og:url" content="http://sanousun.github.io/2018/04/03/内存优化 —— bitmap pool/index.html">
+<meta property="og:site_name" content="sanousun">
+<meta property="og:description" content="内存优化 —— bitmap pool前言图片是 Android 中占用内存比较大的模块，对于一张使用 ARGB_8888（一个像素低占用32位，即4个字节），480 x 800 大小的 bitmap 来说，内存就要占用 480 x 800 x 8 / 1024 = 1500kb 的内存大小，就算使用 RGB_565 也还是需要 750kb 的内存，而且失去了透明度和一些细节。尤其是针对一些图片列">
+<meta property="og:updated_time" content="2018-05-28T04:05:39.888Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="内存优化 —— bitmap pool">
+<meta name="twitter:description" content="内存优化 —— bitmap pool前言图片是 Android 中占用内存比较大的模块，对于一张使用 ARGB_8888（一个像素低占用32位，即4个字节），480 x 800 大小的 bitmap 来说，内存就要占用 480 x 800 x 8 / 1024 = 1500kb 的内存大小，就算使用 RGB_565 也还是需要 750kb 的内存，而且失去了透明度和一些细节。尤其是针对一些图片列">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://sanousun.github.io/2018/04/03/内存优化 —— bitmap pool/"/>
+
+
+
+
+
+  <title>内存优化 —— bitmap pool | sanousun</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">sanousun</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">sanousun的博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://sanousun.github.io/2018/04/03/内存优化 —— bitmap pool/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sanousun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="sanousun">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">内存优化 —— bitmap pool</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-03T22:17:57+08:00">
+                2018-04-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="内存优化-——-bitmap-pool"><a href="#内存优化-——-bitmap-pool" class="headerlink" title="内存优化 —— bitmap pool"></a>内存优化 —— bitmap pool</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>图片是 Android 中占用内存比较大的模块，对于一张使用 ARGB_8888（一个像素低占用32位，即4个字节），480 x 800 大小的 bitmap 来说，内存就要占用 480 x 800 x 8 / 1024 = 1500kb 的内存大小，就算使用 RGB_565 也还是需要 750kb 的内存，而且失去了透明度和一些细节。尤其是针对一些图片列表，图片的缓存尤其重要。</p>
+<p>通常我们知道那些著名的第三方图片加载框架用 LRU Cache 来缓存图片，防止对一张已经加载过的图片又加载一遍，但是很少有人关心过当图片移出 Cache 之后发生了什么。当加载场景是一个无限滑动的图片列表时，基本不会出现图片的复用，系统开始频繁创建销毁 bitmap 资源对象，造成了比较大的内存抖动。所以拥有一个可以复用的对象池可以极大地优化上述现象，介于 bitmap 的特殊性，这个需要特殊定制优化，以 Glide 为例。</p>
+<p>本文基于 Glide 4.3.1 代码</p>
+<h2 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h2><p>Android 官方有一篇关于 Bitmap 内存管理的文章 <a href="https://developer.android.com/topic/performance/graphics/manage-memory" target="_blank" rel="external">Managing Bitmap Memory</a></p>
+<p>Android 各个版本中对于 bitmap 内存优化如下：</p>
+<ul>
+<li>Android 2.2(API 8)及以下，当垃圾回收触发时使导致整个应用暂停，这种同步的回收会影响性能表现。Android 2.3 加入了并发回收策略，如果 bitmap 没有被引用将会很快被回收</li>
+<li>Android 2.3.3(API 10)及以下，bitmap 的像素数据存在于 native heap 中，而 bitmap 本身则存在于 Dalvik heap 中。由于 native 内存中的像素数据何时被释放无法预测，所以可能会导致应用内存溢出而崩溃。从 Android 3.0(API 11)到 Android 7.1(API 27)，像素数据被移到了 Dalvik heap 中，和 bitmap 一样。而 Android 8.0 中，像素数据又再一次被移到了 native heap 中。可能是改进了回收策略，防止像素数据存在 Dalvik heap 中时，使用大量 bitmap 的场景会导致虚拟机的堆内存溢出。</li>
+</ul>
+<p>同时，对于优化 bitmap 的内存管理措施，不同版本也有区别</p>
+<ul>
+<li>Android 2.3.3(API 10)及以下推荐使用 recycle() 来回收 bitmap 的内存</li>
+<li>Android 3.0(API 11)开始，引进了 BitmapFactory.Options.inBitmap 选项，如果设置了此选项，那么在加载 bitmap 时，会采用 Options 对象的解码方法尝试重新使用现有的 bitmap。这意味着 Bitmap 的内存被重用。这样做不但能提高性能，而且省去了内存分配和解除的过程。但是，如何使用 inBitmap 有一定的限制。特别是，在Android 4.4(API 19)之前，只支持相同大小的 bitmap，而在 4.4 以后，只需要复用的 bitmap 大于等于被解码的 bitmap 即可</li>
+</ul>
+<p>所以在开发 bitmap 的复用池时，一定要注意各个版本的区别，值得庆幸的是现在 Android 3.0 版本以下的基本可以被忽略了，所以我们只需要考虑不同版本的 bitmap 复用策略即可</p>
+<h2 id="解析"><a href="#解析" class="headerlink" title="解析"></a>解析</h2><p>GlideBuilder 配置选项中提供了 setBitmapPool 的选项，可以传入一个自定义实现 BitmapPool 接口的对象。当然，Glide 提供了默认的实现对象</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (bitmapPool == <span class="keyword">null</span>) &#123;</div><div class="line">    <span class="keyword">int</span> size = memorySizeCalculator.getBitmapPoolSize();</div><div class="line">    <span class="keyword">if</span> (size &gt; <span class="number">0</span>) &#123;</div><div class="line">        <span class="comment">// 系统默认实现的 bitmap 缓存池，由字面意思可以得知该缓存池也是采用了 LRU 算法管理缓存</span></div><div class="line">        bitmapPool = <span class="keyword">new</span> LruBitmapPool(size);</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        <span class="comment">// 提供默认的空实现</span></div><div class="line">        bitmapPool = <span class="keyword">new</span> BitmapPoolAdapter();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="LruBitmapPool"><a href="#LruBitmapPool" class="headerlink" title="LruBitmapPool"></a>LruBitmapPool</h3><p>LruBitmapPool 的类描述如下：</p>
+<blockquote>
+<p> An BitmapPool implementation that uses an LruPoolStrategy to bucket Bitmaps and then uses an LRU eviction policy to evict Bitmaps from the least recently used bucket in order to keep the pool below a given maximum size limit.<br>使用 LruPoolStrategy 管理 bitmaps，通过 LRU 策略维持对象池的大小</p>
+</blockquote>
+<p>LruBitmapPool 的主要成员变量如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 默认的图片配置时 ARGB_8888</span></div><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Bitmap.Config DEFAULT_CONFIG = Bitmap.Config.ARGB_8888;</div><div class="line"></div><div class="line"><span class="comment">// 实现对象池管理复用的对象</span></div><div class="line"><span class="keyword">private</span> <span class="keyword">final</span> LruPoolStrategy strategy;</div><div class="line"><span class="comment">// 允许内存复用的图片配置</span></div><div class="line"><span class="keyword">private</span> <span class="keyword">final</span> Set&lt;Bitmap.Config&gt; allowedConfigs;</div><div class="line"><span class="comment">// 初始化的最大容量</span></div><div class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> initialMaxSize;</div><div class="line"><span class="comment">// 一个记录器，只用于测试环境追踪 bitmap 对象，没太大意义</span></div><div class="line"><span class="keyword">private</span> <span class="keyword">final</span> BitmapTracker tracker;</div><div class="line"></div><div class="line"><span class="comment">// 真正的最大容量，因为会存在设置了大小因子的时候，等于 initialMaxSize * sizeMultiplier</span></div><div class="line"><span class="keyword">private</span> <span class="keyword">int</span> maxSize;</div><div class="line"><span class="comment">// 当前对象池的大小</span></div><div class="line"><span class="keyword">private</span> <span class="keyword">int</span> currentSize;</div><div class="line"><span class="comment">// 对象复用命中的次数</span></div><div class="line"><span class="keyword">private</span> <span class="keyword">int</span> hits;</div><div class="line"><span class="comment">// 对象复用未命中的次数</span></div><div class="line"><span class="keyword">private</span> <span class="keyword">int</span> misses;</div><div class="line"><span class="comment">// 对象存入的次数</span></div><div class="line"><span class="keyword">private</span> <span class="keyword">int</span> puts;</div><div class="line"><span class="comment">// 容量超限触发清理的次数</span></div><div class="line"><span class="keyword">private</span> <span class="keyword">int</span> evictions;</div><div class="line"></div><div class="line"><span class="comment">// 这些对象可以在测试环境通过 dump() 方法打印</span></div></pre></td></tr></table></figure>
+<p>LruPoolStrategy 一般通过 Bitmap 的 height，width 以及 Bitmap.Config 来生成缓存键。缓存池的大小控制则是通过 currentSize 和 maxSize 的比较来决定是否需要移除 LruPoolStrategy 中的对象。</p>
+<p>在 getDefaultStrategy() 方法中，已经有两个系统默认的实现，而之所以会有两个实现，是因为上文提及 Android 不同版本复用策略不同导致的</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.KITKAT) &#123;</div><div class="line">    strategy = <span class="keyword">new</span> SizeConfigStrategy();</div><div class="line">&#125; <span class="keyword">else</span> &#123;</div><div class="line">    strategy = <span class="keyword">new</span> AttributeStrategy();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>SizeConfigStrategy 的实现相较于 AttributeStrategy 的实现更为复杂，我们以 SizeConfigStrategy 为例深入解析<br>SizeConfigStrategy 的结构并不复杂，但是运用到了比较多的数据结构</p>
+<h3 id="SizeConfigStrategy"><a href="#SizeConfigStrategy" class="headerlink" title="SizeConfigStrategy"></a>SizeConfigStrategy</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 用来缓存键的对象池，内部为一个 20 长度的队列，key 的运用非常频繁，需要创建对象池管理</span></div><div class="line"><span class="comment">// Key 以 size 和 Bitmap.Config 做关键判断</span></div><div class="line"><span class="keyword">private</span> <span class="keyword">final</span> KeyPool keyPool = <span class="keyword">new</span> KeyPool();</div><div class="line"><span class="comment">// 这个 GroupedLinkedMap 是作者根据使用场景定义的一个类似于 LinkedHashMap 的数据结构</span></div><div class="line"><span class="keyword">private</span> <span class="keyword">final</span> GroupedLinkedMap&lt;Key, Bitmap&gt; groupedMap = <span class="keyword">new</span> GroupedLinkedMap&lt;&gt;();</div><div class="line"><span class="comment">// 该对象用于获取最接近可以复用的 key，可以复用大于等于目标 bitmap 大小的对象</span></div><div class="line"><span class="keyword">private</span> <span class="keyword">final</span> Map&lt;Bitmap.Config, NavigableMap&lt;Integer, Integer&gt;&gt; sortedSizes = <span class="keyword">new</span> HashMap&lt;&gt;();</div></pre></td></tr></table></figure>
+<p>关于这些变量可以结合 get 方法去详细解析</p>
+<p><strong>SizeConfigStrategy.get 方法</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> Bitmap <span class="title">get</span><span class="params">(<span class="keyword">int</span> width, <span class="keyword">int</span> height, Bitmap.Config config)</span> </span>&#123;</div><div class="line">    <span class="comment">// 通过宽高及配置计算出 bitmap 的大小</span></div><div class="line">    <span class="keyword">int</span> size = Util.getBitmapByteSize(width, height, config);</div><div class="line">    <span class="comment">// 通过 sortedSizes 查找最匹配的 key</span></div><div class="line">    Key bestKey = findBestKey(size, config);</div><div class="line"></div><div class="line">    Bitmap result = groupedMap.get(bestKey);</div><div class="line">    <span class="keyword">if</span> (result != <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="comment">// 因为对象被取走，所以需要从 sortedSizes 中移除相关数据，必须保证顺序，否则 reconfigure 之后会移除错误的</span></div><div class="line">        decrementBitmapOfSize(bestKey.size, result);</div><div class="line">        result.reconfigure(width, height,</div><div class="line">            result.getConfig() != <span class="keyword">null</span> ? result.getConfig() : Bitmap.Config.ARGB_8888);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> result;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>追踪到 findBestKey 方法中去具体查看到底是如何匹配到最佳的 key 以及 sortedSizes 是如何工作的</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> Key <span class="title">findBestKey</span><span class="params">(<span class="keyword">int</span> size, Bitmap.Config config)</span> </span>&#123;</div><div class="line">    <span class="comment">// 获取缓存键</span></div><div class="line">    Key result = keyPool.get(size, config);</div><div class="line">    <span class="comment">// 遍历相同的配置，为了兼容 Bitmap.Config = null 相当于 Bitmap.Config.ARGB_8888 的情况</span></div><div class="line">    <span class="keyword">for</span> (Bitmap.Config possibleConfig : getInConfigs(config)) &#123;</div><div class="line">        <span class="comment">// 获取对应配置下存储的对应大小的 bitmap 数量，NavigableMap 继承自 SortedMap，所以数据是 key 有序的</span></div><div class="line">        NavigableMap&lt;Integer, Integer&gt; sizesForPossibleConfig = getSizesForConfig(possibleConfig);</div><div class="line">        <span class="comment">// 向上取整获取到大小最接近的</span></div><div class="line">        Integer possibleSize = sizesForPossibleConfig.ceilingKey(size);</div><div class="line">        <span class="comment">// 如果超过了目标值的8倍，则认为没有匹配的值</span></div><div class="line">        <span class="keyword">if</span> (possibleSize != <span class="keyword">null</span> &amp;&amp; possibleSize &lt;= size * MAX_SIZE_MULTIPLE) &#123;</div><div class="line">            <span class="keyword">if</span> (possibleSize != size</div><div class="line">                || (possibleConfig == <span class="keyword">null</span> ? config != <span class="keyword">null</span> : !possibleConfig.equals(config))) &#123;</div><div class="line">                <span class="comment">// 回收生成的 key，返回我们查找到的 key</span></div><div class="line">                keyPool.offer(result);</div><div class="line">                result = keyPool.get(possibleSize, possibleConfig);</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">break</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> result;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这就是大致的逻辑，可以获取到大于目标 bitmap 大小的最接近的可复用的 bitmap，而 put 方法就相对比较简单，只需要往 groupedMap 和 sortedSizes 都插入数据即可，由于池大小是由外部控制，这里也无需进行额外操作。</p>
+<p>我们回到 GroupedLinkedMap 去看看，其实 LinkedHashMap 中如果开启了 accessOrder 是可以实现类似于 LRU 的功能的，他将会把 put 或者 get 操作过的数据放到队尾，队首存放的是最少最久使用的数据。而 GroupedLinkedMap 则是针对使用场景去做了修改，GroupedLinkedMap 的类描述如下：</p>
+<blockquote>
+<p>Similar to {@link java.util.LinkedHashMap} when access ordered except that it is access ordered on groups of bitmaps rather than individual objects. The idea is to be able to find the LRU bitmap size, rather than the LRU bitmap object. We can then remove bitmaps from the least recently used size of bitmap when we need to reduce our cache size.</p>
+<p>For the purposes of the LRU, we count gets for a particular size of bitmap as an access, even if no bitmaps of that size are present. We do not count addition or removal of bitmaps as an access.</p>
+</blockquote>
+<p>在 GroupedLinkedMap 中存放数据的是相同 key 下的一堆 bitmap 而不是单个的 bitmap 对象，具体表现为 LinkedEntry 中存放的是 List<v> 对象，存入相同的 key 并不会覆盖，而且在 GroupedLinkedMap 就算 get 到的对象目标不存在也是会更新对应值的</v></p>
+<p><strong>GroupedLinkedMap.get 方法</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> V <span class="title">get</span><span class="params">(K key)</span> </span>&#123;</div><div class="line">    LinkedEntry&lt;K, V&gt; entry = keyToEntry.get(key);</div><div class="line">    <span class="comment">// 即使获取到的为 null，也会生成一个插入到链表中</span></div><div class="line">    <span class="keyword">if</span> (entry == <span class="keyword">null</span>) &#123;</div><div class="line">        entry = <span class="keyword">new</span> LinkedEntry&lt;&gt;(key);</div><div class="line">        keyToEntry.put(key, entry);</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        key.offer();</div><div class="line">    &#125;</div><div class="line">    <span class="comment">// 移动链表</span></div><div class="line">    makeHead(entry);</div><div class="line">    <span class="comment">// 从 entry 中获取对象并移除，新生成的则为空 </span></div><div class="line">    <span class="keyword">return</span> entry.removeLast();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>而 LinkedLinkedMap.get 方法则不同</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> V <span class="title">get</span><span class="params">(Object key)</span> </span>&#123;</div><div class="line">    Node&lt;K,V&gt; e;</div><div class="line">    <span class="keyword">if</span> ((e = getNode(hash(key), key)) == <span class="keyword">null</span>)</div><div class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">    <span class="keyword">if</span> (accessOrder)</div><div class="line">        afterNodeAccess(e);</div><div class="line">    <span class="keyword">return</span> e.value;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>如果目标为空，则不会对链表进行操作</p>
+<p>GroupedLinkedMap 移除就是常规的链表队尾移除操作，会先移除 Entry 中 list 里的数据，移除完以后才会将 Entry 移除</p>
+<h3 id="AttributeStrategy"><a href="#AttributeStrategy" class="headerlink" title="AttributeStrategy"></a>AttributeStrategy</h3><p>而 AttributeStrategy 中则不需要那么复杂的逻辑，因为他只需要 width, height, config 完全对应即可，那就简单的多了。具体逻辑可以自己去看</p>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>对于频繁创建对象的场景有必要使用对象池去优化，而 bitmap 由于复用的特殊性需要区分版本对待。日常使用中，推荐使用 Glide 这种第三方库去加载图片，因为其内部实现了三级缓存，如果非要自定义的话，在考虑到 LRU 的同时也要考虑到 bitmap 的复用</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Glide/" rel="tag"># Glide</a>
+          
+            <a href="/tags/内存优化/" rel="tag"># 内存优化</a>
+          
+            <a href="/tags/集合框架/" rel="tag"># 集合框架</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/03/12/Android 触摸事件分发解析/" rel="next" title="Android 触摸事件分发解析">
+                <i class="fa fa-chevron-left"></i> Android 触摸事件分发解析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">sanousun</p>
+              <p class="site-description motion-element" itemprop="description">随便写写，随缘</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">20</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#内存优化-——-bitmap-pool"><span class="nav-number">1.</span> <span class="nav-text">内存优化 —— bitmap pool</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基础知识"><span class="nav-number">1.2.</span> <span class="nav-text">基础知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解析"><span class="nav-number">1.3.</span> <span class="nav-text">解析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#LruBitmapPool"><span class="nav-number">1.3.1.</span> <span class="nav-text">LruBitmapPool</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SizeConfigStrategy"><span class="nav-number">1.3.2.</span> <span class="nav-text">SizeConfigStrategy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AttributeStrategy"><span class="nav-number">1.3.3.</span> <span class="nav-text">AttributeStrategy</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结语"><span class="nav-number">1.4.</span> <span class="nav-text">结语</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">sanousun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
