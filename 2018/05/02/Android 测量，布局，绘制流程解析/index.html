@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="view,深入系列,布局流程," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Android 测量，布局，绘制流程解析前言Android 中自定义 View 常常需要覆写 onMeasure, onDraw 方法，而自定义 ViewGroup 则还需要覆写 onLayout 方法，那么这三者之间到底是如何调用的呢
+本文源码基于 Android 7.1
+测量，布局，绘制流程解析触发测量布局绘制的流程是在 ViewGroup 中的 performTraversals 方法中，这">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android 测量，布局，绘制流程解析">
+<meta property="og:url" content="http://sanousun.github.io/2018/05/02/Android 测量，布局，绘制流程解析/index.html">
+<meta property="og:site_name" content="sanousun">
+<meta property="og:description" content="Android 测量，布局，绘制流程解析前言Android 中自定义 View 常常需要覆写 onMeasure, onDraw 方法，而自定义 ViewGroup 则还需要覆写 onLayout 方法，那么这三者之间到底是如何调用的呢
+本文源码基于 Android 7.1
+测量，布局，绘制流程解析触发测量布局绘制的流程是在 ViewGroup 中的 performTraversals 方法中，这">
+<meta property="og:image" content="http://oq546o6pk.bkt.clouddn.com/未命名文件 -7-.png">
+<meta property="og:updated_time" content="2018-05-29T15:08:21.688Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android 测量，布局，绘制流程解析">
+<meta name="twitter:description" content="Android 测量，布局，绘制流程解析前言Android 中自定义 View 常常需要覆写 onMeasure, onDraw 方法，而自定义 ViewGroup 则还需要覆写 onLayout 方法，那么这三者之间到底是如何调用的呢
+本文源码基于 Android 7.1
+测量，布局，绘制流程解析触发测量布局绘制的流程是在 ViewGroup 中的 performTraversals 方法中，这">
+<meta name="twitter:image" content="http://oq546o6pk.bkt.clouddn.com/未命名文件 -7-.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://sanousun.github.io/2018/05/02/Android 测量，布局，绘制流程解析/"/>
+
+
+
+
+
+  <title>Android 测量，布局，绘制流程解析 | sanousun</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">sanousun</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">sanousun的博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://sanousun.github.io/2018/05/02/Android 测量，布局，绘制流程解析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sanousun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="sanousun">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android 测量，布局，绘制流程解析</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-02T15:25:33+08:00">
+                2018-05-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Android-测量，布局，绘制流程解析"><a href="#Android-测量，布局，绘制流程解析" class="headerlink" title="Android 测量，布局，绘制流程解析"></a>Android 测量，布局，绘制流程解析</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Android 中自定义 View 常常需要覆写 onMeasure, onDraw 方法，而自定义 ViewGroup 则还需要覆写 onLayout 方法，那么这三者之间到底是如何调用的呢</p>
+<p>本文源码基于 Android 7.1</p>
+<h2 id="测量，布局，绘制流程解析"><a href="#测量，布局，绘制流程解析" class="headerlink" title="测量，布局，绘制流程解析"></a>测量，布局，绘制流程解析</h2><p>触发测量布局绘制的流程是在 ViewGroup 中的 performTraversals 方法中，这个类中的代码非常非，所以在解析是会省略部分代码进行讲解</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">performTraversals</span><span class="params">()</span> </span>&#123;</div><div class="line"></div><div class="line">    ...</div><div class="line">    </div><div class="line">    mIsInTraversal = <span class="keyword">true</span>;</div><div class="line"></div><div class="line">    ... 省略部分代码</div><div class="line"></div><div class="line">    <span class="comment">// 这边的判断状态非常多，如果窗口属性，大小，显示区域发生了改变，或者是人为 requestLayout 都会触发重新测量</span></div><div class="line">    <span class="keyword">if</span> (mFirst || windowShouldResize || insetsChanged ||</div><div class="line">            viewVisibilityChanged || params != <span class="keyword">null</span> || mForceNextWindowRelayout) &#123;</div><div class="line">        </div><div class="line">        ... 省略部分代码</div><div class="line">        </div><div class="line">        <span class="keyword">if</span> (!mStopped || mReportNextDraw) &#123;</div><div class="line">            <span class="keyword">boolean</span> focusChangedDueToTouchMode = ensureTouchModeLocally(</div><div class="line">                    (relayoutResult&amp;WindowManagerGlobal.RELAYOUT_RES_IN_TOUCH_MODE) != <span class="number">0</span>);</div><div class="line">            <span class="keyword">if</span> (focusChangedDueToTouchMode || mWidth != host.getMeasuredWidth()</div><div class="line">                    || mHeight != host.getMeasuredHeight() || contentInsetsChanged ||</div><div class="line">                    updatedConfiguration) &#123;</div><div class="line">                <span class="keyword">int</span> childWidthMeasureSpec = getRootMeasureSpec(mWidth, lp.width);</div><div class="line">                <span class="keyword">int</span> childHeightMeasureSpec = getRootMeasureSpec(mHeight, lp.height);</div><div class="line"></div><div class="line">                <span class="keyword">if</span> (DEBUG_LAYOUT) Log.v(mTag, <span class="string">"Ooops, something changed!  mWidth="</span></div><div class="line">                        + mWidth + <span class="string">" measuredWidth="</span> + host.getMeasuredWidth()</div><div class="line">                        + <span class="string">" mHeight="</span> + mHeight</div><div class="line">                        + <span class="string">" measuredHeight="</span> + host.getMeasuredHeight()</div><div class="line">                        + <span class="string">" coveredInsetsChanged="</span> + contentInsetsChanged);</div><div class="line"></div><div class="line">                <span class="comment">// 触发的是 DecorView 的 measure 方法，开始沿着 ViewTree 往下递归测量</span></div><div class="line">                performMeasure(childWidthMeasureSpec, childHeightMeasureSpec);</div><div class="line"></div><div class="line">                <span class="comment">// 如果有 weight 属性，会触发重测量</span></div><div class="line">                <span class="keyword">int</span> width = host.getMeasuredWidth();</div><div class="line">                <span class="keyword">int</span> height = host.getMeasuredHeight();</div><div class="line">                <span class="keyword">boolean</span> measureAgain = <span class="keyword">false</span>;</div><div class="line"></div><div class="line">                <span class="keyword">if</span> (lp.horizontalWeight &gt; <span class="number">0.0f</span>) &#123;</div><div class="line">                    width += (<span class="keyword">int</span>) ((mWidth - width) * lp.horizontalWeight);</div><div class="line">                    childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(width,</div><div class="line">                            MeasureSpec.EXACTLY);</div><div class="line">                    measureAgain = <span class="keyword">true</span>;</div><div class="line">                &#125;</div><div class="line">                <span class="keyword">if</span> (lp.verticalWeight &gt; <span class="number">0.0f</span>) &#123;</div><div class="line">                    height += (<span class="keyword">int</span>) ((mHeight - height) * lp.verticalWeight);</div><div class="line">                    childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(height,</div><div class="line">                                MeasureSpec.EXACTLY);</div><div class="line">                    measureAgain = <span class="keyword">true</span>;</div><div class="line">                &#125;</div><div class="line"></div><div class="line">                <span class="keyword">if</span> (measureAgain) &#123;</div><div class="line">                    performMeasure(childWidthMeasureSpec, childHeightMeasureSpec);</div><div class="line">                &#125;</div><div class="line"></div><div class="line">                layoutRequested = <span class="keyword">true</span>;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    ... 省略部分代码</div><div class="line">    </div><div class="line">    <span class="comment">// 这个逻辑可以看出，如果重新测量，那么一个会发生重新布局</span></div><div class="line">    <span class="keyword">final</span> <span class="keyword">boolean</span> didLayout = layoutRequested &amp;&amp; (!mStopped || mReportNextDraw);</div><div class="line">    <span class="keyword">boolean</span> triggerGlobalLayoutListener = didLayout</div><div class="line">        || mAttachInfo.mRecomputeGlobalAttributes;</div><div class="line">    <span class="keyword">if</span> (didLayout) &#123;</div><div class="line">        <span class="comment">// 触发的是 DecorView 的 layout 方法，开始沿着 ViewTree 往下布局</span></div><div class="line">        performLayout(lp, mWidth, mHeight);</div><div class="line"></div><div class="line">        <span class="comment">// 这个点已经完成了测量和布局，可以计算透明的地区了</span></div><div class="line"></div><div class="line">        <span class="keyword">if</span> ((host.mPrivateFlags &amp; View.PFLAG_REQUEST_TRANSPARENT_REGIONS) != <span class="number">0</span>) &#123;</div><div class="line">        </div><div class="line">            ... 省略部分代码</div><div class="line">            </div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="comment">// 这里有 onGlobalLayout 的回调，所以获取 view 的宽高可以在这个回调里进行，因为已经进行过测量流程了</span></div><div class="line">    <span class="keyword">if</span> (triggerGlobalLayoutListener) &#123;</div><div class="line">        mAttachInfo.mRecomputeGlobalAttributes = <span class="keyword">false</span>;</div><div class="line">        mAttachInfo.mTreeObserver.dispatchOnGlobalLayout();</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    ... 省略部分代码</div><div class="line">    </div><div class="line">    <span class="keyword">boolean</span> cancelDraw = mAttachInfo.mTreeObserver.dispatchOnPreDraw() || !isViewVisible;</div><div class="line">    </div><div class="line">    <span class="comment">// 这里会做一些前置判断，一般情况下这个判断是成立的</span></div><div class="line">    <span class="keyword">if</span> (!cancelDraw &amp;&amp; !newSurface) &#123;</div><div class="line">        <span class="keyword">if</span> (mPendingTransitions != <span class="keyword">null</span> &amp;&amp; mPendingTransitions.size() &gt; <span class="number">0</span>) &#123;</div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; mPendingTransitions.size(); ++i) &#123;</div><div class="line">                mPendingTransitions.get(i).startChangingAnimations();</div><div class="line">            &#125;</div><div class="line">            mPendingTransitions.clear();</div><div class="line">        &#125;</div><div class="line">        <span class="comment">// 最终触发的是 DecorView 的 draw 方法，开始沿着 ViewTree 往下绘制</span></div><div class="line">        performDraw();</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        <span class="keyword">if</span> (isViewVisible) &#123;</div><div class="line">            <span class="comment">// 如果是正在创建一个新 newSurface，会延迟此次 draw，重新走一遍上述流程一遍一次性全部绘制出来 </span></div><div class="line">            scheduleTraversals();</div><div class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (mPendingTransitions != <span class="keyword">null</span> &amp;&amp; mPendingTransitions.size() &gt; <span class="number">0</span>) &#123;</div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; mPendingTransitions.size(); ++i) &#123;</div><div class="line">                mPendingTransitions.get(i).endChangingAnimations();</div><div class="line">            &#125;</div><div class="line">            mPendingTransitions.clear();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    mIsInTraversal = <span class="keyword">false</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>最终都是通过 mView 即 DecorView 这个真正意义上的根 view 开始测量布局绘制的流程分发</p>
+<p><img src="http://oq546o6pk.bkt.clouddn.com/未命名文件 -7-.png" alt="ViewRootImpl触发流程"></p>
+<h2 id="measure"><a href="#measure" class="headerlink" title="measure"></a>measure</h2><p><strong>View.measure 方法</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">measure</span><span class="params">(<span class="keyword">int</span> widthMeasureSpec, <span class="keyword">int</span> heightMeasureSpec)</span> </span>&#123;</div><div class="line">    <span class="keyword">boolean</span> optical = isLayoutModeOptical(<span class="keyword">this</span>);</div><div class="line">    <span class="keyword">if</span> (optical != isLayoutModeOptical(mParent)) &#123;</div><div class="line">        Insets insets = getOpticalInsets();</div><div class="line">        <span class="keyword">int</span> oWidth  = insets.left + insets.right;</div><div class="line">        <span class="keyword">int</span> oHeight = insets.top  + insets.bottom;</div><div class="line">        widthMeasureSpec  = MeasureSpec.adjust(widthMeasureSpec,  optical ? -oWidth  : oWidth);</div><div class="line">        heightMeasureSpec = MeasureSpec.adjust(heightMeasureSpec, optical ? -oHeight : oHeight);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// 缓存，对不同的 MeasureSpec 会对测量结果进行缓存设置</span></div><div class="line">    <span class="keyword">long</span> key = (<span class="keyword">long</span>) widthMeasureSpec &lt;&lt; <span class="number">32</span> | (<span class="keyword">long</span>) heightMeasureSpec &amp; <span class="number">0xffffffffL</span>;</div><div class="line">    <span class="keyword">if</span> (mMeasureCache == <span class="keyword">null</span>) mMeasureCache = <span class="keyword">new</span> LongSparseLongArray(<span class="number">2</span>);</div><div class="line"></div><div class="line">    <span class="comment">// 这是强制重新测量的标志</span></div><div class="line">    <span class="keyword">final</span> <span class="keyword">boolean</span> forceLayout = (mPrivateFlags &amp; PFLAG_FORCE_LAYOUT) == PFLAG_FORCE_LAYOUT;</div><div class="line"></div><div class="line">    <span class="comment">// 通过一系列判断来确定是否需要重新测量</span></div><div class="line">    <span class="comment">// 当 MeasureSpec 改变时，布局模式不是确定尺寸或者给定的尺寸发生了变化都会触发重测量</span></div><div class="line">    <span class="keyword">final</span> <span class="keyword">boolean</span> specChanged = widthMeasureSpec != mOldWidthMeasureSpec</div><div class="line">            || heightMeasureSpec != mOldHeightMeasureSpec;</div><div class="line">    <span class="keyword">final</span> <span class="keyword">boolean</span> isSpecExactly = MeasureSpec.getMode(widthMeasureSpec) == MeasureSpec.EXACTLY</div><div class="line">            &amp;&amp; MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.EXACTLY;</div><div class="line">    <span class="keyword">final</span> <span class="keyword">boolean</span> matchesSpecSize = getMeasuredWidth() == MeasureSpec.getSize(widthMeasureSpec)</div><div class="line">            &amp;&amp; getMeasuredHeight() == MeasureSpec.getSize(heightMeasureSpec);</div><div class="line">    <span class="keyword">final</span> <span class="keyword">boolean</span> needsLayout = specChanged</div><div class="line">            &amp;&amp; (sAlwaysRemeasureExactly || !isSpecExactly || !matchesSpecSize);</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (forceLayout || needsLayout) &#123;</div><div class="line">        <span class="comment">// 清除该标记位是为了后面通过对该标记位检测判断是否调用的 setMeasuredDimension 方法</span></div><div class="line">        mPrivateFlags &amp;= ~PFLAG_MEASURED_DIMENSION_SET;</div><div class="line"></div><div class="line">        resolveRtlPropertiesIfNeeded();</div><div class="line">        <span class="comment">// 这里边的逻辑会读取缓存测量</span></div><div class="line">        <span class="keyword">int</span> cacheIndex = forceLayout ? -<span class="number">1</span> : mMeasureCache.indexOfKey(key);</div><div class="line">        <span class="keyword">if</span> (cacheIndex &lt; <span class="number">0</span> || sIgnoreMeasureCache) &#123;</div><div class="line">            <span class="comment">// 这里会调用 onMeasure，也就是我们需要自定义逻辑的地方</span></div><div class="line">            onMeasure(widthMeasureSpec, heightMeasureSpec);</div><div class="line">            mPrivateFlags3 &amp;= ~PFLAG3_MEASURE_NEEDED_BEFORE_LAYOUT;</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            <span class="keyword">long</span> value = mMeasureCache.valueAt(cacheIndex);</div><div class="line">            setMeasuredDimensionRaw((<span class="keyword">int</span>) (value &gt;&gt; <span class="number">32</span>), (<span class="keyword">int</span>) value);</div><div class="line">            <span class="comment">// 由于跳过了 onMeasure，所以设置了标志位，会在 layout 时调用 onMeasure</span></div><div class="line">            mPrivateFlags3 |= PFLAG3_MEASURE_NEEDED_BEFORE_LAYOUT;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="comment">// 这里会判断是否调用了 setMeasuredDimension 方法，防止自定义忘记调用改方法</span></div><div class="line">        <span class="keyword">if</span> ((mPrivateFlags &amp; PFLAG_MEASURED_DIMENSION_SET) != PFLAG_MEASURED_DIMENSION_SET) &#123;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"View with id "</span> + getId() + <span class="string">": "</span></div><div class="line">                    + getClass().getName() + <span class="string">"#onMeasure() did not set the"</span></div><div class="line">                    + <span class="string">" measured dimension by calling"</span></div><div class="line">                    + <span class="string">" setMeasuredDimension()"</span>);</div><div class="line">        &#125;</div><div class="line">        <span class="comment">// 测量完毕强制标记 PFLAG_LAYOUT_REQUIRED 用于 layout，尺寸改变必定要重新布局</span></div><div class="line">        mPrivateFlags |= PFLAG_LAYOUT_REQUIRED;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// 记录当前的状态待下次判断</span></div><div class="line">    mOldWidthMeasureSpec = widthMeasureSpec;</div><div class="line">    mOldHeightMeasureSpec = heightMeasureSpec;</div><div class="line"></div><div class="line">    mMeasureCache.put(key, ((<span class="keyword">long</span>) mMeasuredWidth) &lt;&lt; <span class="number">32</span> |</div><div class="line">            (<span class="keyword">long</span>) mMeasuredHeight &amp; <span class="number">0xffffffffL</span>); <span class="comment">// suppress sign extension</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>由于 ViewGroup 中并没有覆写 measure 方法，所以在 ViewGroup 中调用子 view 的 measure 方法需要在 onMeasure 中自己完成了。<br>ViewGroup 中有提供 measureChildren 测量所有的子 View，measureChild 及 measureChildWithMargins 测量单个子 View 的方法，需要自定义 GroupView 时自己选择调用，千万不能忘记，还有要注意的是 View 的 visible 状态为 Gone 时应该跳过测量。系统的 ViewGroup 中都根据自己的需求实现了 onMeasure 方法，有时会测量多次，比如 RelativeLayout 需要横竖测量两次，LinearLayout 在有 weight 属性时也需要测量两次。在调用子 View 的 measure 后，就可以通过 getMeasureXX 获取测量结果了。</p>
+<h2 id="layout"><a href="#layout" class="headerlink" title="layout"></a>layout</h2><p><strong>View.layout 方法</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">layout</span><span class="params">(<span class="keyword">int</span> l, <span class="keyword">int</span> t, <span class="keyword">int</span> r, <span class="keyword">int</span> b)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> ((mPrivateFlags3 &amp; PFLAG3_MEASURE_NEEDED_BEFORE_LAYOUT) != <span class="number">0</span>) &#123;</div><div class="line">        <span class="comment">// measure 过程中跳过 onMeasure 步骤会在这里被调用</span></div><div class="line">        onMeasure(mOldWidthMeasureSpec, mOldHeightMeasureSpec);</div><div class="line">        mPrivateFlags3 &amp;= ~PFLAG3_MEASURE_NEEDED_BEFORE_LAYOUT;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">int</span> oldL = mLeft;</div><div class="line">    <span class="keyword">int</span> oldT = mTop;</div><div class="line">    <span class="keyword">int</span> oldB = mBottom;</div><div class="line">    <span class="keyword">int</span> oldR = mRight;</div><div class="line"></div><div class="line">    <span class="comment">// 判断 layout 的范围是否改变，同时也完成了显示范围的设置</span></div><div class="line">    <span class="keyword">boolean</span> changed = isLayoutModeOptical(mParent) ?</div><div class="line">            setOpticalFrame(l, t, r, b) : setFrame(l, t, r, b);</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (changed || (mPrivateFlags &amp; PFLAG_LAYOUT_REQUIRED) == PFLAG_LAYOUT_REQUIRED) &#123;</div><div class="line">        <span class="comment">// 调用了 onLayout 方法，可以自定义逻辑，View 中是一个空实现，而 ViewGroup 则是一个抽象方法</span></div><div class="line">        onLayout(changed, l, t, r, b);</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (shouldDrawRoundScrollbar()) &#123;</div><div class="line">            <span class="keyword">if</span>(mRoundScrollbarRenderer == <span class="keyword">null</span>) &#123;</div><div class="line">                mRoundScrollbarRenderer = <span class="keyword">new</span> RoundScrollbarRenderer(<span class="keyword">this</span>);</div><div class="line">            &#125;</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            mRoundScrollbarRenderer = <span class="keyword">null</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="comment">// 清除该标记</span></div><div class="line">        mPrivateFlags &amp;= ~PFLAG_LAYOUT_REQUIRED;</div><div class="line"></div><div class="line">        <span class="comment">// 接口回调</span></div><div class="line">        ListenerInfo li = mListenerInfo;</div><div class="line">        <span class="keyword">if</span> (li != <span class="keyword">null</span> &amp;&amp; li.mOnLayoutChangeListeners != <span class="keyword">null</span>) &#123;</div><div class="line">            ArrayList&lt;OnLayoutChangeListener&gt; listenersCopy =</div><div class="line">                    (ArrayList&lt;OnLayoutChangeListener&gt;)li.mOnLayoutChangeListeners.clone();</div><div class="line">            <span class="keyword">int</span> numListeners = listenersCopy.size();</div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; numListeners; ++i) &#123;</div><div class="line">                listenersCopy.get(i).onLayoutChange(<span class="keyword">this</span>, l, t, r, b, oldL, oldT, oldR, oldB);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// 清除这个强制测量布局的标志位</span></div><div class="line">    mPrivateFlags &amp;= ~PFLAG_FORCE_LAYOUT;</div><div class="line">    mPrivateFlags3 |= PFLAG3_IS_LAID_OUT;</div><div class="line">    <span class="comment">// 自动填充的触发时机在布局完成之后</span></div><div class="line">    <span class="keyword">if</span> ((mPrivateFlags3 &amp; PFLAG3_NOTIFY_AUTOFILL_ENTER_ON_LAYOUT) != <span class="number">0</span>) &#123;</div><div class="line">        mPrivateFlags3 &amp;= ~PFLAG3_NOTIFY_AUTOFILL_ENTER_ON_LAYOUT;</div><div class="line">        notifyEnterOrExitForAutoFillIfNeeded(<span class="keyword">true</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>onLayout 是 ViewGroup 的属性，我们需要实现自己的逻辑去完成子 View 在 ViewGroup 中的布局，调用的是子 View 的 layout 方法</p>
+<h2 id="draw"><a href="#draw" class="headerlink" title="draw"></a>draw</h2><p><strong>View.draw 方法</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">draw</span><span class="params">(Canvas canvas)</span> </span>&#123;</div><div class="line">    <span class="keyword">final</span> <span class="keyword">int</span> privateFlags = mPrivateFlags;</div><div class="line">    <span class="comment">// 这个状态说明此控件的绘制区域会被其他绘制完全遮盖住，既没有透明度，也没有空缺</span></div><div class="line">    <span class="comment">// 一般这个标记取决于子 View，在 invalidate 中有相关设置，而且是唯一的设置方式</span></div><div class="line">    <span class="keyword">final</span> <span class="keyword">boolean</span> dirtyOpaque = (privateFlags &amp; PFLAG_DIRTY_MASK) == PFLAG_DIRTY_OPAQUE &amp;&amp;</div><div class="line">            (mAttachInfo == <span class="keyword">null</span> || !mAttachInfo.mIgnoreDirtyState);</div><div class="line">    <span class="comment">// flag 清除 dirty 标记后打上 PFLAG_DRAWN 标记用来表示已经被绘制过了</span></div><div class="line">    mPrivateFlags = (privateFlags &amp; ~PFLAG_DIRTY_MASK) | PFLAG_DRAWN;</div><div class="line"></div><div class="line">        <span class="comment">/*</span></div><div class="line">         * Draw traversal performs several drawing steps which must be executed</div><div class="line">         * in the appropriate order:</div><div class="line">         *</div><div class="line">         *      1. Draw the background</div><div class="line">         *      2. If necessary, save the canvas' layers to prepare for fading</div><div class="line">         *      3. Draw view's content</div><div class="line">         *      4. Draw children</div><div class="line">         *      5. If necessary, draw the fading edges and restore layers</div><div class="line">         *      6. Draw decorations (scrollbars for instance)</div><div class="line">         */</div><div class="line"></div><div class="line">        <span class="comment">// Step 1, 绘制区域可见，需要绘制背景</span></div><div class="line">        <span class="keyword">int</span> saveCount;</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (!dirtyOpaque) &#123;</div><div class="line">            drawBackground(canvas);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="comment">// 尽可能地跳过步骤 Step 2 和 Step 5，通常情况也是跳过的</span></div><div class="line">        <span class="keyword">final</span> <span class="keyword">int</span> viewFlags = mViewFlags;</div><div class="line">        <span class="keyword">boolean</span> horizontalEdges = (viewFlags &amp; FADING_EDGE_HORIZONTAL) != <span class="number">0</span>;</div><div class="line">        <span class="keyword">boolean</span> verticalEdges = (viewFlags &amp; FADING_EDGE_VERTICAL) != <span class="number">0</span>;</div><div class="line">        <span class="comment">// 如果禁止了渐隐边界，走下面的逻辑，这是一般情况，所以是没有 Step 2 和 Step 5 的</span></div><div class="line">        <span class="keyword">if</span> (!verticalEdges &amp;&amp; !horizontalEdges) &#123;</div><div class="line">            <span class="comment">// Step 3, 绘制区域可见， 绘制内容，这是我们自定实现的 onDraw 逻辑</span></div><div class="line">            <span class="keyword">if</span> (!dirtyOpaque) onDraw(canvas);</div><div class="line"></div><div class="line">            <span class="comment">// Step 4, 绘制子 view</span></div><div class="line">            dispatchDraw(canvas);</div><div class="line"></div><div class="line">            drawAutofilledHighlight(canvas);</div><div class="line"></div><div class="line">            <span class="comment">// Overlay 是内容的一部分，所以绘制于 Foreground 下方</span></div><div class="line">            <span class="keyword">if</span> (mOverlay != <span class="keyword">null</span> &amp;&amp; !mOverlay.isEmpty()) &#123;</div><div class="line">                mOverlay.getOverlayView().dispatchDraw(canvas);</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="comment">// Step 6, 绘制前面板装饰内容，比如说滚动条</span></div><div class="line">            onDrawForeground(canvas);</div><div class="line"></div><div class="line">            <span class="comment">// Step 7, 绘制默认的高亮场景</span></div><div class="line">            drawDefaultFocusHighlight(canvas);</div><div class="line"></div><div class="line">            <span class="keyword">if</span> (debugDraw()) &#123;</div><div class="line">                debugDrawFocus(canvas);</div><div class="line">            &#125;</div><div class="line">            </div><div class="line">            <span class="keyword">return</span>;</div><div class="line">        &#125;</div><div class="line">        </div><div class="line">        ... 省略了FADING_EDGE相关处理，不常用</div><div class="line">        </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>单纯的 draw 方法逻辑比较简单，继续追踪 dispatchDraw 方法，View 中的 dispatchDraw 是一个空方法，所以主要逻辑在 ViewGroup 中的 dispatchDraw。由于这里面的方法比较复杂，所以我们就不贴出来了，需要知道的是 dispatchDraw 里面会遍历子 view，调用的是 boolean draw(Canvas canvas, ViewGroup parent, long drawingTime) 方法，而不是 draw(Canvas canvas)。</p>
+<p><strong>View.draw(canvas, parent, drawingTime) 方法</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">draw</span><span class="params">(Canvas canvas, ViewGroup parent, <span class="keyword">long</span> drawingTime)</span> </span>&#123;</div><div class="line"></div><div class="line">    ...略去部分代码，我们来看分发的关键代码</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (!drawingWithDrawingCache) &#123;</div><div class="line">        <span class="keyword">if</span> (drawingWithRenderNode) &#123;</div><div class="line">            <span class="comment">// 硬件加速</span></div><div class="line">            mPrivateFlags &amp;= ~PFLAG_DIRTY_MASK;</div><div class="line">            ((DisplayListCanvas) canvas).drawRenderNode(renderNode);</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            <span class="comment">// ViewGroup 有个特性是如果没有 backgroud 就会直接分发，可以通过 setWillNotDraw(false) 来跳过</span></div><div class="line">            <span class="keyword">if</span> ((mPrivateFlags &amp; PFLAG_SKIP_DRAW) == PFLAG_SKIP_DRAW) &#123;</div><div class="line">                mPrivateFlags &amp;= ~PFLAG_DIRTY_MASK;</div><div class="line">                dispatchDraw(canvas);</div><div class="line">            &#125; <span class="keyword">else</span> &#123;</div><div class="line">                <span class="comment">// 这就是上面的方法</span></div><div class="line">                draw(canvas);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (cache != <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="comment">// 有缓存的则画出缓存图片即可</span></div><div class="line">        mPrivateFlags &amp;= ~PFLAG_DIRTY_MASK;</div><div class="line">        <span class="keyword">if</span> (layerType == LAYER_TYPE_NONE || mLayerPaint == <span class="keyword">null</span>) &#123;</div><div class="line">            <span class="comment">// no layer paint, use temporary paint to draw bitmap</span></div><div class="line">            Paint cachePaint = parent.mCachePaint;</div><div class="line">            <span class="keyword">if</span> (cachePaint == <span class="keyword">null</span>) &#123;</div><div class="line">                cachePaint = <span class="keyword">new</span> Paint();</div><div class="line">                cachePaint.setDither(<span class="keyword">false</span>);</div><div class="line">                parent.mCachePaint = cachePaint;</div><div class="line">            &#125;</div><div class="line">            cachePaint.setAlpha((<span class="keyword">int</span>) (alpha * <span class="number">255</span>));</div><div class="line">            canvas.drawBitmap(cache, <span class="number">0.0f</span>, <span class="number">0.0f</span>, cachePaint);</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            <span class="comment">// use layer paint to draw the bitmap, merging the two alphas, but also restore</span></div><div class="line">            <span class="keyword">int</span> layerPaintAlpha = mLayerPaint.getAlpha();</div><div class="line">            <span class="keyword">if</span> (alpha &lt; <span class="number">1</span>) &#123;</div><div class="line">                mLayerPaint.setAlpha((<span class="keyword">int</span>) (alpha * layerPaintAlpha));</div><div class="line">            &#125;</div><div class="line">            canvas.drawBitmap(cache, <span class="number">0.0f</span>, <span class="number">0.0f</span>, mLayerPaint);</div><div class="line">            <span class="keyword">if</span> (alpha &lt; <span class="number">1</span>) &#123;</div><div class="line">                mLayerPaint.setAlpha(layerPaintAlpha);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>就这样一直分发到最底层的 view 完成了绘制过程</p>
+<h2 id="requestLayout-amp-invalidate"><a href="#requestLayout-amp-invalidate" class="headerlink" title="requestLayout() &amp; invalidate()"></a>requestLayout() &amp; invalidate()</h2><p>View.requestLayout 会触发 view 的测量布局刷新，而 invalidate 只会触发 view 的绘制</p>
+<p><strong>View.requestLayout 方法</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">requestLayout</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="comment">// 清除缓存的测量结果</span></div><div class="line">    <span class="keyword">if</span> (mMeasureCache != <span class="keyword">null</span>) mMeasureCache.clear();</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (mAttachInfo != <span class="keyword">null</span> &amp;&amp; mAttachInfo.mViewRequestingLayout == <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="comment">// 这里会标记请求布局的界面，如果发现 ViewRoot 正在布局将此次的 request 暂存，ViewRootImpl 的 performLayout 有相关读取操作</span></div><div class="line">        ViewRootImpl viewRoot = getViewRootImpl();</div><div class="line">        <span class="keyword">if</span> (viewRoot != <span class="keyword">null</span> &amp;&amp; viewRoot.isInLayout()) &#123;</div><div class="line">            <span class="keyword">if</span> (!viewRoot.requestLayoutDuringLayout(<span class="keyword">this</span>)) &#123;</div><div class="line">                <span class="keyword">return</span>;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        <span class="comment">// 标记发起的 view 防止网上调用传递的时候多次标记发起的 view</span></div><div class="line">        mAttachInfo.mViewRequestingLayout = <span class="keyword">this</span>;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="comment">// 将必须的标志位标记上</span></div><div class="line">    mPrivateFlags |= PFLAG_FORCE_LAYOUT;</div><div class="line">    mPrivateFlags |= PFLAG_INVALIDATED;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (mParent != <span class="keyword">null</span> &amp;&amp; !mParent.isLayoutRequested()) &#123;</div><div class="line">        <span class="comment">// 通过 View tree 往上传递直至 ViewRootImpl 中 requestLayout 最终还是会触发 performTraversals 方法</span></div><div class="line">        <span class="comment">// 所有 view 的调用链上的 view 都必须打上标记，这样 ViewRootImpl 发起测量布局绘制时才能沿着树链往下传递调用</span></div><div class="line">        mParent.requestLayout();</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">if</span> (mAttachInfo != <span class="keyword">null</span> &amp;&amp; mAttachInfo.mViewRequestingLayout == <span class="keyword">this</span>) &#123;</div><div class="line">        mAttachInfo.mViewRequestingLayout = <span class="keyword">null</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>由于 requestLayout 方法会触发 view 所在的整条链上的调用 view 去重新测量布局绘制，所以尽量避免频繁的调用该方法，比如说尽量固定 view 的大小，通过 view 的 layout 方法更改位置，在大小固定的情况下自定义 View 可以对调用 requestLayout 方法做一些限制</p>
+<p><strong>View.invalidate 方法</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * invalidate() 最终调用的是该方法</div><div class="line"> * 传参 invalidateInternal(0, 0, mRight - mLeft, mBottom - mTop, true, true)</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">invalidateInternal</span><span class="params">(<span class="keyword">int</span> l, <span class="keyword">int</span> t, <span class="keyword">int</span> r, <span class="keyword">int</span> b, <span class="keyword">boolean</span> invalidateCache,</span></span></div><div class="line">        <span class="keyword">boolean</span> fullInvalidate) &#123;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (mGhostView != <span class="keyword">null</span>) &#123;</div><div class="line">        mGhostView.invalidate(<span class="keyword">true</span>);</div><div class="line">        <span class="keyword">return</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// 有些情况会跳过绘制，比如说控件不可见，控件正在处理动画，或者是 DecorView</span></div><div class="line">    <span class="keyword">if</span> (skipInvalidate()) &#123;</div><div class="line">        <span class="keyword">return</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> ((mPrivateFlags &amp; (PFLAG_DRAWN | PFLAG_HAS_BOUNDS)) == (PFLAG_DRAWN | PFLAG_HAS_BOUNDS)</div><div class="line">            || (invalidateCache &amp;&amp; (mPrivateFlags &amp; PFLAG_DRAWING_CACHE_VALID) == PFLAG_DRAWING_CACHE_VALID)</div><div class="line">            || (mPrivateFlags &amp; PFLAG_INVALIDATED) != PFLAG_INVALIDATED</div><div class="line">            || (fullInvalidate &amp;&amp; isOpaque() != mLastIsOpaque)) &#123;</div><div class="line">        <span class="keyword">if</span> (fullInvalidate) &#123;</div><div class="line">            mLastIsOpaque = isOpaque();</div><div class="line">            mPrivateFlags &amp;= ~PFLAG_DRAWN;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        mPrivateFlags |= PFLAG_DIRTY;</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (invalidateCache) &#123;</div><div class="line">            mPrivateFlags |= PFLAG_INVALIDATED;</div><div class="line">            mPrivateFlags &amp;= ~PFLAG_DRAWING_CACHE_VALID;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="comment">// 将更改的区域即需要绘制的区域传给父控件的 invalidateChild 处理</span></div><div class="line">        <span class="keyword">final</span> AttachInfo ai = mAttachInfo;</div><div class="line">        <span class="keyword">final</span> ViewParent p = mParent;</div><div class="line">        <span class="keyword">if</span> (p != <span class="keyword">null</span> &amp;&amp; ai != <span class="keyword">null</span> &amp;&amp; l &lt; r &amp;&amp; t &lt; b) &#123;</div><div class="line">            <span class="keyword">final</span> Rect damage = ai.mTmpInvalRect;</div><div class="line">            damage.set(l, t, r, b);</div><div class="line">            p.invalidateChild(<span class="keyword">this</span>, damage);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="comment">// 如果背景是父控件投射出来的，而不是 view 自带的，那么清理掉</span></div><div class="line">        <span class="keyword">if</span> (mBackground != <span class="keyword">null</span> &amp;&amp; mBackground.isProjected()) &#123;</div><div class="line">            <span class="keyword">final</span> View receiver = getProjectionReceiver();</div><div class="line">            <span class="keyword">if</span> (receiver != <span class="keyword">null</span>) &#123;</div><div class="line">                receiver.damageInParent();</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>View 的 invalidateInternal 会传入绘制区域，在这个方法中会调用父 ViewGroup 的 invalidateChild 的方法</p>
+<p><strong>ViewGroup.invalidateChild 方法</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">invalidateChild</span><span class="params">(View child, <span class="keyword">final</span> Rect dirty)</span> </span>&#123;</div><div class="line">    <span class="keyword">final</span> AttachInfo attachInfo = mAttachInfo;</div><div class="line">    <span class="keyword">if</span> (attachInfo != <span class="keyword">null</span> &amp;&amp; attachInfo.mHardwareAccelerated) &#123;</div><div class="line">        <span class="comment">// HW accelerated fast path</span></div><div class="line">        onDescendantInvalidated(child, child);</div><div class="line">        <span class="keyword">return</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    ViewParent parent = <span class="keyword">this</span>;</div><div class="line">    <span class="keyword">if</span> (attachInfo != <span class="keyword">null</span>) &#123;</div><div class="line">        </div><div class="line">        <span class="keyword">final</span> <span class="keyword">boolean</span> drawAnimation = (child.mPrivateFlags &amp; PFLAG_DRAW_ANIMATION) != <span class="number">0</span>;</div><div class="line"></div><div class="line">        <span class="comment">// 这里要确认是否发起重绘的view是否是个不透明的view</span></div><div class="line">        Matrix childMatrix = child.getMatrix();</div><div class="line">        <span class="comment">// child.isOpaque 方法读取的是 PFLAG_OPAQUE_MASK 和 View 透明度</span></div><div class="line">        <span class="comment">// 而 PFLAG_OPAQUE_MASK 是在 computeOpaqueFlags 方法中由 PFLAG_OPAQUE_BACKGROUND 和 PFLAG_OPAQUE_SCROLLBARS 标志位合成的</span></div><div class="line">        <span class="keyword">final</span> <span class="keyword">boolean</span> isOpaque = child.isOpaque() &amp;&amp; !drawAnimation &amp;&amp;</div><div class="line">                child.getAnimation() == <span class="keyword">null</span> &amp;&amp; childMatrix.isIdentity();</div><div class="line">        <span class="comment">// 根据透明或者不透明，得到绘制的标志位</span></div><div class="line">        <span class="keyword">int</span> opaqueFlag = isOpaque ? PFLAG_DIRTY_OPAQUE : PFLAG_DIRTY;</div><div class="line">            </div><div class="line">        ... 省去一些其他标志位操作和 dirty 区域变换的结果，因为 dirty  是一个相对坐标系</div><div class="line"></div><div class="line">        <span class="comment">// 这里通过一个循环不断向上传递，知道 ViewRootImpl</span></div><div class="line">        <span class="keyword">do</span> &#123;</div><div class="line">            View view = <span class="keyword">null</span>;</div><div class="line">            <span class="keyword">if</span> (parent <span class="keyword">instanceof</span> View) &#123;</div><div class="line">                view = (View) parent;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="comment">// 处理动画时间</span></div><div class="line">            <span class="keyword">if</span> (drawAnimation) &#123;</div><div class="line">                <span class="keyword">if</span> (view != <span class="keyword">null</span>) &#123;</div><div class="line">                    view.mPrivateFlags |= PFLAG_DRAW_ANIMATION;</div><div class="line">                &#125; <span class="keyword">else</span> <span class="keyword">if</span> (parent <span class="keyword">instanceof</span> ViewRootImpl) &#123;</div><div class="line">                    ((ViewRootImpl) parent).mIsAnimating = <span class="keyword">true</span>;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="comment">// 该方法会为所有的父 view 打上 PFLAG_DIRTY_MASK 绘制标记</span></div><div class="line">            <span class="comment">// 会决定绘制是父 View 是否会跳过 drawBackgroud 和 onDraw 方法</span></div><div class="line">            <span class="keyword">if</span> (view != <span class="keyword">null</span>) &#123;</div><div class="line">                <span class="keyword">if</span> ((view.mViewFlags &amp; FADING_EDGE_MASK) != <span class="number">0</span> &amp;&amp;</div><div class="line">                        view.getSolidColor() == <span class="number">0</span>) &#123;</div><div class="line">                    opaqueFlag = PFLAG_DIRTY;</div><div class="line">                &#125;</div><div class="line">                <span class="keyword">if</span> ((view.mPrivateFlags &amp; PFLAG_DIRTY_MASK) != PFLAG_DIRTY) &#123;</div><div class="line">                    view.mPrivateFlags = (view.mPrivateFlags &amp; ~PFLAG_DIRTY_MASK) | opaqueFlag;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="comment">// view tree 上的整条链都会调用这个方法，直到 ViewRootImpl 的 invalidateChildInParent 去触发 performTraversals，这个方法会调整 dirty 到父 View 的大小</span></div><div class="line">            parent = parent.invalidateChildInParent(location, dirty);</div><div class="line">            <span class="keyword">if</span> (view != <span class="keyword">null</span>) &#123;</div><div class="line">                <span class="comment">// Account for transform on current parent</span></div><div class="line">                Matrix m = view.getMatrix();</div><div class="line">                <span class="keyword">if</span> (!m.isIdentity()) &#123;</div><div class="line">                    RectF boundingRect = attachInfo.mTmpTransformRect;</div><div class="line">                    boundingRect.set(dirty);</div><div class="line">                    m.mapRect(boundingRect);</div><div class="line">                    dirty.set((<span class="keyword">int</span>) Math.floor(boundingRect.left),</div><div class="line">                            (<span class="keyword">int</span>) Math.floor(boundingRect.top),</div><div class="line">                            (<span class="keyword">int</span>) Math.ceil(boundingRect.right),</div><div class="line">                            (<span class="keyword">int</span>) Math.ceil(boundingRect.bottom));</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125; <span class="keyword">while</span> (parent != <span class="keyword">null</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>而在 ViewRootImpl.invalidateChildInParent 会把 dirty 最终范围带入在触发 draw 的时候则会锁定这个画布的范围更新视图，所以说如果需要重绘制，最好调用 invalidate 方法时传入一个更新范围，这样就会节省不少的功夫</p>
+<p>invalidate 也是验证树层层往上传递处理标记标志位，最后由 ViewRootImpl 触发整个树的刷新，只不过由于没有标记测量和布局的标志位，所以不会触发重测量和布局</p>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>其实 Android 中关于布局的测量布局和绘制是一个非常复杂的流程，由 ViewRootImpl 发起遍历树的操作，而 ViewGroup 和 View 中有各种各样的标志位来标记操作的执行。这篇文章也只是讲了其中的一小部分，也仅仅是记录了一下我的理解。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/view/" rel="tag"># view</a>
+          
+            <a href="/tags/深入系列/" rel="tag"># 深入系列</a>
+          
+            <a href="/tags/布局流程/" rel="tag"># 布局流程</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/04/03/内存优化 —— bitmap pool/" rel="next" title="内存优化 —— bitmap pool">
+                <i class="fa fa-chevron-left"></i> 内存优化 —— bitmap pool
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">sanousun</p>
+              <p class="site-description motion-element" itemprop="description">随便写写，随缘</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">20</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Android-测量，布局，绘制流程解析"><span class="nav-number">1.</span> <span class="nav-text">Android 测量，布局，绘制流程解析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#测量，布局，绘制流程解析"><span class="nav-number">1.2.</span> <span class="nav-text">测量，布局，绘制流程解析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#measure"><span class="nav-number">1.3.</span> <span class="nav-text">measure</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#layout"><span class="nav-number">1.4.</span> <span class="nav-text">layout</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#draw"><span class="nav-number">1.5.</span> <span class="nav-text">draw</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#requestLayout-amp-invalidate"><span class="nav-number">1.6.</span> <span class="nav-text">requestLayout() & invalidate()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结语"><span class="nav-number">1.7.</span> <span class="nav-text">结语</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">sanousun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
