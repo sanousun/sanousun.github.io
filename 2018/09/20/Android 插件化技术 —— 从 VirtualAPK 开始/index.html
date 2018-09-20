@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="深入系列,VirtualAPK,插件化,动态化," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Android 插件化技术 —— 从 VirtualAPK 开始前言安卓的插件化技术在这一两年越来越流行，虽然这种行为被谷歌命令禁止，而且在版本控制上越来越严格（最新的 Android P 对非 SDK 做了非常大的限制，而这些接口通常是插件化方案必须调用的接口）但是由于其动态化的部署方案确实有着非常多的优点（模块解耦，动态配置，减少 APK 体积等），这篇文章将从滴滴开源的 VirtualAPK">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android 插件化技术 —— 从 VirtualAPK 开始">
+<meta property="og:url" content="http://sanousun.github.io/2018/09/20/Android 插件化技术 —— 从 VirtualAPK 开始/index.html">
+<meta property="og:site_name" content="sanousun">
+<meta property="og:description" content="Android 插件化技术 —— 从 VirtualAPK 开始前言安卓的插件化技术在这一两年越来越流行，虽然这种行为被谷歌命令禁止，而且在版本控制上越来越严格（最新的 Android P 对非 SDK 做了非常大的限制，而这些接口通常是插件化方案必须调用的接口）但是由于其动态化的部署方案确实有着非常多的优点（模块解耦，动态配置，减少 APK 体积等），这篇文章将从滴滴开源的 VirtualAPK">
+<meta property="og:updated_time" content="2018-09-20T06:20:22.981Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android 插件化技术 —— 从 VirtualAPK 开始">
+<meta name="twitter:description" content="Android 插件化技术 —— 从 VirtualAPK 开始前言安卓的插件化技术在这一两年越来越流行，虽然这种行为被谷歌命令禁止，而且在版本控制上越来越严格（最新的 Android P 对非 SDK 做了非常大的限制，而这些接口通常是插件化方案必须调用的接口）但是由于其动态化的部署方案确实有着非常多的优点（模块解耦，动态配置，减少 APK 体积等），这篇文章将从滴滴开源的 VirtualAPK">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://sanousun.github.io/2018/09/20/Android 插件化技术 —— 从 VirtualAPK 开始/"/>
+
+
+
+
+
+  <title>Android 插件化技术 —— 从 VirtualAPK 开始 | sanousun</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">sanousun</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">sanousun的博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://sanousun.github.io/2018/09/20/Android 插件化技术 —— 从 VirtualAPK 开始/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sanousun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="sanousun">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android 插件化技术 —— 从 VirtualAPK 开始</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-20T14:19:31+08:00">
+                2018-09-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Android-插件化技术-——-从-VirtualAPK-开始"><a href="#Android-插件化技术-——-从-VirtualAPK-开始" class="headerlink" title="Android 插件化技术 —— 从 VirtualAPK 开始"></a>Android 插件化技术 —— 从 VirtualAPK 开始</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>安卓的插件化技术在这一两年越来越流行，虽然这种行为被谷歌命令禁止，而且在版本控制上越来越严格（最新的 Android P 对非 SDK 做了非常大的限制，而这些接口通常是插件化方案必须调用的接口）但是由于其动态化的部署方案确实有着非常多的优点（模块解耦，动态配置，减少 APK 体积等），这篇文章将从滴滴开源的 VirtualAPK 来分析市场上主流的插件化 APP 实现方式。本文的代码基于 Android N，后续 Android 的代码或多或少地都会有一些改动，但是大致方向是不会变的。</p>
+<p>强烈建议去看一遍 <a href="http://gityuan.com/2016/03/12/start-activity/" target="_blank" rel="external">startActivity启动过程分析</a>，只有清楚了启动流程才能明白一些关键点的代码是如何处理的</p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>Android 的插件化技术实现主要依靠基于 ClassLoader 的动态加载机制，但是在 Android 中四大组件的使用必须提前在 Manifest.xml 中注册，所以也必须在宿主中预埋一些基础四大组件，在实际运行中需要通过反射以及 hock 一些系统关键类去实现对应关系</p>
+<h3 id="类加载器及双亲委托机制"><a href="#类加载器及双亲委托机制" class="headerlink" title="类加载器及双亲委托机制"></a>类加载器及双亲委托机制</h3><p>Java 的代码都是以 class 的形式存在的，当虚拟机运行时就需要一种机制将 class 内容加载到内存中才能创建我们需要的实例。而负责这种加载机制的就是类加载器 ClassLoader。</p>
+<p>提到类加载器那就必须提到类加载器的<strong>双亲委托机制</strong>，Android 虚拟机和 Java 虚拟机虽然有些细微的差别，但是总体上的机制是一致的。</p>
+<p>在 Android 中常用的类加载器包括 DexClassLoader 和 PathClassLoader，区别在于 PathClassLoader 只能加载系统已安装过的 Apk，而 DexClassLoader 可以加载自定义目录下的 Jar/Apk/Dex，常用于动态加载。而两者都继承自 BaseDexClassLoader，最终继承自 ClassLoader，会在构造函数中会传入 parent（在 Android 系统中就是 BootClassLoader，该加载器会加载一些系统级别的类），在加载类时 ClassLoader 会先由 parent 去加载，如果没有找到对应的类才会再交给自己去实现加载逻辑。</p>
+<p>首先看 jdk 的类加载方法</p>
+<p><strong>ClassLoader.loadClass</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">protected Class&lt;?&gt; loadClass(String name, boolean resolve) </div><div class="line">    throws ClassNotFoundException</div><div class="line">    &#123;</div><div class="line">        // 首先会查找类是否已经被加载器加载过，所以被替换的类需要在原类未被加载之前替换</div><div class="line">        Class&lt;?&gt; c = findLoadedClass(name);</div><div class="line">        if (c == null) &#123;</div><div class="line">            try &#123;</div><div class="line">                // 先由父加载器加载</div><div class="line">                if (parent != null) &#123;</div><div class="line">                    c = parent.loadClass(name, false);</div><div class="line">                &#125; else &#123;</div><div class="line">                    c = findBootstrapClassOrNull(name);</div><div class="line">                &#125;</div><div class="line">            &#125; catch (ClassNotFoundException e) &#123;</div><div class="line">                // 未查找到会抛出该异常，所以需要捕获</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            if (c == null) &#123;</div><div class="line">                // 如果父加载器查找不到类才会交由本身去加载</div><div class="line">                c = findClass(name);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        return c;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在 Android sdk 中 BaseDexClassLoader 略有些不同</p>
+<p>双亲委托机制优点：</p>
+<ol>
+<li>类共享，被顶层类加载器加载过的类将会被缓存在内存中，任何子加载器加载该类都可以从内存中直接获取</li>
+<li>类安全，一些系统级别的类只会被顶层加载器加载，这就避免了用自己的代码去替换核心类的一些恶意行为</li>
+</ol>
+<h2 id="插件框架"><a href="#插件框架" class="headerlink" title="插件框架"></a>插件框架</h2><h3 id="Activity-代理"><a href="#Activity-代理" class="headerlink" title="Activity 代理"></a>Activity 代理</h3><p>在 <a href="http://gityuan.com/2016/03/12/start-activity/" target="_blank" rel="external">startActivity启动过程分析</a> 一文中可以详细的了解一个 activity 启动的全过程，这里提几个校验的关键点，<a href="https://android.googlesource.com/platform/frameworks/base/+/nougat-release/core/java/android/app/Instrumentation.java" target="_blank" rel="external">Instrumentation 源码</a></p>
+<ul>
+<li>intent 的构造函数中会生成 ComponentName 成员变量，保存当前的 packageName 以及目标 class 的 className</li>
+</ul>
+<ul>
+<li>ActivityManagerService 在启动一个 activity 时会通过 ActivityStackSupervisor 的 resolveActivity 方法去 PackageManagerService 查找对应的 activity 信息（PackageManagerService 会解析 Manifest.xml 获取整个应用的信息），无法查找到在 startActivityLocked  方法中则会返回 ActivityManager.START_INTENT_NOT_RESOLVED 的 err 信息，最终返回到 Instrumentation 中抛出我们开发中常见的 ActivityNotFoundException 异常</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">public static void checkStartActivityResult(int res, Object intent) &#123;</div><div class="line">    if (!ActivityManager.isStartResultFatalError(res)) &#123;</div><div class="line">        return;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    switch (res) &#123;</div><div class="line">        case ActivityManager.START_INTENT_NOT_RESOLVED:</div><div class="line">        case ActivityManager.START_CLASS_NOT_FOUND:</div><div class="line">            if (intent instanceof Intent &amp;&amp; ((Intent)intent).getComponent() != null)</div><div class="line">                throw new ActivityNotFoundException(</div><div class="line">                        &quot;Unable to find explicit activity class &quot;</div><div class="line">                        + ((Intent)intent).getComponent().toShortString()</div><div class="line">                        + &quot;; have you declared this activity in your AndroidManifest.xml?&quot;);</div><div class="line">            throw new ActivityNotFoundException(</div><div class="line">                    &quot;No Activity found to handle &quot; + intent);</div><div class="line">        </div><div class="line">        ...</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这种限制导致了必须在宿主 Apk 中的 Manifest.xml 中预埋足够多的宿主代理 Activity。<br>早期的插件化框架则是在这些宿主的 ProxyActivity 中运行时生成将生命周期方法代理插件 Activity 中，然而这种方法的缺点就是由于两者的上下文环境即 context 是不同的，为了兼容实际的使用需求必须要 hock 许许多多的方法去对应正确的 context，需要对基类做比较多的工作。</p>
+<p>而 VirtualAPK 的做法则是 hock 一些关键节点更改信息来“欺骗” AMS，具体的做法就是从 Instrumentation 着手，该类是一个工具类，用于协助 ActivityThread 完成一些琐碎的工作，在 VirtualAPK 中通过 VAInstrumentation 去代理。</p>
+<p>在 Activity 启动流程中，activity 的 startActivityForResult 方法会调用 Instrumentation.execStartActivity 方法，在这个方法里就可以改变 Intent 携带的信息</p>
+<p><strong>VAInstrumentation.injectIntent</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">injectIntent</span><span class="params">(Intent intent)</span> </span>&#123;</div><div class="line">    <span class="comment">// 查找插件 activity 在插件包中注册的信息</span></div><div class="line">    mPluginManager.getComponentsHandler().transformIntentToExplicitAsNeeded(intent);</div><div class="line">    <span class="comment">// 如果 Component 为空则表示不在插件包，而是在宿主包中的</span></div><div class="line">    <span class="keyword">if</span> (intent.getComponent() != <span class="keyword">null</span>) &#123;</div><div class="line">        Log.i(TAG, String.format(<span class="string">"execStartActivity[%s : %s]"</span>, intent.getComponent().getPackageName(), intent.getComponent().getClassName()));</div><div class="line">        <span class="comment">// 一些必要的信息替换工作</span></div><div class="line">        <span class="keyword">this</span>.mPluginManager.getComponentsHandler().markIntentIfNeeded(intent);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>通过 ComponentsHandler.transformIntentToExplicitAsNeeded -&gt; PluginManager.resolveActivity -&gt; LoadedPlugin.resolveActivity -&gt; LoadedPlugin.chooseBestActivity 查找到插件 activity  在插件包中注册的信息。</p>
+<p>然后通过 </p>
+<p><strong>ComponentsHandler.markIntentIfNeeded</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">markIntentIfNeeded</span><span class="params">(Intent intent)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (intent.getComponent() == <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">return</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    String targetPackageName = intent.getComponent().getPackageName();</div><div class="line">    String targetClassName = intent.getComponent().getClassName();</div><div class="line">    <span class="comment">// 如果是插件包，将原本的包名和类名存储在 intent 中</span></div><div class="line">    <span class="keyword">if</span> (!targetPackageName.equals(mContext.getPackageName()) &amp;&amp; mPluginManager.getLoadedPlugin(targetPackageName) != <span class="keyword">null</span>) &#123;</div><div class="line">        intent.putExtra(Constants.KEY_IS_PLUGIN, <span class="keyword">true</span>);</div><div class="line">        intent.putExtra(Constants.KEY_TARGET_PACKAGE, targetPackageName);</div><div class="line">        intent.putExtra(Constants.KEY_TARGET_ACTIVITY, targetClassName);</div><div class="line">        <span class="comment">// 查找合适的代理信息</span></div><div class="line">        dispatchStubActivity(intent);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>通过 ComponentsHandler.dispatchStubActivity -&gt; StubActivityInfo.getStubActivity(String className, int launchMode, Theme theme) 根据启动模式和主题样式，去获取到合理的代理 activity 信息</p>
+<p>就这样将插件中 activity 信息替换成代理信息，然后有 Instrumentation 交由后续的代码处理，待到 AMS 处理返回通过 ApplicationThread 经由 handler 传递 LAUNCH_ACTIVITY 的消息到 ActivityThread</p>
+<p>VAInstrumentation 继承了 Handler.Callback 接口，早在初始化的 hock 阶段，PluginManager 的 hookInstrumentationAndHandler 方法中就为 ActivityThread 中的 mH 这个 handler 设置 VAInstrumentation 这个callback，那 VAInstrumentation 可以在 ActivityThread 之前收到启动请求</p>
+<p><strong>VAInstrumentation.handleMessage</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">public boolean handleMessage(Message msg) &#123;</div><div class="line">    if (msg.what == LAUNCH_ACTIVITY) &#123;</div><div class="line">        // ActivityClientRecord r，此时 activity 的实例并没有生产</div><div class="line">        Object r = msg.obj;</div><div class="line">        try &#123;</div><div class="line">            Intent intent = (Intent) ReflectUtil.getField(r.getClass(), r, &quot;intent&quot;);</div><div class="line">            // 这里替换了 classloader 防止加载 Parcelable 是因 classloader 不同导致的类型不同</div><div class="line">            intent.setExtrasClassLoader(VAInstrumentation.class.getClassLoader());</div><div class="line">            ActivityInfo activityInfo = (ActivityInfo) ReflectUtil.getField(r.getClass(), r, &quot;activityInfo&quot;);</div><div class="line"></div><div class="line">            if (PluginUtil.isIntentFromPlugin(intent)) &#123;</div><div class="line">                // 替换主题</div><div class="line">                int theme = PluginUtil.getTheme(mPluginManager.getHostContext(), intent);</div><div class="line">                if (theme != 0) &#123;</div><div class="line">                    Log.i(TAG, &quot;resolve theme, current theme:&quot; + activityInfo.theme + &quot;  after :0x&quot; + Integer.toHexString(theme));</div><div class="line">                    activityInfo.theme = theme;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125; catch (Exception e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    // 不会拦截后续的逻辑</div><div class="line">    return false;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在经由 ActivityThread，交由 Instrumentation.newActivity 生产 Activity 实例，VAInstrumentation 同样覆写了该方法</p>
+<p><strong>VAInstrumentation.newActivity</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> Activity <span class="title">newActivity</span><span class="params">(ClassLoader cl, String className, Intent intent)</span> <span class="keyword">throws</span> InstantiationException, IllegalAccessException, ClassNotFoundException </span>&#123;</div><div class="line">    <span class="comment">// 由于宿主代理类并不会有实例，所有会抛出 ClassNotFoundException 异常</span></div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">        cl.loadClass(className);</div><div class="line">        Log.i(TAG, String.format(<span class="string">"newActivity[%s]"</span>, className));        </div><div class="line">    &#125; <span class="keyword">catch</span> (ClassNotFoundException e) &#123;</div><div class="line">        <span class="comment">// 根据开始存入 intent 的插件类信息生成 component</span></div><div class="line">        ComponentName component = PluginUtil.getComponent(intent);</div><div class="line">            </div><div class="line">        <span class="keyword">if</span> (component == <span class="keyword">null</span>) &#123;</div><div class="line">            <span class="keyword">return</span> newActivity(mBase.newActivity(cl, className, intent));</div><div class="line">        &#125;</div><div class="line">    </div><div class="line">        String targetClassName = component.getClassName();</div><div class="line">        Log.i(TAG, String.format(<span class="string">"newActivity[%s : %s/%s]"</span>, className, component.getPackageName(), targetClassName));</div><div class="line">        <span class="comment">// 根据包名获取到插件</span></div><div class="line">        LoadedPlugin plugin = <span class="keyword">this</span>.mPluginManager.getLoadedPlugin(component);</div><div class="line">    </div><div class="line">        <span class="keyword">if</span> (plugin == <span class="keyword">null</span>) &#123;</div><div class="line">            <span class="comment">// 没有对应插件会在debug模式下报错，属于异常情况</span></div><div class="line">            <span class="keyword">boolean</span> debuggable = <span class="keyword">false</span>;</div><div class="line">            <span class="keyword">try</span> &#123;</div><div class="line">                Context context = <span class="keyword">this</span>.mPluginManager.getHostContext();</div><div class="line">                debuggable = (context.getApplicationInfo().flags &amp; ApplicationInfo.FLAG_DEBUGGABLE) != <span class="number">0</span>;</div><div class="line">            &#125; <span class="keyword">catch</span> (Throwable ex) &#123;</div><div class="line">        </div><div class="line">            &#125;</div><div class="line">    </div><div class="line">            <span class="keyword">if</span> (debuggable) &#123;</div><div class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> ActivityNotFoundException(<span class="string">"error intent: "</span> + intent.toURI());</div><div class="line">            &#125;</div><div class="line">                </div><div class="line">            Log.i(TAG, <span class="string">"Not found. starting the stub activity: "</span> + StubActivity.class);</div><div class="line">            <span class="keyword">return</span> newActivity(mBase.newActivity(cl, StubActivity.class.getName(), intent));</div><div class="line">        &#125;</div><div class="line">            </div><div class="line">        <span class="comment">// 通过插件中的 classloader 加载，该 classloader 为 DexClassLoader，可以</span></div><div class="line">        Activity activity = mBase.newActivity(plugin.getClassLoader(), targetClassName, intent);</div><div class="line">        activity.setIntent(intent);</div><div class="line">    </div><div class="line">        <span class="comment">// for 4.1+</span></div><div class="line">        <span class="comment">// 替换资源文件</span></div><div class="line">        Reflector.QuietReflector.with(activity).field(<span class="string">"mResources"</span>).set(plugin.getResources());</div><div class="line">    </div><div class="line">        <span class="keyword">return</span> newActivity(activity);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">return</span> newActivity(mBase.newActivity(cl, className, intent));</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>待到 activity 生成以后就开始生命周期的回调了，ActivityThread 会调用 Instrumentation.callActivityOnCreate 方法触发 activity 的 onCreate，在这里 VAInstrumentation 会 hock 住替换掉 activity 中的一些相关资源类</p>
+<p><strong>VAInstrumentation.injectActivity</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">injectActivity</span><span class="params">(Activity activity)</span> </span>&#123;</div><div class="line">    <span class="keyword">final</span> Intent intent = activity.getIntent();</div><div class="line">    <span class="keyword">if</span> (PluginUtil.isIntentFromPlugin(intent)) &#123;</div><div class="line">        Context base = activity.getBaseContext();</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            LoadedPlugin plugin = <span class="keyword">this</span>.mPluginManager.getLoadedPlugin(intent);</div><div class="line">            Reflector.with(base).field(<span class="string">"mResources"</span>).set(plugin.getResources());</div><div class="line">            Reflector reflector = Reflector.with(activity);</div><div class="line">            reflector.field(<span class="string">"mBase"</span>).set(plugin.createPluginContext(activity.getBaseContext()));</div><div class="line">            reflector.field(<span class="string">"mApplication"</span>).set(plugin.getApplication());</div><div class="line"></div><div class="line">            <span class="comment">// set screenOrientation</span></div><div class="line">            ActivityInfo activityInfo = plugin.getActivityInfo(PluginUtil.getComponent(intent));</div><div class="line">            <span class="keyword">if</span> (activityInfo.screenOrientation != ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED) &#123;</div><div class="line">                activity.setRequestedOrientation(activityInfo.screenOrientation);</div><div class="line">            &#125;</div><div class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">            Log.w(TAG, e);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>会一次替换掉，mResources：使用插件包中的资源，mBase：对 context 进行 hock，用于替换一些上下文环境，具体可以在 PluginContext 中查找，mApplication：替换成插件包中的 Application。 这样就完成了一个插件 activity 的欺骗启动了。</p>
+<h3 id="其他代理"><a href="#其他代理" class="headerlink" title="其他代理"></a>其他代理</h3><p>至于其他的的基础组件代理，其实只要明白了启动流程，找到关键点进行替换也是同样的道理，只是具体的实现可能不同吧</p>
+<h3 id="Android-P-的适配"><a href="#Android-P-的适配" class="headerlink" title="Android P 的适配"></a>Android P 的适配</h3><p>首先在 ActivityThread 类中的 H handler 类，原先 ApplicationThread 会通过 LAUNCH_ACTIVITY(100) 去传递信息通知 ActivityThread 去初始化 Activity<br>。但是在 Android P 中，谷歌将所有关于 activity 生命周期的通知消息整合成了 EXECUTE_TRANSACTION(159)，通过 TransactionExecutor 交由对应的 ClientTransactionItem.execute 方法执行，负责启动 Activity 的就是 LaunchActivityItem 了</p>
+<p>Android P 引入了<a href="https://developer.android.com/about/versions/pie/restrictions-non-sdk-interfaces?hl=zh-cn" target="_blank" rel="external">针对非 SDK 接口（俗称为隐藏API）的使用限制</a>。这对于插件化技术来说无疑是一个非常重大的打击，毕竟插件化技术完全是基于反射替换系统关键类实现的</p>
+<p>这篇文章将会深入探讨谷歌对于接口限制的工作原理，也提供了几种解决方案 <a href="https://zhuanlan.zhihu.com/p/37819685" target="_blank" rel="external">一种绕过Android P上非SDK接口限制的简单方法</a></p>
+<h3 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h3><p>插件化技术确实能有效提升开发以及发版的效率，但是适配问题一直是插件化的最头疼的问题，面对 Android 严重的碎片化以及谷歌对插件化技术的严厉禁止，插件化技术的未来还是有很长的路要走。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/深入系列/" rel="tag"># 深入系列</a>
+          
+            <a href="/tags/VirtualAPK/" rel="tag"># VirtualAPK</a>
+          
+            <a href="/tags/插件化/" rel="tag"># 插件化</a>
+          
+            <a href="/tags/动态化/" rel="tag"># 动态化</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/08/04/flutter - GestureBinding 与触摸事件分发/" rel="next" title="flutter - GestureBinding 与触摸事件分发">
+                <i class="fa fa-chevron-left"></i> flutter - GestureBinding 与触摸事件分发
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">sanousun</p>
+              <p class="site-description motion-element" itemprop="description">随便写写，随缘</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">24</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Android-插件化技术-——-从-VirtualAPK-开始"><span class="nav-number">1.</span> <span class="nav-text">Android 插件化技术 —— 从 VirtualAPK 开始</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原理"><span class="nav-number">1.2.</span> <span class="nav-text">原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#类加载器及双亲委托机制"><span class="nav-number">1.2.1.</span> <span class="nav-text">类加载器及双亲委托机制</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#插件框架"><span class="nav-number">1.3.</span> <span class="nav-text">插件框架</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Activity-代理"><span class="nav-number">1.3.1.</span> <span class="nav-text">Activity 代理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#其他代理"><span class="nav-number">1.3.2.</span> <span class="nav-text">其他代理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Android-P-的适配"><span class="nav-number">1.3.3.</span> <span class="nav-text">Android P 的适配</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#结语"><span class="nav-number">1.3.4.</span> <span class="nav-text">结语</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">sanousun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
