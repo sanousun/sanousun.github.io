@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="flutter," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="flutter - 动画实现前言动画是客户端开发中非常重要的一个方面，良好的动画设计能带给用户非常好的交互体。flutter 提供了一个非常灵活的动画框架，可以非常轻松地实现各种动效。这篇文章就将带你深入了解。
+从 AnimationController.forward 方法开始AnimationController.forward 是最常用的启动动画的方法，该方法调用后 AnimationCon">
+<meta property="og:type" content="article">
+<meta property="og:title" content="flutter - 动画实现">
+<meta property="og:url" content="http://sanousun.github.io/2018/10/05/flutter - 动画实现/index.html">
+<meta property="og:site_name" content="sanousun">
+<meta property="og:description" content="flutter - 动画实现前言动画是客户端开发中非常重要的一个方面，良好的动画设计能带给用户非常好的交互体。flutter 提供了一个非常灵活的动画框架，可以非常轻松地实现各种动效。这篇文章就将带你深入了解。
+从 AnimationController.forward 方法开始AnimationController.forward 是最常用的启动动画的方法，该方法调用后 AnimationCon">
+<meta property="og:updated_time" content="2018-12-12T03:39:01.517Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="flutter - 动画实现">
+<meta name="twitter:description" content="flutter - 动画实现前言动画是客户端开发中非常重要的一个方面，良好的动画设计能带给用户非常好的交互体。flutter 提供了一个非常灵活的动画框架，可以非常轻松地实现各种动效。这篇文章就将带你深入了解。
+从 AnimationController.forward 方法开始AnimationController.forward 是最常用的启动动画的方法，该方法调用后 AnimationCon">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://sanousun.github.io/2018/10/05/flutter - 动画实现/"/>
+
+
+
+
+
+  <title>flutter - 动画实现 | sanousun</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">sanousun</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">sanousun的博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://sanousun.github.io/2018/10/05/flutter - 动画实现/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sanousun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="sanousun">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">flutter - 动画实现</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-10-05T15:23:21+08:00">
+                2018-10-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="flutter-动画实现"><a href="#flutter-动画实现" class="headerlink" title="flutter - 动画实现"></a>flutter - 动画实现</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>动画是客户端开发中非常重要的一个方面，良好的动画设计能带给用户非常好的交互体。flutter 提供了一个非常灵活的动画框架，可以非常轻松地实现各种动效。这篇文章就将带你深入了解。</p>
+<h2 id="从-AnimationController-forward-方法开始"><a href="#从-AnimationController-forward-方法开始" class="headerlink" title="从 AnimationController.forward 方法开始"></a>从 AnimationController.forward 方法开始</h2><p>AnimationController.forward 是最常用的启动动画的方法，该方法调用后 AnimationController.value 值会在持续时间内持续变化，我们可以从这个方法开始分析整个 flutter 的动画实现原理</p>
+<p><strong>AnimationController.forward</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">TickerFuture forward(&#123; double from &#125;) &#123;</div><div class="line">  assert(() &#123;</div><div class="line">    if (duration == null) &#123;</div><div class="line">      throw new FlutterError(</div><div class="line">        &apos;AnimationController.forward() called with no default Duration.\n&apos;</div><div class="line">        &apos;The &quot;duration&quot; property should be set, either in the constructor or later, before &apos;</div><div class="line">        &apos;calling the forward() function.&apos;</div><div class="line">      );</div><div class="line">    &#125;</div><div class="line">    return true;</div><div class="line">  &#125;());</div><div class="line">  _direction = _AnimationDirection.forward;</div><div class="line">  if (from != null)</div><div class="line">    value = from;</div><div class="line">  return _animateToInternal(upperBound);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>确定了动画的方向，以及可能的动画起始值，返回值是一个 TickerFuture 类型的异步任务</p>
+<p><strong>AnimationController._animateToInternal</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line">TickerFuture _animateToInternal(double target, &#123; Duration duration, Curve curve: Curves.linear &#125;) &#123;</div><div class="line">  Duration simulationDuration = duration;</div><div class="line">  if (simulationDuration == null) &#123;</div><div class="line">    assert(() &#123;</div><div class="line">      if (this.duration == null) &#123;</div><div class="line">        throw new FlutterError(</div><div class="line">          &apos;AnimationController.animateTo() called with no explicit Duration and no default Duration.\n&apos;</div><div class="line">          &apos;Either the &quot;duration&quot; argument to the animateTo() method should be provided, or the &apos;</div><div class="line">          &apos;&quot;duration&quot; property should be set, either in the constructor or later, before &apos;</div><div class="line">          &apos;calling the animateTo() function.&apos;</div><div class="line">        );</div><div class="line">      &#125;</div><div class="line">      return true;</div><div class="line">    &#125;());</div><div class="line">    final double range = upperBound - lowerBound;</div><div class="line">    final double remainingFraction = range.isFinite ? (target - _value).abs() / range : 1.0;</div><div class="line">    simulationDuration = this.duration * remainingFraction;</div><div class="line">  &#125; else if (target == value) &#123;</div><div class="line">    // Already at target, don&apos;t animate.</div><div class="line">    simulationDuration = Duration.zero;</div><div class="line">  &#125;</div><div class="line">  stop();</div><div class="line">  if (simulationDuration == Duration.zero) &#123;</div><div class="line">    if (value != target) &#123;</div><div class="line">      _value = target.clamp(lowerBound, upperBound);</div><div class="line">      notifyListeners();</div><div class="line">    &#125;</div><div class="line">    _status = (_direction == _AnimationDirection.forward) ?</div><div class="line">      AnimationStatus.completed :</div><div class="line">      AnimationStatus.dismissed;</div><div class="line">    _checkStatusChanged();</div><div class="line">    return new TickerFuture.complete();</div><div class="line">  &#125;</div><div class="line">  assert(simulationDuration &gt; Duration.zero);</div><div class="line">  assert(!isAnimating);</div><div class="line">  return _startSimulation(new _InterpolationSimulation(_value, target, simulationDuration, curve));</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>会根据目标值 target 和起始值 _value 计算整个动画的持续时间。先通过 stop 方法暂停可以存在的动画。如果计算出的持续时间为 0，意味着不需要进行动画，回调一些必要的 Listener 后结束，否则就开始启动动画，调用 _startSimulation(new _InterpolationSimulation(_value, target, simulationDuration, curve)) 方法。</p>
+<p><strong>AnimationController._startSimulation</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">TickerFuture _startSimulation(Simulation simulation) &#123;</div><div class="line">  assert(simulation != null);</div><div class="line">  assert(!isAnimating);</div><div class="line">  _simulation = simulation;</div><div class="line">  _lastElapsedDuration = Duration.zero;</div><div class="line">  _value = simulation.x(0.0).clamp(lowerBound, upperBound);</div><div class="line">  final Future&lt;Null&gt; result = _ticker.start();</div><div class="line">  _status = (_direction == _AnimationDirection.forward) ?</div><div class="line">    AnimationStatus.forward :</div><div class="line">    AnimationStatus.reverse;</div><div class="line">  _checkStatusChanged();</div><div class="line">  return result;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>Simulation 是用来模拟在一维空间中一个物体受力改变的情况，通过 x 函数可以获取给定时间物体的位置，dx 函数可以获取给定时间物体的速度，isDone 函数获取给定时间是否完成。通过自定义各种各样的 simulation 可以模拟出真实场景下的动画效果。接下去我们可以看到动画运行的关键 _ticker.start()</p>
+<p>AnimationController 的构造函数中 TickerProvider 是一个必要的参数，通过 TickerProvider.createTicker(TickerCallback onTick) 方法可以生成 _ticker(Ticker) 对象，那么这个 _ticker 到底是用来干嘛的</p>
+<p>Ticker 是每一帧用来调用动画回调的，它由 SchedulerBinding 驱动，什么意思呢，我们可以从 start 方法深入了解</p>
+<p><strong>Ticker.start</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">TickerFuture start() &#123;</div><div class="line">  assert(() &#123;</div><div class="line">    if (isActive) &#123;</div><div class="line">      throw new FlutterError(</div><div class="line">        &apos;A ticker was started twice.\n&apos;</div><div class="line">        &apos;A ticker that is already active cannot be started again without first stopping it.\n&apos;</div><div class="line">        &apos;The affected ticker was: $&#123; toString(debugIncludeStack: true) &#125;&apos;</div><div class="line">      );</div><div class="line">    &#125;</div><div class="line">    return true;</div><div class="line">  &#125;());</div><div class="line">  assert(_startTime == null);</div><div class="line">  _future = new TickerFuture._();</div><div class="line">  if (shouldScheduleTick) &#123;</div><div class="line">    scheduleTick();</div><div class="line">  &#125;</div><div class="line">  if (SchedulerBinding.instance.schedulerPhase.index &gt; SchedulerPhase.idle.index &amp;&amp;</div><div class="line">    SchedulerBinding.instance.schedulerPhase.index &lt; SchedulerPhase.postFrameCallbacks.index)</div><div class="line">    _startTime = SchedulerBinding.instance.currentFrameTimeStamp;</div><div class="line">  return _future;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>回调添加在 scheduleTick 方法进行，随后记录了起始时间</p>
+<p><strong>Ticker.scheduleTick</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">void scheduleTick(&#123; bool rescheduling: false &#125;) &#123;</div><div class="line">  assert(!scheduled);</div><div class="line">  assert(shouldScheduleTick);</div><div class="line">  _animationId = SchedulerBinding.instance.scheduleFrameCallback(_tick, rescheduling: rescheduling);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这时 Ticker 会向 SchedulerBinding 通过 scheduleFrameCallback 注册帧回调，回调方法为 _tick，记录当前帧的回调主键  _animationId，可用于取消动画时注销回调</p>
+<p>在 ScheduleBinding 初始化的工作中，ui.window.onBeginFrame = _handleBeginFrame，这里将从 flutter 引擎传来的每一帧开时回调传递给 _handleBeginFrame 方法，在该方法中会回调注册过的动画回调</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">try &#123;</div><div class="line">  // TRANSIENT FRAME CALLBACKS</div><div class="line">  Timeline.startSync(&apos;Animate&apos;, arguments: timelineWhitelistArguments);</div><div class="line">  _schedulerPhase = SchedulerPhase.transientCallbacks;</div><div class="line">  final Map&lt;int, _FrameCallbackEntry&gt; callbacks = _transientCallbacks;</div><div class="line">  _transientCallbacks = &lt;int, _FrameCallbackEntry&gt;&#123;&#125;;</div><div class="line">  callbacks.forEach((int id, _FrameCallbackEntry callbackEntry) &#123;</div><div class="line">    if (!_removedIds.contains(id))</div><div class="line">      _invokeFrameCallback(callbackEntry.callback, _currentFrameTimeStamp, callbackEntry.debugStack);</div><div class="line">  &#125;);</div><div class="line">  _removedIds.clear();</div><div class="line">&#125; finally &#123;</div><div class="line">  _schedulerPhase = SchedulerPhase.midFrameMicrotasks;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里会遍历 callbacks，排除掉已经移除的回调方法，依次触发回调方法，回到 Ticker._tick</p>
+<p><strong>Tick._tick</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">void _tick(Duration timeStamp) &#123;</div><div class="line">  assert(isTicking);</div><div class="line">  assert(scheduled);</div><div class="line">  _animationId = null;</div><div class="line"></div><div class="line">  _startTime ??= timeStamp;</div><div class="line"></div><div class="line">  _onTick(timeStamp - _startTime);</div><div class="line"></div><div class="line">  // The onTick callback may have scheduled another tick already, for</div><div class="line">  // example by calling stop then start again.</div><div class="line">  if (shouldScheduleTick)</div><div class="line">    scheduleTick(rescheduling: true);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里就会回调 AnimationController._tick，但是这里传递的 time 就是已经减去起始值的持续时间了，最后还会根据是否需要注册下一帧的回调</p>
+<p><strong>AnimationController._tick</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">void _tick(Duration elapsed) &#123;</div><div class="line">  _lastElapsedDuration = elapsed;</div><div class="line">  final double elapsedInSeconds = elapsed.inMicroseconds.toDouble() / Duration.microsecondsPerSecond;</div><div class="line">  assert(elapsedInSeconds &gt;= 0.0);</div><div class="line">  _value = _simulation.x(elapsedInSeconds).clamp(lowerBound, upperBound);</div><div class="line">  if (_simulation.isDone(elapsedInSeconds)) &#123;</div><div class="line">    _status = (_direction == _AnimationDirection.forward) ?</div><div class="line">      AnimationStatus.completed :</div><div class="line">      AnimationStatus.dismissed;</div><div class="line">    stop(canceled: false);</div><div class="line">  &#125;</div><div class="line">  notifyListeners();</div><div class="line">  _checkStatusChanged();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>根据 elapsed 和 _simulation 计算当前的 value 值，当判断动画结束时就通过 stop 方法调用 ticker.stop 结束回调，具体操作也就是根据 _animationId 去移除回调方法，然后结束代表动画任务的 TickerFuture，重置参数，unscheduleTick</p>
+<p>对于其他的方法操作 [reverse]、[animateTo]、[animateWith]、[fling] 和 [repeat]， 都是类似的原理，可能具体实施有些区别或者 Simulation 不同而已</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/flutter/" rel="tag"># flutter</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/09/20/Android 插件化技术 —— 从 VirtualAPK 开始/" rel="next" title="Android 插件化技术 —— 从 VirtualAPK 开始">
+                <i class="fa fa-chevron-left"></i> Android 插件化技术 —— 从 VirtualAPK 开始
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/11/22/通过 SnapHelper 构建基于 RecyclerView 的轮播图/" rel="prev" title="通过 SnapHelper 构建基于 RecyclerView 的轮播图">
+                通过 SnapHelper 构建基于 RecyclerView 的轮播图 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">sanousun</p>
+              <p class="site-description motion-element" itemprop="description">随便写写，随缘</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">26</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#flutter-动画实现"><span class="nav-number">1.</span> <span class="nav-text">flutter - 动画实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#从-AnimationController-forward-方法开始"><span class="nav-number">1.2.</span> <span class="nav-text">从 AnimationController.forward 方法开始</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">sanousun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

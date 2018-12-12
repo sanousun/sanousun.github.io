@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="flutter," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="flutter - 路由前言flutter 中的页面管理由 Route 和 Navigator 两个核心概念，Route 代表着一个页面的抽象，而 Navigator 则是管理 Route 的 Widget。Navigator可以通过route入栈和出栈来实现页面之间的跳转。
+NavigatorNavigator 作为一个管理路由的控件，继承自 StatefulWidget，通过 Navigato">
+<meta property="og:type" content="article">
+<meta property="og:title" content="flutter - 路由">
+<meta property="og:url" content="http://sanousun.github.io/2018/12/12/flutter - 路由/index.html">
+<meta property="og:site_name" content="sanousun">
+<meta property="og:description" content="flutter - 路由前言flutter 中的页面管理由 Route 和 Navigator 两个核心概念，Route 代表着一个页面的抽象，而 Navigator 则是管理 Route 的 Widget。Navigator可以通过route入栈和出栈来实现页面之间的跳转。
+NavigatorNavigator 作为一个管理路由的控件，继承自 StatefulWidget，通过 Navigato">
+<meta property="og:updated_time" content="2018-12-12T03:38:22.526Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="flutter - 路由">
+<meta name="twitter:description" content="flutter - 路由前言flutter 中的页面管理由 Route 和 Navigator 两个核心概念，Route 代表着一个页面的抽象，而 Navigator 则是管理 Route 的 Widget。Navigator可以通过route入栈和出栈来实现页面之间的跳转。
+NavigatorNavigator 作为一个管理路由的控件，继承自 StatefulWidget，通过 Navigato">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://sanousun.github.io/2018/12/12/flutter - 路由/"/>
+
+
+
+
+
+  <title>flutter - 路由 | sanousun</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">sanousun</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">sanousun的博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://sanousun.github.io/2018/12/12/flutter - 路由/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sanousun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="sanousun">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">flutter - 路由</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-12-12T11:37:23+08:00">
+                2018-12-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="flutter-路由"><a href="#flutter-路由" class="headerlink" title="flutter - 路由"></a>flutter - 路由</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>flutter 中的页面管理由 Route 和 Navigator 两个核心概念，Route 代表着一个页面的抽象，而 Navigator 则是管理 Route 的 Widget。Navigator可以通过route入栈和出栈来实现页面之间的跳转。</p>
+<h3 id="Navigator"><a href="#Navigator" class="headerlink" title="Navigator"></a>Navigator</h3><p>Navigator 作为一个管理路由的控件，继承自 StatefulWidget，通过 NavigatorState 来保存路由栈，负责页面的出入栈，而 MaterialApp 和 WidgetApp 作为必须使用的根 widget 已经在内部集成了 Navigator，所以可以在任意地方都可以通过 Navigator.of(context) 方法通过上下文环境来获取 NavigatorState 实例来操作页面路由，具体的方法也不一一介绍了，这里有几个主要的变量值得介绍一下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">/// Route 列表，先入后出的路由栈</div><div class="line">final List&lt;Route&lt;dynamic&gt;&gt; _history = &lt;Route&lt;dynamic&gt;&gt;[];</div><div class="line">/// 暂时存放弹出的路由</div><div class="line">final Set&lt;Route&lt;dynamic&gt;&gt; _poppedRoutes = Set&lt;Route&lt;dynamic&gt;&gt;();</div><div class="line"></div><div class="line">/// 默认的页面焦点</div><div class="line">final FocusScopeNode focusScopeNode = FocusScopeNode();</div><div class="line"></div><div class="line">/// 由 Route 生成的展示页面</div><div class="line">final GlobalKey&lt;OverlayState&gt; _overlayKey = GlobalKey&lt;OverlayState&gt;();</div><div class="line">final List&lt;OverlayEntry&gt; _initialOverlayEntries = &lt;OverlayEntry&gt;[];</div></pre></td></tr></table></figure>
+<p>我们可以通过 NavigatorState 的 build 函数来简单的看一下路由器的构成</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@override</span></div><div class="line">Widget build(BuildContext context) &#123;</div><div class="line">  <span class="keyword">assert</span>(!_debugLocked);</div><div class="line">  <span class="keyword">assert</span>(_history.isNotEmpty);</div><div class="line">  <span class="keyword">return</span> Listener(</div><div class="line">    onPointerDown: _handlePointerDown,</div><div class="line">    onPointerUp: _handlePointerUpOrCancel,</div><div class="line">    onPointerCancel: _handlePointerUpOrCancel,</div><div class="line">    child: AbsorbPointer(</div><div class="line">      absorbing: <span class="keyword">false</span>, <span class="comment">// it's mutated directly by _cancelActivePointers above</span></div><div class="line">      child: FocusScope(</div><div class="line">        node: focusScopeNode,</div><div class="line">        autofocus: <span class="keyword">true</span>,</div><div class="line">        child: Overlay(</div><div class="line">          key: _overlayKey,</div><div class="line">          initialEntries: _initialOverlayEntries,</div><div class="line">        ),</div><div class="line">      ),</div><div class="line">    ),</div><div class="line">  );</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>Navigator 会在页面变换时接管触摸事件的拦截取消工作，会生成一个默认的焦点，以及通过 Overlay 最终展示页面层</p>
+<h3 id="Route"><a href="#Route" class="headerlink" title="Route"></a>Route</h3><p>Route 是一个抽象类，是作为 Navigator 管理路由的单元存在的，这个抽象类定义了一些抽象方法，包括生成用于展示的一个或者多个 OverlayEntry。我们常熟悉的 Route 就是MaterialPageRoute 了，下面是 MaterialPageRoute 的继承图</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">MaterialPageRoute</div><div class="line">  \- PageRoute /// A modal route that replaces the entire screen.</div><div class="line">    \- ModalRoute /// A route that blocks interaction with previous routes.</div><div class="line">      \- TransitionRoute /// A route with entrance and exit transitions.</div><div class="line">        \- OverlayRoute /// A route that displays widgets in the [Navigator]&apos;s [Overlay].</div><div class="line">          \- Route</div></pre></td></tr></table></figure>
+<p>下面也会以 MaterialPageRoute 为例，详细地分析一下入栈弹出页面时的操作 </p>
+<h3 id="页面入栈-Navigator-of-context-push-route"><a href="#页面入栈-Navigator-of-context-push-route" class="headerlink" title="页面入栈 Navigator.of(context).push(route)"></a>页面入栈 Navigator.of(context).push(route)</h3><figure class="highlight dart"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@optionalTypeArgs</span></div><div class="line">Future&lt;T&gt; push&lt;T <span class="keyword">extends</span> <span class="built_in">Object</span>&gt;(Route&lt;T&gt; route) &#123;</div><div class="line">  <span class="keyword">assert</span>(!_debugLocked);</div><div class="line">  <span class="keyword">assert</span>(() &#123; _debugLocked = <span class="keyword">true</span>; <span class="keyword">return</span> <span class="keyword">true</span>; &#125;());</div><div class="line">  <span class="keyword">assert</span>(route != <span class="keyword">null</span>);</div><div class="line">  <span class="keyword">assert</span>(route._navigator == <span class="keyword">null</span>);</div><div class="line">  <span class="keyword">final</span> Route&lt;<span class="keyword">dynamic</span>&gt; oldRoute = _history.isNotEmpty ? _history.last : <span class="keyword">null</span>;</div><div class="line">  route._navigator = <span class="keyword">this</span>;</div><div class="line">  route.install(_currentOverlayEntry);</div><div class="line">  <span class="comment">// 将 route 添加到 NavigatorState 中</span></div><div class="line">  _history.add(route);</div><div class="line">  route.didPush();</div><div class="line">  route.didChangeNext(<span class="keyword">null</span>);</div><div class="line">  <span class="keyword">if</span> (oldRoute != <span class="keyword">null</span>) &#123;</div><div class="line">    oldRoute.didChangeNext(route);</div><div class="line">    route.didChangePrevious(oldRoute);</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">for</span> (NavigatorObserver observer <span class="keyword">in</span> widget.observers)</div><div class="line">    observer.didPush(route, oldRoute);</div><div class="line">  <span class="keyword">assert</span>(() &#123; _debugLocked = <span class="keyword">false</span>; <span class="keyword">return</span> <span class="keyword">true</span>; &#125;());</div><div class="line">  _afterNavigation();</div><div class="line">  <span class="keyword">return</span> route.popped;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>route.install</strong> 方法会准备一些前置操作，比如说在 TransitionRoute 会准备一些 AnimationController 的初始化工作，在 ModalRoute 中会对 AnimationController 进行一定的包装，用于两个页面的转换的动画交互，而在 OverlayRoute 中，则会把 Route 生成的页面即 OverlayEntry 插入到 NavigatorState 的 Overlay 控件中</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">@override</div><div class="line">void install(OverlayEntry insertionPoint) &#123;</div><div class="line">  assert(_overlayEntries.isEmpty);</div><div class="line">  // 一个 route 的视图可能有多层，比如说弹窗的背景阴影</div><div class="line">  _overlayEntries.addAll(createOverlayEntries());</div><div class="line">  navigator.overlay?.insertAll(_overlayEntries, above: insertionPoint);</div><div class="line">  super.install(insertionPoint);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>route.didPush()</strong> 则开始转场动画，主要在 TransitionRoute.didPush 方法中开始，还有比较重要的一点是会为动画设置监听器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">void _handleStatusChanged(AnimationStatus status) &#123;</div><div class="line">  switch (status) &#123;</div><div class="line">    case AnimationStatus.completed:</div><div class="line">      if (overlayEntries.isNotEmpty)</div><div class="line">        overlayEntries.first.opaque = opaque;</div><div class="line">      break;</div><div class="line">    case AnimationStatus.forward:</div><div class="line">    case AnimationStatus.reverse:</div><div class="line">      if (overlayEntries.isNotEmpty)</div><div class="line">        overlayEntries.first.opaque = false;</div><div class="line">      break;</div><div class="line">    case AnimationStatus.dismissed:</div><div class="line">      assert(!overlayEntries.first.opaque);</div><div class="line">      if (!isCurrent) &#123;</div><div class="line">        navigator.finalizeRoute(this);</div><div class="line">        assert(overlayEntries.isEmpty);</div><div class="line">      &#125;</div><div class="line">      break;</div><div class="line">  &#125;</div><div class="line">  changedInternalState();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>监听器的目的就是在转场动画播放时将最上面的一层设置为透明，就可以展现完整的动画效果了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">if (oldRoute != null) &#123;</div><div class="line">  oldRoute.didChangeNext(route);</div><div class="line">  route.didChangePrevious(oldRoute);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>AnimationController 在前面就已经被触发了，<br>接着的这段代码就是让被覆盖的页面执行一些转场动画，比如说我们熟知的 ModalRoute 中 secondaryAnimation 会通过 TrainHoppingAnimation 这种代理器去关联前面提到的会在 didPush 中运行的 AnimationController，这样就能同步执行前一个页面的退出动画和新页面的进入动画，这些代码可以在 TransitionRoute 中找到，这就是我们通过 PageRouteBuilder 实现的转场动画原理</p>
+<p>最后就是去通知一些注册的路由观察者，以及 _afterNavigation 去处理一些后续的事情，比如说取消前一个页面的触摸事件，最后就是返回一个 future</p>
+<h3 id="Navigator-of-context-pop"><a href="#Navigator-of-context-pop" class="headerlink" title="Navigator.of(context).pop()"></a>Navigator.of(context).pop()</h3><p>如果理解了路由加载，那么弹出路由就比较容易理解了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">@optionalTypeArgs</div><div class="line">bool pop&lt;T extends Object&gt;([ T result ]) &#123;</div><div class="line">  assert(!_debugLocked);</div><div class="line">  assert(() &#123; _debugLocked = true; return true; &#125;());</div><div class="line">  final Route&lt;dynamic&gt; route = _history.last;</div><div class="line">  assert(route._navigator == this);</div><div class="line">  bool debugPredictedWouldPop;</div><div class="line">  assert(() &#123; debugPredictedWouldPop = !route.willHandlePopInternally; return true; &#125;());</div><div class="line">  if (route.didPop(result ?? route.currentResult)) &#123;</div><div class="line">    assert(debugPredictedWouldPop);</div><div class="line">    if (_history.length &gt; 1) &#123;</div><div class="line">      _history.removeLast();</div><div class="line">      // If route._navigator is null, the route called finalizeRoute from</div><div class="line">      // didPop, which means the route has already been disposed and doesn&apos;t</div><div class="line">      // need to be added to _poppedRoutes for later disposal.</div><div class="line">      if (route._navigator != null)</div><div class="line">        _poppedRoutes.add(route);</div><div class="line">      _history.last.didPopNext(route);</div><div class="line">      for (NavigatorObserver observer in widget.observers)</div><div class="line">        observer.didPop(route, _history.last);</div><div class="line">    &#125; else &#123;</div><div class="line">      assert(() &#123; _debugLocked = false; return true; &#125;());</div><div class="line">      return false;</div><div class="line">    &#125;</div><div class="line">  &#125; else &#123;</div><div class="line">    assert(!debugPredictedWouldPop);</div><div class="line">  &#125;</div><div class="line">  assert(() &#123; _debugLocked = false; return true; &#125;());</div><div class="line">  _afterNavigation();</div><div class="line">  return true;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>通过 route.didPop(result ?? route.currentResult) 将值传递回去，TransitionRoute.didPop 中会反向执行动画控制器，OverlayRoute 则会做一些特殊流程的处理工作</p>
+<p>根节点是不会被移除的。接着被移除的 route 会被加入到 _poppedRoutes 做统一处理。 _history.last.didPopNext(route) 这里流程和 pop 时一样会执行被返回页面的相关动画。最后就是处理跳转后的一些收尾工作。</p>
+<h3 id="原生操作的监听"><a href="#原生操作的监听" class="headerlink" title="原生操作的监听"></a>原生操作的监听</h3><p>对于 Android 来说原生系统是由返回键的，那 flutter 是如何将原生事件和 Navigator 关联起来的？</p>
+<p>widget 层和 flutter 引擎之间有一层胶水层 WidgetsBinding 负责两层之间的数据交互，在 initInstances 初始化方法中通过下列方法订阅了原生系统的导航事件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">SystemChannels.navigation.setMethodCallHandler(_handleNavigationInvocation);</div></pre></td></tr></table></figure>
+<p><strong>WidgetBinding._handleNavigationInvocation</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">Future&lt;dynamic&gt; _handleNavigationInvocation(MethodCall methodCall) &#123;</div><div class="line">  switch (methodCall.method) &#123;</div><div class="line">    case &apos;popRoute&apos;:</div><div class="line">      return handlePopRoute();</div><div class="line">    case &apos;pushRoute&apos;:</div><div class="line">      return handlePushRoute(methodCall.arguments);</div><div class="line">  &#125;</div><div class="line">  return Future&lt;dynamic&gt;.value();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>原生会通过 popRoute 和 pushRoute 两个方法控制路由跳转，以 handlePopRoute 为例</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">@protected</div><div class="line">Future&lt;void&gt; handlePopRoute() async &#123;</div><div class="line">  for (WidgetsBindingObserver observer in List&lt;WidgetsBindingObserver&gt;.from(_observers)) &#123;</div><div class="line">    if (await observer.didPopRoute())</div><div class="line">      return;</div><div class="line">  &#125;</div><div class="line">  SystemNavigator.pop();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>如果没有对象处理就会交由原生去处理，我们知道 flutter 应用必须要有 WidgetsApp 作为根 widget，而 _WidgetsAppState 实现了 WidgetsBindingObserver 并在 initState 方法中注册自己到 WidgetBinding 中</p>
+<p><strong>_WidgetsAppState.didPopRoute</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">@override</div><div class="line">Future&lt;bool&gt; didPopRoute() async &#123;</div><div class="line">  assert(mounted);</div><div class="line">  final NavigatorState navigator = _navigator?.currentState;</div><div class="line">  if (navigator == null)</div><div class="line">    return false;</div><div class="line">  return await navigator.maybePop();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>最终会关联到 navigator.maybePop 方法上</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">@optionalTypeArgs</div><div class="line">Future&lt;bool&gt; maybePop&lt;T extends Object&gt;([ T result ]) async &#123;</div><div class="line">  final Route&lt;T&gt; route = _history.last;</div><div class="line">  assert(route._navigator == this);</div><div class="line">  final RoutePopDisposition disposition = await route.willPop();</div><div class="line">  if (disposition != RoutePopDisposition.bubble &amp;&amp; mounted) &#123;</div><div class="line">    if (disposition == RoutePopDisposition.pop)</div><div class="line">      pop(result);</div><div class="line">    return true;</div><div class="line">  &#125;</div><div class="line">  return false;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>Route.willPop</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Future&lt;RoutePopDisposition&gt; willPop() async &#123;</div><div class="line">  return isFirst ? RoutePopDisposition.bubble : RoutePopDisposition.pop;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>只要 route 不是跟页面就会执行 Navigator.pop 了，而页面添加也是类似的流程</p>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>Navigator 当然还有许多的其他相关方法，比如说 pushReplacement 等，但是万变不离其宗，只要了解了 push 和 pop 的流程其他的也就比较容易了解。flutter 的这一套页面路由实现充满了灵活性，让页面间的转场动画实现以及本身的管理变得更加容易，相较于 Android 涉及到 AMS,WMS 等的 Activity 跳转无疑是简单多了，而且也预留了监听接口更是方便的埋点之类额外功能的开发工作。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/flutter/" rel="tag"># flutter</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/11/22/通过 SnapHelper 构建基于 RecyclerView 的轮播图/" rel="next" title="通过 SnapHelper 构建基于 RecyclerView 的轮播图">
+                <i class="fa fa-chevron-left"></i> 通过 SnapHelper 构建基于 RecyclerView 的轮播图
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">sanousun</p>
+              <p class="site-description motion-element" itemprop="description">随便写写，随缘</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">26</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#flutter-路由"><span class="nav-number">1.</span> <span class="nav-text">flutter - 路由</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.1.</span> <span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Navigator"><span class="nav-number">1.1.1.</span> <span class="nav-text">Navigator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Route"><span class="nav-number">1.1.2.</span> <span class="nav-text">Route</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#页面入栈-Navigator-of-context-push-route"><span class="nav-number">1.1.3.</span> <span class="nav-text">页面入栈 Navigator.of(context).push(route)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Navigator-of-context-pop"><span class="nav-number">1.1.4.</span> <span class="nav-text">Navigator.of(context).pop()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原生操作的监听"><span class="nav-number">1.1.5.</span> <span class="nav-text">原生操作的监听</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结语"><span class="nav-number">1.2.</span> <span class="nav-text">结语</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">sanousun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

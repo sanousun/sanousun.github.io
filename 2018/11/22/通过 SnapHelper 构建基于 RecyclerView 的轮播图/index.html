@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Android,RecyclerView," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="通过 SnapHelper 构建基于 RecyclerView 的轮播图前言Android 中的轮播图控件往往是基于 ViewPager 构建的，通过 setAdapter， addOnPageChangeListener，setPageTransformer 等 API 接口可以轻松实现轮播图的播放，滑动监听以及切换效果等功能，但是今天我们要另辟蹊径，通过基于 RecyclerView 这个高性">
+<meta property="og:type" content="article">
+<meta property="og:title" content="通过 SnapHelper 构建基于 RecyclerView 的轮播图">
+<meta property="og:url" content="http://sanousun.github.io/2018/11/22/通过 SnapHelper 构建基于 RecyclerView 的轮播图/index.html">
+<meta property="og:site_name" content="sanousun">
+<meta property="og:description" content="通过 SnapHelper 构建基于 RecyclerView 的轮播图前言Android 中的轮播图控件往往是基于 ViewPager 构建的，通过 setAdapter， addOnPageChangeListener，setPageTransformer 等 API 接口可以轻松实现轮播图的播放，滑动监听以及切换效果等功能，但是今天我们要另辟蹊径，通过基于 RecyclerView 这个高性">
+<meta property="og:updated_time" content="2018-12-12T03:41:49.178Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="通过 SnapHelper 构建基于 RecyclerView 的轮播图">
+<meta name="twitter:description" content="通过 SnapHelper 构建基于 RecyclerView 的轮播图前言Android 中的轮播图控件往往是基于 ViewPager 构建的，通过 setAdapter， addOnPageChangeListener，setPageTransformer 等 API 接口可以轻松实现轮播图的播放，滑动监听以及切换效果等功能，但是今天我们要另辟蹊径，通过基于 RecyclerView 这个高性">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://sanousun.github.io/2018/11/22/通过 SnapHelper 构建基于 RecyclerView 的轮播图/"/>
+
+
+
+
+
+  <title>通过 SnapHelper 构建基于 RecyclerView 的轮播图 | sanousun</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">sanousun</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">sanousun的博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://sanousun.github.io/2018/11/22/通过 SnapHelper 构建基于 RecyclerView 的轮播图/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sanousun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="sanousun">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">通过 SnapHelper 构建基于 RecyclerView 的轮播图</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-22T19:20:39+08:00">
+                2018-11-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="通过-SnapHelper-构建基于-RecyclerView-的轮播图"><a href="#通过-SnapHelper-构建基于-RecyclerView-的轮播图" class="headerlink" title="通过 SnapHelper 构建基于 RecyclerView 的轮播图"></a>通过 SnapHelper 构建基于 RecyclerView 的轮播图</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Android 中的轮播图控件往往是基于 ViewPager 构建的，通过 setAdapter， addOnPageChangeListener，setPageTransformer 等 API 接口可以轻松实现轮播图的播放，滑动监听以及切换效果等功能，但是今天我们要另辟蹊径，通过基于 RecyclerView 这个高性能列表框架实现轮播图效果</p>
+<h2 id="技术背景"><a href="#技术背景" class="headerlink" title="技术背景"></a>技术背景</h2><p>在 SupportLib 25.1.0 中 Android 官方为 RecyclerView 加入了一个新的类 SnapHelper，作用就是帮助 RecyclerView 滑动完成以后调整到合适的位置，并提供了两个官方子类实现 LinearSnapHelper 和 PagerSnapHelper，而其中 PagerSnapHelper 等效于 PageView 的滑动效果</p>
+<h3 id="SnapHelper"><a href="#SnapHelper" class="headerlink" title="SnapHelper"></a>SnapHelper</h3><p>SnapHelper 顾名思义就是用来动态捕捉目标 view 的帮助类，比如说 PagerSnapHelper 会捕捉屏幕正中的 itemView 并通过动态计算实现 itemView 在滑动停止时居中</p>
+<p>SnapHelper 是一个抽象类，实现了一些与 RecyclerView 相关监听方法，并且暴露了三个方法供子类实现</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Override this method to snap to a particular point within the target view or the container</div><div class="line"> * view on any axis</div><div class="line"> * 覆写该方法捕捉到目标视图或者容器中的特定点或任意轴上的距离</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">int</span>[] calculateDistanceToFinalSnap(<span class="meta">@NonNull</span> LayoutManager layoutManager,</div><div class="line">        <span class="meta">@NonNull</span> View targetView);</div><div class="line">        </div><div class="line"><span class="comment">/**</span></div><div class="line"> * Override this method to provide a particular target view for snapping</div><div class="line"> * 覆写该方法捕捉目标视图</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> View <span class="title">findSnapView</span><span class="params">(LayoutManager layoutManager)</span></span>;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * Override to provide a particular adapter target position for snapping</div><div class="line"> * 覆写该方法提供一个用于捕捉目标视图的位置，该方法用于  </div><div class="line"> * fling 时</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">int</span> <span class="title">findTargetSnapPosition</span><span class="params">(LayoutManager layoutManager, <span class="keyword">int</span> velocityX,</span></span></div><div class="line">        <span class="keyword">int</span> velocityY);</div></pre></td></tr></table></figure>
+<p>大致的讲一下流程，SnapHelper 需要通过 attachToRecyclerView 与 RecyclerView 相关联</p>
+<p><strong>SnapHelper.attachToRecyclerView</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">attachToRecyclerView</span><span class="params">(@Nullable RecyclerView recyclerView)</span></span></div><div class="line">        <span class="keyword">throws</span> IllegalStateException &#123;</div><div class="line">    <span class="keyword">if</span> (mRecyclerView == recyclerView) &#123;</div><div class="line">        <span class="keyword">return</span>; <span class="comment">// nothing to do</span></div><div class="line">    &#125;</div><div class="line">    <span class="keyword">if</span> (mRecyclerView != <span class="keyword">null</span>) &#123;</div><div class="line">        destroyCallbacks();</div><div class="line">    &#125;</div><div class="line">    mRecyclerView = recyclerView;</div><div class="line">    <span class="keyword">if</span> (mRecyclerView != <span class="keyword">null</span>) &#123;</div><div class="line">        setupCallbacks();</div><div class="line">        mGravityScroller = <span class="keyword">new</span> Scroller(mRecyclerView.getContext(),</div><div class="line">                <span class="keyword">new</span> DecelerateInterpolator());</div><div class="line">        snapToTargetExistingView();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>主要通过 setupCallbacks 为 RecyclerView 添加 OnScrollListener 和设置 OnFlingListener，先从 OnScrollListener 开始</p>
+<p>OnScrollListener 主要是为了监听 RecyclerView 滑动停止事件并及时调整位置效果</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">final</span> RecyclerView.OnScrollListener mScrollListener =</div><div class="line">        <span class="keyword">new</span> RecyclerView.OnScrollListener() &#123;</div><div class="line">            <span class="keyword">boolean</span> mScrolled = <span class="keyword">false</span>;</div><div class="line"></div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onScrollStateChanged</span><span class="params">(RecyclerView recyclerView, <span class="keyword">int</span> newState)</span> </span>&#123;</div><div class="line">                <span class="keyword">super</span>.onScrollStateChanged(recyclerView, newState);</div><div class="line">                <span class="keyword">if</span> (newState == RecyclerView.SCROLL_STATE_IDLE &amp;&amp; mScrolled) &#123;</div><div class="line">                    mScrolled = <span class="keyword">false</span>;</div><div class="line">                    snapToTargetExistingView();</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onScrolled</span><span class="params">(RecyclerView recyclerView, <span class="keyword">int</span> dx, <span class="keyword">int</span> dy)</span> </span>&#123;</div><div class="line">                <span class="keyword">if</span> (dx != <span class="number">0</span> || dy != <span class="number">0</span>) &#123;</div><div class="line">                    mScrolled = <span class="keyword">true</span>;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;;</div></pre></td></tr></table></figure>
+<p>滑动以后 mScrolled 会设置滑动标志位，这样当滑动停止状态 RecyclerView.SCROLL_STATE_IDLE 触发以后才会调用 snapToTargetExistingView 去调整姿态。</p>
+<p>SnapHelper.snapToTargetExistingView</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">snapToTargetExistingView</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (mRecyclerView == <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">return</span>;</div><div class="line">    &#125;</div><div class="line">    LayoutManager layoutManager = mRecyclerView.getLayoutManager();</div><div class="line">    <span class="keyword">if</span> (layoutManager == <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">return</span>;</div><div class="line">    &#125;</div><div class="line">    View snapView = findSnapView(layoutManager);</div><div class="line">    <span class="keyword">if</span> (snapView == <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">return</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">int</span>[] snapDistance = calculateDistanceToFinalSnap(layoutManager, snapView);</div><div class="line">    <span class="keyword">if</span> (snapDistance[<span class="number">0</span>] != <span class="number">0</span> || snapDistance[<span class="number">1</span>] != <span class="number">0</span>) &#123;</div><div class="line">        mRecyclerView.smoothScrollBy(snapDistance[<span class="number">0</span>], snapDistance[<span class="number">1</span>]);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>该方法其实比较简单，通过 layoutManager 找到需要捕捉的目标 snapView，获取后再通过 layoutManager 和 snapView 计算出还需要滑动的距离最后通过 RecyclerView 平缓滑动。</p>
+<p>还有一个关于快速滑动的特殊处理，fling 操作发生时为了防止出现快速滑动停止后有突然启动调整的情形，需要对 fling 的距离做特殊调整。 SnapHelper 实现了  RecyclerView.OnFlingListener 接口</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onFling</span><span class="params">(<span class="keyword">int</span> velocityX, <span class="keyword">int</span> velocityY)</span> </span>&#123;</div><div class="line">    LayoutManager layoutManager = mRecyclerView.getLayoutManager();</div><div class="line">    <span class="keyword">if</span> (layoutManager == <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">    &#125;</div><div class="line">    RecyclerView.Adapter adapter = mRecyclerView.getAdapter();</div><div class="line">    <span class="keyword">if</span> (adapter == <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">int</span> minFlingVelocity = mRecyclerView.getMinFlingVelocity();</div><div class="line">    <span class="keyword">return</span> (Math.abs(velocityY) &gt; minFlingVelocity || Math.abs(velocityX) &gt; minFlingVelocity)</div><div class="line">            &amp;&amp; snapFromFling(layoutManager, velocityX, velocityY);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>通过 snapFromFling 方法确认是否需要拦截 fling 操作已替换成自己的逻辑实现，继续追踪</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">snapFromFling</span><span class="params">(@NonNull LayoutManager layoutManager, <span class="keyword">int</span> velocityX,</span></span></div><div class="line">        <span class="keyword">int</span> velocityY) &#123;</div><div class="line">    <span class="keyword">if</span> (!(layoutManager <span class="keyword">instanceof</span> ScrollVectorProvider)) &#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    SmoothScroller smoothScroller = createScroller(layoutManager);</div><div class="line">    <span class="keyword">if</span> (smoothScroller == <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">int</span> targetPosition = findTargetSnapPosition(layoutManager, velocityX, velocityY);</div><div class="line">    <span class="keyword">if</span> (targetPosition == RecyclerView.NO_POSITION) &#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    smoothScroller.setTargetPosition(targetPosition);</div><div class="line">    layoutManager.startSmoothScroll(smoothScroller);</div><div class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在这个，通过 findTargetSnapPosition 方法获取到最终滑动的目标 view，可以是 fling 滑动一步到位，避免滑动停止后的调整操作，smoothScroller 由 createScroller 方法创建的，最终交给 createSnapScroller 实现，我们可以从 LinearSmoothScroller 类具体实现看出一些滑动细节</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">protected</span> LinearSmoothScroller <span class="title">createSnapScroller</span><span class="params">(LayoutManager layoutManager)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (!(layoutManager <span class="keyword">instanceof</span> ScrollVectorProvider)) &#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">new</span> LinearSmoothScroller(mRecyclerView.getContext()) &#123;</div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onTargetFound</span><span class="params">(View targetView, RecyclerView.State state, Action action)</span> </span>&#123;</div><div class="line">            <span class="keyword">if</span> (mRecyclerView == <span class="keyword">null</span>) &#123;</div><div class="line">                <span class="keyword">return</span>;</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">int</span>[] snapDistances = calculateDistanceToFinalSnap(mRecyclerView.getLayoutManager(),</div><div class="line">                    targetView);</div><div class="line">            <span class="keyword">final</span> <span class="keyword">int</span> dx = snapDistances[<span class="number">0</span>];</div><div class="line">            <span class="keyword">final</span> <span class="keyword">int</span> dy = snapDistances[<span class="number">1</span>];</div><div class="line">            <span class="keyword">final</span> <span class="keyword">int</span> time = calculateTimeForDeceleration(Math.max(Math.abs(dx), Math.abs(dy)));</div><div class="line">            <span class="keyword">if</span> (time &gt; <span class="number">0</span>) &#123;</div><div class="line">                action.update(dx, dy, time, mDecelerateInterpolator);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">protected</span> <span class="keyword">float</span> <span class="title">calculateSpeedPerPixel</span><span class="params">(DisplayMetrics displayMetrics)</span> </span>&#123;</div><div class="line">            <span class="keyword">return</span> MILLISECONDS_PER_INCH / displayMetrics.densityDpi;</div><div class="line">        &#125;</div><div class="line">    &#125;;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在 smoothScroller.setTargetPosition 设置了最终目标后，我们可以看到此时是可以得到滑动的 targetView 的，在 Scroller 的 onTargetFound 方法中需要通过 calculateDistanceToFinalSnap 去更新 action，使得最终的停止位置就是 snapView。</p>
+<p>所以自定义的 SnapHelper 只需要实现几个抽象方法中的逻辑，我们回过头看 PageSnapHelper 的具体逻辑实现</p>
+<h3 id="PageSnapHelper"><a href="#PageSnapHelper" class="headerlink" title="PageSnapHelper"></a>PageSnapHelper</h3><p>我们通过分析覆写的三个方法来切入</p>
+<p><strong>findSnapView</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">public</span> View <span class="title">findSnapView</span><span class="params">(RecyclerView.LayoutManager layoutManager)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (layoutManager.canScrollVertically()) &#123;</div><div class="line">        <span class="keyword">return</span> findCenterView(layoutManager, getVerticalHelper(layoutManager));</div><div class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (layoutManager.canScrollHorizontally()) &#123;</div><div class="line">        <span class="keyword">return</span> findCenterView(layoutManager, getHorizontalHelper(layoutManager));</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>方法里对滑动方向做了区分，通过 findCenterView 来查找到相对居中的 view</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> View <span class="title">findCenterView</span><span class="params">(RecyclerView.LayoutManager layoutManager,</span></span></div><div class="line">        OrientationHelper helper) &#123;</div><div class="line">    <span class="keyword">int</span> childCount = layoutManager.getChildCount();</div><div class="line">    <span class="keyword">if</span> (childCount == <span class="number">0</span>) &#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    View closestChild = <span class="keyword">null</span>;</div><div class="line">    <span class="keyword">final</span> <span class="keyword">int</span> center;</div><div class="line">    <span class="comment">// 找到 RecyclerView 的中心点，这里会根据 clipToPadding 去除 padding 的影响</span></div><div class="line">    <span class="keyword">if</span> (layoutManager.getClipToPadding())&#123;</div><div class="line">        center = helper.getStartAfterPadding() + helper.getTotalSpace() / <span class="number">2</span>;</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        center = helper.getEnd() / <span class="number">2</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">int</span> absClosest = Integer.MAX_VALUE;</div><div class="line">    <span class="comment">// 遍历所有存在的 view 找到中心点最接近中心为位置的 snapView</span></div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; childCount; i++) &#123;</div><div class="line">        <span class="keyword">final</span> View child = layoutManager.getChildAt(i);</div><div class="line">        <span class="keyword">int</span> childCenter = helper.getDecoratedStart(child)</div><div class="line">                + (helper.getDecoratedMeasurement(child) / <span class="number">2</span>);</div><div class="line">        <span class="keyword">int</span> absDistance = Math.abs(childCenter - center);</div><div class="line"></div><div class="line">       </div><div class="line">        <span class="keyword">if</span> (absDistance &lt; absClosest) &#123;</div><div class="line">            absClosest = absDistance;</div><div class="line">            closestChild = child;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> closestChild;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>通过 helper 可以比较容易的找到 snapView 那么计算出距离也是比较容易的，只需要将刚才计算的 RecyclerView 中心点和 SnapView 的中心点相减就行</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">distanceToCenter</span><span class="params">(@NonNull RecyclerView.LayoutManager layoutManager,</span></span></div><div class="line">        @NonNull View targetView, OrientationHelper helper) &#123;</div><div class="line">    <span class="keyword">final</span> <span class="keyword">int</span> childCenter = helper.getDecoratedStart(targetView)</div><div class="line">            + (helper.getDecoratedMeasurement(targetView) / <span class="number">2</span>);</div><div class="line">    <span class="keyword">final</span> <span class="keyword">int</span> containerCenter;</div><div class="line">    <span class="keyword">if</span> (layoutManager.getClipToPadding()) &#123;</div><div class="line">        containerCenter = helper.getStartAfterPadding() + helper.getTotalSpace() / <span class="number">2</span>;</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        containerCenter = helper.getEnd() / <span class="number">2</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> childCenter - containerCenter;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>再看是如果计算出 fling 的目标位置 findTargetSnapPosition，由于 PagerSnapHelper 比较特殊，一次只能滑动一个 view</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">findTargetSnapPosition</span><span class="params">(RecyclerView.LayoutManager layoutManager, <span class="keyword">int</span> velocityX,</span></span></div><div class="line">        <span class="keyword">int</span> velocityY) &#123;</div><div class="line">    <span class="keyword">final</span> <span class="keyword">int</span> itemCount = layoutManager.getItemCount();</div><div class="line">    <span class="keyword">if</span> (itemCount == <span class="number">0</span>) &#123;</div><div class="line">        <span class="keyword">return</span> RecyclerView.NO_POSITION;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// 获取到起始位置的 view</span></div><div class="line">    View mStartMostChildView = <span class="keyword">null</span>;</div><div class="line">    <span class="keyword">if</span> (layoutManager.canScrollVertically()) &#123;</div><div class="line">        mStartMostChildView = findStartView(layoutManager, getVerticalHelper(layoutManager));</div><div class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (layoutManager.canScrollHorizontally()) &#123;</div><div class="line">        mStartMostChildView = findStartView(layoutManager, getHorizontalHelper(layoutManager));</div><div class="line">    &#125;</div><div class="line">    <span class="comment">// 获取到起始位置</span></div><div class="line">    <span class="keyword">if</span> (mStartMostChildView == <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">return</span> RecyclerView.NO_POSITION;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">final</span> <span class="keyword">int</span> centerPosition = layoutManager.getPosition(mStartMostChildView);</div><div class="line">    <span class="keyword">if</span> (centerPosition == RecyclerView.NO_POSITION) &#123;</div><div class="line">        <span class="keyword">return</span> RecyclerView.NO_POSITION;</div><div class="line">    &#125;</div><div class="line">    <span class="comment">// 找到滑动方向</span></div><div class="line">    <span class="keyword">final</span> <span class="keyword">boolean</span> forwardDirection;</div><div class="line">    <span class="keyword">if</span> (layoutManager.canScrollHorizontally()) &#123;</div><div class="line">        forwardDirection = velocityX &gt; <span class="number">0</span>;</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        forwardDirection = velocityY &gt; <span class="number">0</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">boolean</span> reverseLayout = <span class="keyword">false</span>;</div><div class="line">    <span class="keyword">if</span> ((layoutManager <span class="keyword">instanceof</span> RecyclerView.SmoothScroller.ScrollVectorProvider)) &#123;</div><div class="line">        RecyclerView.SmoothScroller.ScrollVectorProvider vectorProvider =</div><div class="line">                (RecyclerView.SmoothScroller.ScrollVectorProvider) layoutManager;</div><div class="line">        PointF vectorForEnd = vectorProvider.computeScrollVectorForPosition(itemCount - <span class="number">1</span>);</div><div class="line">        <span class="keyword">if</span> (vectorForEnd != <span class="keyword">null</span>) &#123;</div><div class="line">            reverseLayout = vectorForEnd.x &lt; <span class="number">0</span> || vectorForEnd.y &lt; <span class="number">0</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> reverseLayout</div><div class="line">            ? (forwardDirection ? centerPosition - <span class="number">1</span> : centerPosition)</div><div class="line">            : (forwardDirection ? centerPosition + <span class="number">1</span> : centerPosition);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>如果是正向滑动，那么返回下一个位置，因为 mStartMostChildView 还是原来的 view，如果是反向滑动，那么 mStartMostChildView 已经是前一个位置了，只要返回 centerPosition 即可。</p>
+<p>在这个基础之上实现 ViewPager 的 OnPageChangeListener 就不难了，具体实现代码也不列举了，我已经在 github 上传了，<a href="https://github.com/sanousun/recyclerViewPager" target="_blank" rel="external">https://github.com/sanousun/recyclerViewPager</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/RecyclerView/" rel="tag"># RecyclerView</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/10/05/flutter - 动画实现/" rel="next" title="flutter - 动画实现">
+                <i class="fa fa-chevron-left"></i> flutter - 动画实现
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/12/12/flutter - 路由/" rel="prev" title="flutter - 路由">
+                flutter - 路由 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">sanousun</p>
+              <p class="site-description motion-element" itemprop="description">随便写写，随缘</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">26</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#通过-SnapHelper-构建基于-RecyclerView-的轮播图"><span class="nav-number">1.</span> <span class="nav-text">通过 SnapHelper 构建基于 RecyclerView 的轮播图</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#技术背景"><span class="nav-number">1.2.</span> <span class="nav-text">技术背景</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SnapHelper"><span class="nav-number">1.2.1.</span> <span class="nav-text">SnapHelper</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PageSnapHelper"><span class="nav-number">1.2.2.</span> <span class="nav-text">PageSnapHelper</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">sanousun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
