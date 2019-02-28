@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="view,深入系列,布局流程," />
+  <meta name="keywords" content="深入系列,view,布局流程," />
 
 
 
@@ -89,15 +89,15 @@
 <meta property="og:description" content="Android 触摸事件分发解析前言Android 中的界面是由一颗 view tree 组成的，从 Activity 开始向下分发触摸事件直到被目标 view 消费，这篇文章将带你详细了解事件从 viewRoot 接受到目标 view 消费的过程
 代码基于 Android 7.0
 基础知识事件的传递对象 MotionEvent 有许多类型，通过 getAction 方法可以获取到当前事件的类型，">
-<meta property="og:image" content="http://oq546o6pk.bkt.clouddn.com/未命名文件 -6-.png">
-<meta property="og:image" content="http://oq546o6pk.bkt.clouddn.com/事件分发图.png">
-<meta property="og:updated_time" content="2018-05-25T06:36:44.127Z">
+<meta property="og:image" content="http://sanousun.github.io/images/android_touch_event_state.png">
+<meta property="og:image" content="http://sanousun.github.io/images/android_touch_event_dispatch.png">
+<meta property="og:updated_time" content="2019-02-28T08:11:11.229Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android 触摸事件分发解析">
 <meta name="twitter:description" content="Android 触摸事件分发解析前言Android 中的界面是由一颗 view tree 组成的，从 Activity 开始向下分发触摸事件直到被目标 view 消费，这篇文章将带你详细了解事件从 viewRoot 接受到目标 view 消费的过程
 代码基于 Android 7.0
 基础知识事件的传递对象 MotionEvent 有许多类型，通过 getAction 方法可以获取到当前事件的类型，">
-<meta name="twitter:image" content="http://oq546o6pk.bkt.clouddn.com/未命名文件 -6-.png">
+<meta name="twitter:image" content="http://sanousun.github.io/images/android_touch_event_state.png">
 
 
 
@@ -327,7 +327,7 @@
 <li>ACTION_CANCEL 触摸取消事件</li>
 <li>…</li>
 </ul>
-<p>以及一些额外的手势，比如说用于多指操控的 ACTION_POINT_XX 事件等，但绝大部分的控件只需要关心这四个事件就行了，一般的触摸事件如下图所示<br><img src="http://oq546o6pk.bkt.clouddn.com/未命名文件 -6-.png" alt="触摸事件"></p>
+<p>以及一些额外的手势，比如说用于多指操控的 ACTION_POINT_XX 事件等，但绝大部分的控件只需要关心这四个事件就行了，一般的触摸事件如下图所示<br><img src="/images/android_touch_event_state.png" alt="触摸事件"></p>
 <p>Android 的源码量太庞大了，所以在解析过程中会选择性的略去一部分非关键性流程代码</p>
 <h2 id="事件分发流程解析"><a href="#事件分发流程解析" class="headerlink" title="事件分发流程解析"></a>事件分发流程解析</h2><h3 id="ViewRootImpl-转发"><a href="#ViewRootImpl-转发" class="headerlink" title="ViewRootImpl 转发"></a>ViewRootImpl 转发</h3><p>如果想看触摸事件是如何从底层传递到应用层的话，我建议你去看看 gityuan 的关于一系列关于 Input 系统的博客，本文从 <a href="http://gityuan.com/2016/12/31/input-ipc" target="_blank" rel="external">Input系统—事件处理全过程</a> 这篇博客中在 ViewRootImpl 接收到数据后 deliverInputEvent 方法开始解析</p>
 <p><strong>ViewRootImpl.deliverInputEvent</strong></p>
@@ -360,7 +360,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">dispatchTouchEvent</span><span class="params">(MotionEvent event)</span> </span>&#123;</div><div class="line">    <span class="comment">// 会优先处理焦点事件</span></div><div class="line">    <span class="keyword">if</span> (event.isTargetAccessibilityFocus()) &#123;</div><div class="line">        <span class="keyword">if</span> (!isAccessibilityFocusedViewOrHost()) &#123;</div><div class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">        &#125;</div><div class="line">        event.setTargetAccessibilityFocus(<span class="keyword">false</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">boolean</span> result = <span class="keyword">false</span>;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (mInputEventConsistencyVerifier != <span class="keyword">null</span>) &#123;</div><div class="line">        mInputEventConsistencyVerifier.onTouchEvent(event, <span class="number">0</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">final</span> <span class="keyword">int</span> actionMasked = event.getActionMasked();</div><div class="line">    <span class="keyword">if</span> (actionMasked == MotionEvent.ACTION_DOWN) &#123;</div><div class="line">        <span class="comment">// Defensive cleanup for new gesture</span></div><div class="line">        stopNestedScroll();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (onFilterTouchEventForSecurity(event)) &#123;</div><div class="line">        <span class="comment">// 滑动块的处理事件</span></div><div class="line">        <span class="keyword">if</span> ((mViewFlags &amp; ENABLED_MASK) == ENABLED &amp;&amp; handleScrollBarDragging(event)) &#123;</div><div class="line">            result = <span class="keyword">true</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="comment">// 会优先处理 OnTouchListener</span></div><div class="line">        ListenerInfo li = mListenerInfo;</div><div class="line">        <span class="keyword">if</span> (li != <span class="keyword">null</span> &amp;&amp; li.mOnTouchListener != <span class="keyword">null</span></div><div class="line">                &amp;&amp; (mViewFlags &amp; ENABLED_MASK) == ENABLED</div><div class="line">                &amp;&amp; li.mOnTouchListener.onTouch(<span class="keyword">this</span>, event)) &#123;</div><div class="line">            result = <span class="keyword">true</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="comment">// 没有处理才会轮到 onTouchEvent 方法</span></div><div class="line">        <span class="keyword">if</span> (!result &amp;&amp; onTouchEvent(event)) &#123;</div><div class="line">            result = <span class="keyword">true</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (!result &amp;&amp; mInputEventConsistencyVerifier != <span class="keyword">null</span>) &#123;</div><div class="line">        mInputEventConsistencyVerifier.onUnhandledEvent(event, <span class="number">0</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// Clean up after nested scrolls if this is the end of a gesture;</span></div><div class="line">    <span class="comment">// also cancel it if we tried an ACTION_DOWN but we didn't want the rest</span></div><div class="line">    <span class="comment">// of the gesture.</span></div><div class="line">    <span class="keyword">if</span> (actionMasked == MotionEvent.ACTION_UP ||</div><div class="line">            actionMasked == MotionEvent.ACTION_CANCEL ||</div><div class="line">            (actionMasked == MotionEvent.ACTION_DOWN &amp;&amp; !result)) &#123;</div><div class="line">        stopNestedScroll();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">return</span> result;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>View 的 dispatchTouchEvent 相对比较简单，只是操作了一些额外的滑动事件处理，只要逻辑在于如果有 OnTouchListener 就交给 OnTouchListener.onTouch 处理，不消费则再去通过 onTouchEvent 方法处理，如果都没有消费意味着返回 false，那后续的事件是不会传进来的</p>
 <p>可以用一张图来描述这个过程</p>
-<p><img src="http://oq546o6pk.bkt.clouddn.com/事件分发图.png" alt="事件分发图"></p>
+<p><img src="/images/android_touch_event_dispatch.png" alt="事件分发图"></p>
 <h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>一个相对完整的触摸事件分发流程就解析完了，不仅仅是停留于纸面上的 API 调用关系，相信会对你自定义 ViewGroup 如何处理事件分发，解决滑动冲突会有很大的帮助</p>
 
       
@@ -379,9 +379,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/view/" rel="tag"># view</a>
-          
             <a href="/tags/深入系列/" rel="tag"># 深入系列</a>
+          
+            <a href="/tags/view/" rel="tag"># view</a>
           
             <a href="/tags/布局流程/" rel="tag"># 布局流程</a>
           
@@ -551,7 +551,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

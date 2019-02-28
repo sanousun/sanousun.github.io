@@ -91,16 +91,16 @@
 这篇文章的目的是深入解析 Glide 加载一张来自网络图片时的流程及各种控制优化，基于 Glide V4 分析
 简单使用Glide 加载图片非常简单，一行代码足矣
 123Glide.with(fragment)    .load(m">
-<meta property="og:image" content="http://oq546o6pk.bkt.clouddn.com/未命名文件 -5-.png">
-<meta property="og:image" content="http://oq546o6pk.bkt.clouddn.com/未命名文件 -4-.png">
-<meta property="og:updated_time" content="2018-05-22T14:47:18.878Z">
+<meta property="og:image" content="http://sanousun.github.io/images/glide_resouce_loader.png">
+<meta property="og:image" content="http://sanousun.github.io/images/glide_cache.png">
+<meta property="og:updated_time" content="2019-02-28T08:13:31.402Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Glide 缓存解析">
 <meta name="twitter:description" content="Glide 缓存解析前言Glide 是 Android 开发中大名鼎鼎的图片加载框架，它通过三级缓存实现了对图片加载的优化，又通过内部的图片池实现了对移动端内存的优化
 这篇文章的目的是深入解析 Glide 加载一张来自网络图片时的流程及各种控制优化，基于 Glide V4 分析
 简单使用Glide 加载图片非常简单，一行代码足矣
 123Glide.with(fragment)    .load(m">
-<meta name="twitter:image" content="http://oq546o6pk.bkt.clouddn.com/未命名文件 -5-.png">
+<meta name="twitter:image" content="http://sanousun.github.io/images/glide_resouce_loader.png">
 
 
 
@@ -335,7 +335,7 @@
 <li>ResourceTranscoder：对原始的 Resource 处理转化，比如说圆角啊，缩略啊</li>
 <li>Encoder：持久化数据，将原始的 Resource 持久化缓存到磁盘里，还有一个子类 ResourceEncoder，这个则是用来持久化处理过的 Resource 的</li>
 </ul>
-<p>后面提到的工具都会在 Registry 里注册，这里展示一个最简单的数据第一次获取流程<br><img src="http://oq546o6pk.bkt.clouddn.com/未命名文件 -5-.png" alt="数据处理流程"></p>
+<p>后面提到的工具都会在 Registry 里注册，这里展示一个最简单的数据第一次获取流程<br><img src="/images/glide_resouce_loader.png" alt="数据处理流程"></p>
 <h2 id="流程解析"><a href="#流程解析" class="headerlink" title="流程解析"></a>流程解析</h2><h3 id="请求构建解析"><a href="#请求构建解析" class="headerlink" title="请求构建解析"></a>请求构建解析</h3><p><strong>Glide.with 方法</strong></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> RequestManager <span class="title">with</span><span class="params">(Fragment fragment)</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> getRetriever(fragment.getActivity()).get(fragment);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>返回了一个 RequestManager 对象，以供后续的代码调用，而 RequestManager 经过 getRetriever 方法层层追踪可以得知是由 Glide 单例对象中持有的 RequestManagerRetriever 中 RequestManagerFactory 工厂生成的，至于具体是如何生成的先略去不谈</p>
@@ -426,7 +426,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">decodeFromRetrievedData</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (Log.isLoggable(TAG, Log.VERBOSE)) &#123;</div><div class="line">        logWithTimeAndKey(<span class="string">"Retrieved data"</span>, startFetchTime,</div><div class="line">            <span class="string">"data: "</span> + currentData</div><div class="line">            + <span class="string">", cache key: "</span> + currentSourceKey</div><div class="line">            + <span class="string">", fetcher: "</span> + currentFetcher);</div><div class="line">    &#125;</div><div class="line">    Resource&lt;R&gt; resource = <span class="keyword">null</span>;</div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">        <span class="comment">// 这里完成了对图片的处理</span></div><div class="line">        resource = decodeFromData(currentFetcher, currentData, currentDataSource);</div><div class="line">    &#125; <span class="keyword">catch</span> (GlideException e) &#123;</div><div class="line">        e.setLoggingDetails(currentAttemptingKey, currentDataSource);</div><div class="line">        throwables.add(e);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">if</span> (resource != <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="comment">// 缓存处理后的资源</span></div><div class="line">        notifyEncodeAndRelease(resource, currentDataSource);</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        runGenerators();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p><strong>DecodeJob.notifyEncodeAndRelease 方法</strong></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">notifyEncodeAndRelease</span><span class="params">(Resource&lt;R&gt; resource, DataSource dataSource)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (resource <span class="keyword">instanceof</span> Initializable) &#123;</div><div class="line">        ((Initializable) resource).initialize();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    Resource&lt;R&gt; result = resource;</div><div class="line">    LockedResource&lt;R&gt; lockedResource = <span class="keyword">null</span>;</div><div class="line">    <span class="comment">// 从对象池里去对象赋值</span></div><div class="line">    <span class="keyword">if</span> (deferredEncodeManager.hasResourceToEncode()) &#123;</div><div class="line">        lockedResource = LockedResource.obtain(resource);</div><div class="line">        result = lockedResource;</div><div class="line">    &#125;</div><div class="line">    <span class="comment">// 资源加载完成回调</span></div><div class="line">    notifyComplete(result, dataSource);</div><div class="line"></div><div class="line">    stage = Stage.ENCODE;</div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">        <span class="comment">// 做处理后的资源缓存</span></div><div class="line">        <span class="keyword">if</span> (deferredEncodeManager.hasResourceToEncode()) &#123;</div><div class="line">            deferredEncodeManager.encode(diskCacheProvider, options);</div><div class="line">        &#125;</div><div class="line">    &#125; <span class="keyword">finally</span> &#123;</div><div class="line">        <span class="keyword">if</span> (lockedResource != <span class="keyword">null</span>) &#123;</div><div class="line">            lockedResource.unlock();</div><div class="line">        &#125;</div><div class="line">        <span class="comment">// 加载过程完成，释放 DecodeJob 对象，加入到复用池中</span></div><div class="line">        onEncodeComplete();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>至此，最简单的一个加载流程已经完成，可以用一张图来表示<br><img src="http://oq546o6pk.bkt.clouddn.com/未命名文件 -4-.png" alt="加载来源获取流程图"></p>
+<p>至此，最简单的一个加载流程已经完成，可以用一张图来表示<br><img src="/images/glide_cache.png" alt="加载来源获取流程图"></p>
 <h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>本文从一个最简单的图片加载操作完整追踪整个缓存路径，虽然还有许多细节没有涉及到，但确实也是因为 glide 是个非常庞大的图片加载库，为了内存优化、性能改善做了非常多的努力，比如说对列表图片加载的优化等等，希望可以开个好头，激起你探索的兴趣吧</p>
 
       
@@ -617,7 +617,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

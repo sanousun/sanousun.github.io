@@ -91,16 +91,16 @@ ReactiveX 是一个基于一系列可观察的异步和基础">
 文章的初衷就是希望能给你带来 RxJava2.x 的订阅流程更深入的解析。
 相关概念
 ReactiveX 是一个基于一系列可观察的异步和基础">
-<meta property="og:image" content="http://oq546o6pk.bkt.clouddn.com/15267144602037.jpg">
-<meta property="og:image" content="http://oq546o6pk.bkt.clouddn.com/未命名文件.png">
-<meta property="og:updated_time" content="2018-05-21T09:31:59.173Z">
+<meta property="og:image" content="http://sanousun.github.io/images/rxjava_result.jpg">
+<meta property="og:image" content="http://sanousun.github.io/images/rxjava_progress.png">
+<meta property="og:updated_time" content="2019-02-28T08:16:06.728Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="RxJava2.x 订阅流程解析">
 <meta name="twitter:description" content="RxJava2.x 订阅流程解析前言RxJava + Retrofit + okhttp 的网络请求框架已经成为 Android 开发的绝对主流框架，其带来的简洁、方便的调用形式早已征服了每个 Android 开发者，那么我们完全有必要去深入研究其实现原理。
 文章的初衷就是希望能给你带来 RxJava2.x 的订阅流程更深入的解析。
 相关概念
 ReactiveX 是一个基于一系列可观察的异步和基础">
-<meta name="twitter:image" content="http://oq546o6pk.bkt.clouddn.com/15267144602037.jpg">
+<meta name="twitter:image" content="http://sanousun.github.io/images/rxjava_result.jpg">
 
 
 
@@ -328,7 +328,7 @@ ReactiveX 是一个基于一系列可观察的异步和基础">
 </ul>
 <h2 id="订阅流程"><a href="#订阅流程" class="headerlink" title="订阅流程"></a>订阅流程</h2><p>已 RxJava2.x 为例，下面是一个简单的 RxJava 订阅流程，我们忽略 RxJava2.x 因背压处理的新观察者模型，就以 RxJava1.x 的观察者模型 Observable ( 被观察者 ) / Observer ( 观察者 ) 为例：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">Observable</div><div class="line">        .create(<span class="keyword">new</span> ObservableOnSubscribe&lt;Integer&gt;() &#123;</div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">subscribe</span><span class="params">(ObservableEmitter&lt;Integer&gt; emitter)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">                emitter.onNext(<span class="number">1</span>);</div><div class="line">                emitter.onNext(<span class="number">2</span>);</div><div class="line">                emitter.onNext(<span class="number">3</span>);</div><div class="line">                emitter.onComplete();</div><div class="line">            &#125;</div><div class="line">        &#125;) <span class="comment">// 观察者订阅被观察者 </span></div><div class="line">        .subscribe(<span class="keyword">new</span> Observer&lt;Integer&gt;() &#123;</div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onSubscribe</span><span class="params">(Disposable d)</span> </span>&#123;</div><div class="line"></div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onNext</span><span class="params">(Integer integer)</span> </span>&#123;</div><div class="line">                System.out.println(<span class="string">"Observer.onNext: "</span> + integer);</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onError</span><span class="params">(Throwable e)</span> </span>&#123;</div><div class="line"></div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onComplete</span><span class="params">()</span> </span>&#123;</div><div class="line">                System.out.println(<span class="string">"Observer.onComplete"</span>);</div><div class="line">            &#125;</div><div class="line">        &#125;);</div></pre></td></tr></table></figure>
-<p>这是最简单的 RxJava2.x 订阅流程，Observable.create() 方法创建了一个被观察者对象，由 ObservableOnSubscribe 对象作为事件源，而 Observer 作为观察者通过 subscribe() 方法订阅注册到被观察者，此时事件源发出的事件将会被 Observer 接受输出。<br><img src="http://oq546o6pk.bkt.clouddn.com/15267144602037.jpg" alt=""></p>
+<p>这是最简单的 RxJava2.x 订阅流程，Observable.create() 方法创建了一个被观察者对象，由 ObservableOnSubscribe 对象作为事件源，而 Observer 作为观察者通过 subscribe() 方法订阅注册到被观察者，此时事件源发出的事件将会被 Observer 接受输出。<br><img src="/images/rxjava_result.jpg" alt=""></p>
 <h2 id="订阅流程解析"><a href="#订阅流程解析" class="headerlink" title="订阅流程解析"></a>订阅流程解析</h2><p>我们知道订阅是由 Observable.subscribe 方法触发</p>
 <p><strong>Observable.subscribe 方法</strong></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">subscribe</span><span class="params">(Observer&lt;? <span class="keyword">super</span> T&gt; observer)</span> </span>&#123;</div><div class="line">    ...</div><div class="line">    <span class="comment">// 核心的订阅方法    </span></div><div class="line">    subscribeActual(observer);</div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
@@ -343,7 +343,7 @@ ReactiveX 是一个基于一系列可观察的异步和基础">
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">subscribeActual</span><span class="params">(v&lt;? <span class="keyword">super</span> U&gt; t)</span> </span>&#123;</div><div class="line">    source.subscribe(<span class="keyword">new</span> MapObserver&lt;T, U&gt;(t, function));</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>其中 source 是在构造函数中传入的 this 对象，即上一个 Observable 对象，在 map 操作中会生成一个新的 Observable，在 subscribeActual 实现方法中会对上一个 Observable 进行订阅。同时，会对 Observer 也会进行包装，为的是真正的数据转化工作</p>
 <p>用图的方式更直白一些</p>
-<p><img src="http://oq546o6pk.bkt.clouddn.com/未命名文件.png" alt=""></p>
+<p><img src="/images/rxjava_progress.png" alt=""></p>
 <p>订阅流程就比较直观地展示，只有在 Observable 被订阅时才会向上订阅一直到事件源，同时会根据操作符类型对 Observer 做一些转换封装，事件源调用后，事件会通过 Observer 层层调用最终调用到最初订阅时传入的 Observer</p>
 <h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>虽然只是通过一个简单的流程分析了订阅流程，但其他的模型也是类似的，只不过可能其他类型的 Observable 可能实现了更为复杂的控制流程，譬如说实现一些缓存队列来保证数据的缓存。最终通过操作符的转换形成一条调用链，当被订阅时会沿着链子向上调用，然后事件向下回调传递</p>
 <p>接下去，我会分析 RxJava2.x 另外一个重要特性线程切换，并简单讲述一些系统提供的 Schedulers 特性和实现原理</p>
@@ -536,7 +536,7 @@ ReactiveX 是一个基于一系列可观察的异步和基础">
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

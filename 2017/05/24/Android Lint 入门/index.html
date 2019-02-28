@@ -87,16 +87,16 @@ Android Lint 的源码集成在 Android SDK Tools 16 及更高的版本中，我
 <meta property="og:site_name" content="sanousun">
 <meta property="og:description" content="前言Android Lint 是有 Android SDK 提供的一种静态代码检测工具，用于检测 Android 的代码质量
 Android Lint 的源码集成在 Android SDK Tools 16 及更高的版本中，我们可以在项目目录下通过 ./gradlew lint 命令调用，也可以通过 Android Studio 的 【Analyze】-&amp;gt;【Inspect Code】路径调用">
-<meta property="og:image" content="http://oq546o6pk.bkt.clouddn.com/2671940175-57aec2cc55eb3_articlex.png">
-<meta property="og:image" content="http://oq546o6pk.bkt.clouddn.com/%E8%87%AA%E5%AE%9A%E4%B9%89lint%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E6%88%AA%E5%9B%BE.png">
-<meta property="og:image" content="http://oq546o6pk.bkt.clouddn.com/14956209367286.jpg">
-<meta property="og:image" content="http://oq546o6pk.bkt.clouddn.com/14956201641543.jpg">
-<meta property="og:updated_time" content="2018-04-11T08:52:57.553Z">
+<meta property="og:image" content="http://sanousun.github.io/images/custom_lint_progress.png">
+<meta property="og:image" content="http://sanousun.github.io/images/custom_lint_result.png">
+<meta property="og:image" content="http://sanousun.github.io/images/custom_lint.jpg">
+<meta property="og:image" content="http://sanousun.github.io/images/custom_lint_show.jpg">
+<meta property="og:updated_time" content="2019-02-28T08:07:23.543Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android Lint 入门">
 <meta name="twitter:description" content="前言Android Lint 是有 Android SDK 提供的一种静态代码检测工具，用于检测 Android 的代码质量
 Android Lint 的源码集成在 Android SDK Tools 16 及更高的版本中，我们可以在项目目录下通过 ./gradlew lint 命令调用，也可以通过 Android Studio 的 【Analyze】-&amp;gt;【Inspect Code】路径调用">
-<meta name="twitter:image" content="http://oq546o6pk.bkt.clouddn.com/2671940175-57aec2cc55eb3_articlex.png">
+<meta name="twitter:image" content="http://sanousun.github.io/images/custom_lint_progress.png">
 
 
 
@@ -326,7 +326,7 @@ Android Lint 的源码集成在 Android SDK Tools 16 及更高的版本中，我
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</div><div class="line">&lt;lint&gt;</div><div class="line">    &lt;!-- 需要配置的 issues 列表 --&gt;</div><div class="line">    &lt;!-- 关闭对应的检测--&gt;</div><div class="line">    &lt;issue id=&quot;IconMissingDensityFolder&quot; severity=&quot;ignore&quot; /&gt;</div><div class="line"></div><div class="line">    &lt;!-- 在一些特定的文件中关闭对应的检测 --&gt;</div><div class="line">    &lt;issue id=&quot;ObsoleteLayoutParam&quot;&gt;</div><div class="line">        &lt;ignore path=&quot;res/layout/activation.xml&quot; /&gt;</div><div class="line">        &lt;ignore path=&quot;res/layout-xlarge/activation.xml&quot; /&gt;</div><div class="line">    &lt;/issue&gt;</div><div class="line"></div><div class="line">    &lt;!-- 将对应的检测级别修改 --&gt;</div><div class="line">    &lt;issue id=&quot;HardcodedText&quot; severity=&quot;error&quot; /&gt;</div><div class="line">&lt;/lint&gt;</div></pre></td></tr></table></figure>
 <p>id 的获取我们可以通过命令行 <code>lint --list</code> 获取。如果无法直接执行 lint 命令，我们可以在 <code>/.bash_profile</code> 中添加 <code>PATH=&quot;~/Library/Android/sdk/tools/bin:${PATH}&quot;</code> 即可</p>
 <h2 id="Android-Studio-的-Lint-支持"><a href="#Android-Studio-的-Lint-支持" class="headerlink" title="Android Studio 的 Lint 支持"></a>Android Studio 的 Lint 支持</h2><p>Android Studio 2.0 以后，谷歌将 Lint 检查整合到了 IDE 之中，提供了方便的图形界面操作，检测结果也会在底部 Inspection Results 中展现，除了 Lint 规则，AS 也加入了一些其他的检测规则</p>
-<h2 id="自定义-Lint-规则"><a href="#自定义-Lint-规则" class="headerlink" title="自定义 Lint 规则"></a>自定义 Lint 规则</h2><p><img src="http://oq546o6pk.bkt.clouddn.com/2671940175-57aec2cc55eb3_articlex.png" alt="自定义Lint流程图"></p>
+<h2 id="自定义-Lint-规则"><a href="#自定义-Lint-规则" class="headerlink" title="自定义 Lint 规则"></a>自定义 Lint 规则</h2><p><img src="/images/custom_lint_progress.png" alt="自定义Lint流程图"></p>
 <p>在某些特殊情况下，系统定义的 Lint 并不能满足我们的需求，这时需要我们自己定义规则，然后利用 Android 的 Lint 工具帮助我们自动发现某些问题</p>
 <p>谷歌官方的方案是依赖 lint-api 创建自己的 lint 规则，然后将自定义的 lint 规则打包成 jar (保存在 build/libs 中)，将 jar 包复制到 <code>~/.android/lint</code> 目录下，最后在 Android 工程源码目录下执行 <code>./gradlew lint</code> 即可。但是这种方案有一个缺点：它针对的是本机的所有项目，也就是会影响同一台机器其他项目的 Lint 检查</p>
 <p>所以我们可以采用 LinkedIn 提出的 aar 方案，将 jar 包放到一个 aar 中，然后 Android 项目依赖这个 aar 完成自定义 lint 检查。利用这种方案我们就可以针对项目进行自定义 Lint 规则，且 lint.jar 只对当前项目有效，根据 <a href="http://carrotsight.com/2016/06/21/Android%20Lint%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90.html" target="_blank" rel="external">Android Lint工作原理剖析</a> 里分析可以得知，当系统执行 lint 时，会检查项目的构建目录下的 lint 目录下是否引用了一个名为lint.jar文件，有的话会添加到自定义的 lint 规则中，最终将会被执行</p>
@@ -373,18 +373,18 @@ Android Lint 的源码集成在 Android SDK Tools 16 及更高的版本中，我
 <figure class="highlight gradle"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//配置lint的jar包</span></div><div class="line"><span class="keyword">configurations</span> &#123;</div><div class="line">    lintJarImport</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">dependencies</span> &#123;</div><div class="line">    lintJarImport <span class="keyword">project</span>(path: <span class="string">":lintCoreLib"</span>, configuration: <span class="string">"lintJarOutput"</span>)</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">//将jar复制到lint目录下的lint.jar，因为在 lint 命令执行时会检查该文件，存在的话会添加到 lint 检查的队列中</span></div><div class="line"><span class="keyword">task</span> copyLintJar(type: <span class="keyword">Copy</span>) &#123;</div><div class="line">    <span class="keyword">from</span> (<span class="keyword">configurations</span>.lintJarImport) &#123;</div><div class="line">        rename &#123;</div><div class="line">            String fileName -&gt;</div><div class="line">                <span class="string">'lint.jar'</span></div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">into</span> <span class="string">'build/intermediates/lint/'</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">//当 Project 创建完所有任务的有向图后，通过 afterEvaluate 函数设置一个回调 Closure。将 copyLintJar 插入到 compileLint 之前执行</span></div><div class="line">  Closure 里，我 disable 了所有 Debug 的 <span class="keyword">Task</span></div><div class="line"><span class="keyword">project</span>.afterEvaluate &#123;</div><div class="line">    <span class="keyword">def</span> compileLintTask = <span class="keyword">project</span>.tasks.<span class="keyword">find</span> &#123; it.name == <span class="string">'compileLint'</span> &#125;</div><div class="line">    compileLintTask.dependsOn(copyLintJar)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>最后只要在主工程中依赖 :lint 模块即可</p>
 <p>我把导出的 aar 包导入到了生产环境中，执行后就可以见到自定义的 Lint 的检测结果</p>
-<p><img src="http://oq546o6pk.bkt.clouddn.com/%E8%87%AA%E5%AE%9A%E4%B9%89lint%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E6%88%AA%E5%9B%BE.png" alt="生产环境自定义lint截图"></p>
+<p><img src="/images/custom_lint_result.png" alt="生产环境自定义lint截图"></p>
 <h2 id="debug-lint代码"><a href="#debug-lint代码" class="headerlink" title="debug lint代码"></a>debug lint代码</h2><p>调试 lint 的代码需要特殊配置</p>
 <ul>
 <li>在 gradle.properties 文件中添加如下配置</li>
 </ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">org.gradle.jvmargs=&apos;-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005&apos;</div></pre></td></tr></table></figure>
 <ul>
-<li><p>创建一个 Remote 类型的 debug 配置文件<br><img src="http://oq546o6pk.bkt.clouddn.com/14956209367286.jpg" alt=""></p>
+<li><p>创建一个 Remote 类型的 debug 配置文件<br><img src="/images/custom_lint.jpg" alt=""></p>
 </li>
 <li><p>终端中以 daemon 模式启动 gradle lint 任务</p>
 </li>
-<li>选择新建的配置文件快速点击 debug 按钮<br><img src="http://oq546o6pk.bkt.clouddn.com/14956201641543.jpg" alt=""></li>
+<li>选择新建的配置文件快速点击 debug 按钮<br><img src="/images/custom_lint_show.jpg" alt=""></li>
 </ul>
 <p>按照这种方法我们就可以 debug 我们自定义的 lint 规则或者是系统定义的 lint 规则了 </p>
 <h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p><a href="http://stackoverflow.com/questions/31128770/how-to-find-gradle-lintoptions-document-for-android" target="_blank" rel="external">How to find gradle lintOptions document for android?</a><br><a href="http://tools.android.com/tips/lint/suppressing-lint-warnings" target="_blank" rel="external">Android Studio Project Site – Suppressing Lint Warnings</a><br><a href="http://tech.meituan.com/android_custom_lint.html" target="_blank" rel="external">Android自定义Lint实践</a><br><a href="http://tech.meituan.com/android_custom_lint2.html" target="_blank" rel="external">Android自定义Lint实践2——改进原生Detector</a><br><a href="https://android.googlesource.com/platform/tools/base/+/studio-master-dev/lint/" target="_blank" rel="external">Lint Source Code</a></p>
@@ -575,7 +575,7 @@ Android Lint 的源码集成在 Android SDK Tools 16 及更高的版本中，我
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
