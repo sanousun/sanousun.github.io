@@ -6,10 +6,10 @@
 
 
 <html class="theme-next muse use-motion" lang="zh-Hans">
-<head>
-  <meta charset="UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="theme-color" content="#222">
 
 
@@ -20,8 +20,8 @@
 
 
 
-<meta http-equiv="Cache-Control" content="no-transform" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
 
 
 
@@ -40,7 +40,7 @@
 
   
   
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
 
 
 
@@ -48,9 +48,9 @@
 
 
 
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
 
-<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
 
 
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="入坑系列,kotlin," />
+  <meta name="keywords" content="入坑系列,kotlin,">
 
 
 
@@ -79,34 +79,18 @@
 
 
 
-<meta name="description" content="前言
-2011年7月，JetBrains 推出 Kotlin 项目
-2012年2月，JetBrains 以 Apache 2.0 许可证开源此项目，github 地址 kotlin
-2016年2月，Kotlin v1.0（第一个官方稳定版本）发布
-2017 Google I/O 大会上，Kotlin 正式成为 Android 开发官方语言
-
-什么是KotlinKotlin 是由 JetBrains">
+<meta name="description" content="前言 2011年7月，JetBrains 推出 Kotlin 项目 2012年2月，JetBrains 以 Apache 2.0 许可证开源此项目，github 地址 kotlin 2016年2月，Kotlin v1.0（第一个官方稳定版本）发布 2017 Google I/O 大会上，Kotlin 正式成为 Android 开发官方语言  什么是KotlinKotlin 是由 JetBrains">
+<meta name="keywords" content="入坑系列,kotlin">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Kotlin 入门">
 <meta property="og:url" content="http://sanousun.github.io/2017/07/28/Kotlin 入门/index.html">
 <meta property="og:site_name" content="sanousun">
-<meta property="og:description" content="前言
-2011年7月，JetBrains 推出 Kotlin 项目
-2012年2月，JetBrains 以 Apache 2.0 许可证开源此项目，github 地址 kotlin
-2016年2月，Kotlin v1.0（第一个官方稳定版本）发布
-2017 Google I/O 大会上，Kotlin 正式成为 Android 开发官方语言
-
-什么是KotlinKotlin 是由 JetBrains">
+<meta property="og:description" content="前言 2011年7月，JetBrains 推出 Kotlin 项目 2012年2月，JetBrains 以 Apache 2.0 许可证开源此项目，github 地址 kotlin 2016年2月，Kotlin v1.0（第一个官方稳定版本）发布 2017 Google I/O 大会上，Kotlin 正式成为 Android 开发官方语言  什么是KotlinKotlin 是由 JetBrains">
+<meta property="og:locale" content="zh-Hans">
 <meta property="og:updated_time" content="2018-04-11T08:53:12.480Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kotlin 入门">
-<meta name="twitter:description" content="前言
-2011年7月，JetBrains 推出 Kotlin 项目
-2012年2月，JetBrains 以 Apache 2.0 许可证开源此项目，github 地址 kotlin
-2016年2月，Kotlin v1.0（第一个官方稳定版本）发布
-2017 Google I/O 大会上，Kotlin 正式成为 Android 开发官方语言
-
-什么是KotlinKotlin 是由 JetBrains">
+<meta name="twitter:description" content="前言 2011年7月，JetBrains 推出 Kotlin 项目 2012年2月，JetBrains 以 Apache 2.0 许可证开源此项目，github 地址 kotlin 2016年2月，Kotlin v1.0（第一个官方稳定版本）发布 2017 Google I/O 大会上，Kotlin 正式成为 Android 开发官方语言  什么是KotlinKotlin 是由 JetBrains">
 
 
 
@@ -136,7 +120,7 @@
 
 
 
-  <link rel="canonical" href="http://sanousun.github.io/2017/07/28/Kotlin 入门/"/>
+  <link rel="canonical" href="http://sanousun.github.io/2017/07/28/Kotlin 入门/">
 
 
 
@@ -170,7 +154,7 @@
     
 
     <div class="custom-logo-site-title">
-      <a href="/"  class="brand" rel="start">
+      <a href="/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">sanousun</span>
         <span class="logo-line-after"><i></i></span>
@@ -200,7 +184,7 @@
         <li class="menu-item menu-item-home">
           <a href="/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
             
             首页
           </a>
@@ -210,7 +194,7 @@
         <li class="menu-item menu-item-tags">
           <a href="/tags/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
             
             标签
           </a>
@@ -220,7 +204,7 @@
         <li class="menu-item menu-item-archives">
           <a href="/archives/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
             
             归档
           </a>
@@ -263,7 +247,7 @@
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sanousun">
-      <meta itemprop="description" content="">
+      <meta itemprop="description" content>
       <meta itemprop="image" content="/images/avatar.gif">
     </span>
 
@@ -328,7 +312,7 @@
       
         <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><ul>
 <li>2011年7月，JetBrains 推出 Kotlin 项目</li>
-<li>2012年2月，JetBrains 以 Apache 2.0 许可证开源此项目，github 地址 <a href="https://github.com/JetBrains/kotlin" target="_blank" rel="external">kotlin</a></li>
+<li>2012年2月，JetBrains 以 Apache 2.0 许可证开源此项目，github 地址 <a href="https://github.com/JetBrains/kotlin" target="_blank" rel="noopener">kotlin</a></li>
 <li>2016年2月，Kotlin v1.0（第一个官方稳定版本）发布</li>
 <li>2017 Google I/O 大会上，Kotlin 正式成为 Android 开发官方语言</li>
 </ul>
@@ -341,7 +325,7 @@
 <li><p><strong>静态语言：</strong> 静态类型语言是在运行前编译时检查类型，而不是在运行期间检查数据的类型。Kotlin 必须清楚定义数据类型，否则无法编译通过，同 Java 一样，Kotlin 是强静态语言，类型转换必须显式表达</p>
 </li>
 </ul>
-<h2 id="为什么我们要使用-Kotlin"><a href="#为什么我们要使用-Kotlin" class="headerlink" title="为什么我们要使用 Kotlin"></a>为什么我们要使用 Kotlin</h2><p>我们可以在这个网站 <a href="https://fabiomsr.github.io/from-java-to-kotlin" target="_blank" rel="external">https://fabiomsr.github.io/from-java-to-kotlin</a> 上看到 Kotlin 和 Java 的基本语法比较，很明显 Kotlin 拥有比 Java 更简洁的语法</p>
+<h2 id="为什么我们要使用-Kotlin"><a href="#为什么我们要使用-Kotlin" class="headerlink" title="为什么我们要使用 Kotlin"></a>为什么我们要使用 Kotlin</h2><p>我们可以在这个网站 <a href="https://fabiomsr.github.io/from-java-to-kotlin" target="_blank" rel="noopener">https://fabiomsr.github.io/from-java-to-kotlin</a> 上看到 Kotlin 和 Java 的基本语法比较，很明显 Kotlin 拥有比 Java 更简洁的语法</p>
 <ul>
 <li><p>相比较 Java，Kotlin 增加了许多特性，比如 When 表达式、扩展函数、高级类、委托、Java 8 之前没有的 Lambda 表达式、高阶函数、协程… 每一个都让人兴奋不已</p>
 </li>
@@ -358,31 +342,31 @@
 </li>
 <li><p><strong>多平台开发</strong>：JetBrains 开发 Kotlin 不仅仅想要取代 Java (Android开发 —— 官方宣布 Kotlin 正式成为 Android 开发的语言，Web开发 —— 对 Spring 框架的支持，以及可以编译生成 JavaScript 模块)，更远大的目标使实现多平台的统一，甚至可以进行 Native 开发，基于 LLVM 底层虚拟机的实现，Kotlin 可以为各个平台编写原生应用，在不久的将来可以看到 iOS 开发也有 Kotlin 的一席之地</p>
 </li>
-<li><p><strong>简洁安全</strong>：Kotlin 的入门相当简单，当然你有 Java 基础的话，你可以十分清晰的感受到这门语言在 Java 的基础上做了多少优化提升，非常值得一试，语法的定义与苹果推出的 Swift 有些类似，<a href="http://nilhcem.com/swift-is-like-kotlin" target="_blank" rel="external">http://nilhcem.com/swift-is-like-kotlin</a> 上可以看到两者的比较</p>
+<li><p><strong>简洁安全</strong>：Kotlin 的入门相当简单，当然你有 Java 基础的话，你可以十分清晰的感受到这门语言在 Java 的基础上做了多少优化提升，非常值得一试，语法的定义与苹果推出的 Swift 有些类似，<a href="http://nilhcem.com/swift-is-like-kotlin" target="_blank" rel="noopener">http://nilhcem.com/swift-is-like-kotlin</a> 上可以看到两者的比较</p>
 </li>
 </ul>
 <p>当然后面也会介绍到一小部分 Kotlin 的特性</p>
 <h1 id="kotlin-的语法糖"><a href="#kotlin-的语法糖" class="headerlink" title="kotlin 的语法糖"></a>kotlin 的语法糖</h1><h2 id="安全性"><a href="#安全性" class="headerlink" title="安全性"></a>安全性</h2><h3 id="空安全"><a href="#空安全" class="headerlink" title="空安全"></a>空安全</h3><p>Java 的 NullPointException 一直以来都是导致程序崩溃的头号杀手。kotlin 则通过类型系统旨在代码中消除潜在的空指针安全问题。<br>在 kotlin 中类型系统会区分一个引用可以容纳 null (可空引用)还是不能容纳(非空引用)，通过在类名后添加后缀 <code>？</code> 实现</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">var str1:String = &quot;abc&quot;</div><div class="line">// str1 = null </div><div class="line">// String是非空引用，不可以容纳 null，编译器会报错</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">var str1:String = &quot;abc&quot;</span><br><span class="line">// str1 = null </span><br><span class="line">// String是非空引用，不可以容纳 null，编译器会报错</span><br></pre></td></tr></table></figure>
 <p>如果需要允许赋值为空，那么我们需要声明该变量为可空引用，即 <code>Srting?</code></p>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> str2: String? = <span class="string">"abc"</span></div><div class="line">str2 = <span class="literal">null</span> <span class="comment">// 编译通过</span></div></pre></td></tr></table></figure>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> str2: String? = <span class="string">"abc"</span></span><br><span class="line">str2 = <span class="literal">null</span> <span class="comment">// 编译通过</span></span><br></pre></td></tr></table></figure>
 <p>对于前者，因为是非空引用，我们可以直接调用对象属性而不必考虑空指针的情形</p>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> l = a.length</div></pre></td></tr></table></figure>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> l = a.length</span><br></pre></td></tr></table></figure>
 <p>而对于后者，因为是可空引用，我们就不能直接去调用对象属性，因为很有可能会导致空指针的出现，因此 kotlin 直接杜绝了这种不安全的调用方式的出现</p>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// val l2 = str2.length</span></div><div class="line"><span class="comment">// 编译错误：变量 str2 可能为空</span></div></pre></td></tr></table></figure>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// val l2 = str2.length</span></span><br><span class="line"><span class="comment">// 编译错误：变量 str2 可能为空</span></span><br></pre></td></tr></table></figure>
 <h3 id="安全调用操作符"><a href="#安全调用操作符" class="headerlink" title="安全调用操作符 ?."></a>安全调用操作符 <code>?.</code></h3><p>针对可空引用，kotlin 提供了专门的空安全调用操作符 <code>?.</code> </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">// var l2: Int = str2?.length</div><div class="line">// 编译错误：变量 l2 可能为空</div><div class="line">var l2: Int? = str2?.length</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// var l2: Int = str2?.length</span><br><span class="line">// 编译错误：变量 l2 可能为空</span><br><span class="line">var l2: Int? = str2?.length</span><br></pre></td></tr></table></figure>
 <p>如果变量 b 为 null，那么返回的也将是 null， 反之则会返回 b.length 的数值，所以我们得到的结果类型也是将一个可空引用 <code>Int?</code><br>这个操作符将在链式调用时发挥巨大的作用</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">a?.b?.c?.d // 这种形式的链式调用很有可能在一些复杂的数据结构中有用到</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">a?.b?.c?.d // 这种形式的链式调用很有可能在一些复杂的数据结构中有用到</span><br></pre></td></tr></table></figure>
 <p>当链式调用的任一节点为 null 都会中断链子返回 null，而在 Java 代码中</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">if(a != null) &#123;</div><div class="line">    if(b != null) &#123;</div><div class="line">       if(c != null) &#123;</div><div class="line">           return c.d;</div><div class="line">       &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">return null;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">if(a != null) &#123;</span><br><span class="line">    if(b != null) &#123;</span><br><span class="line">       if(c != null) &#123;</span><br><span class="line">           return c.d;</span><br><span class="line">       &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">return null;</span><br></pre></td></tr></table></figure>
 <p>这样的写法即不简洁也不美观，而且最重要的一点是部分开发者并不会想到这么做<br>当然要只对非空值执行某个操作，安全调用操作符可以与 let 一起使用</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">val listWithNulls: List&lt;String?&gt; = listOf(&quot;A&quot;, null)for (item in listWithNulls) &#123;   item?.let &#123; println(it) &#125; // 输出 A 并忽略了 null </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">val listWithNulls: List&lt;String?&gt; = listOf(&quot;A&quot;, null)for (item in listWithNulls) &#123;   item?.let &#123; println(it) &#125; // 输出 A 并忽略了 null </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h3 id="Elvis-操作符"><a href="#Elvis-操作符" class="headerlink" title="Elvis 操作符 ?:"></a>Elvis 操作符 <code>?:</code></h3><p>当一个可空引用 b 需要如下操作，当 b 不为空时，我们使用 b，否则我们需要使用一个非空的默认值 c 时，我们就可以使用该操作符</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">val l = b?.length ?: -1 // 相当于 val l: Int = if (b != null) b.length else -1</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">val l = b?.length ?: -1 // 相当于 val l: Int = if (b != null) b.length else -1</span><br></pre></td></tr></table></figure>
 <p>如果 ?: 左侧表达式非空，就返回其左侧表达式，否则返回右侧表达式，并且只有当左侧的表达式为空时才会对右侧的表达式求值</p>
 <h3 id="可能导致空指针的操作符"><a href="#可能导致空指针的操作符" class="headerlink" title="可能导致空指针的操作符 !!"></a>可能导致空指针的操作符 <code>!!</code></h3><p>对于一个可空引用的变量 b 来说，使用该操作符相当于返回一个非空引用的变量 b!!，可以直接使用对象的属性，当然如果 b 为 null，那么就会抛出 NullPointException 了</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">val l = b!!.length // 虽然 b 是可空类型，但是可以调用获取 length 属性，但是可能会抛出空指针异常</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">val l = b!!.length // 虽然 b 是可空类型，但是可以调用获取 length 属性，但是可能会抛出空指针异常</span><br></pre></td></tr></table></figure>
 <p>在 kotlin 中除非是你显示的要求 NullPointException：</p>
 <ul>
 <li>显式调用 throw NullPointerException() </li>
@@ -395,14 +379,14 @@
 </ul>
 <h3 id="类型转换安全"><a href="#类型转换安全" class="headerlink" title="类型转换安全"></a>类型转换安全</h3><p>如果你检查类型是正确的，编译器会为你做自动类型转换，kotlin 通过 <strong><code>is</code></strong>  操作符及其否定形式 <strong><code>!is</code></strong> 来检查对象是否符合给定的类型，相当于 Java 中的 instanceof 关键字</p>
 <p>同时我们可以省略显式的转换操作，因为编辑器跟踪不可变值的 is 检查，并在需要是自动插入安全的转换</p>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span>(x <span class="keyword">is</span> String)&#123;</div><div class="line">    println(x.length)<span class="comment">// x会被编译器自动转化为 Kotlin.String 类型，在编译器上会有高亮提示</span></div><div class="line">&#125;</div><div class="line"><span class="comment">//安全转换也可对反向检查智能判定</span></div><div class="line"><span class="keyword">if</span>(x !<span class="keyword">is</span> String)&#123;</div><div class="line">    <span class="keyword">return</span></div><div class="line">&#125;</div><div class="line">println(x.length)</div><div class="line"></div><div class="line"><span class="comment">//安全转换还可以实现对 &amp;&amp; 和 || 操作符的兼容</span></div><div class="line"><span class="keyword">if</span>(x <span class="keyword">is</span> String &amp;&amp; x.length &gt; <span class="number">0</span>) <span class="keyword">return</span><span class="comment">//对于 &amp;&amp; 后面数据类型自动转换</span></div><div class="line"><span class="keyword">if</span>(x !<span class="keyword">is</span> String || x.length == <span class="number">0</span>) <span class="keyword">return</span><span class="comment">//对于 || 后面数据类型自动转换</span></div></pre></td></tr></table></figure>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(x <span class="keyword">is</span> String)&#123;</span><br><span class="line">    println(x.length)<span class="comment">// x会被编译器自动转化为 Kotlin.String 类型，在编译器上会有高亮提示</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//安全转换也可对反向检查智能判定</span></span><br><span class="line"><span class="keyword">if</span>(x !<span class="keyword">is</span> String)&#123;</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br><span class="line">println(x.length)</span><br><span class="line"></span><br><span class="line"><span class="comment">//安全转换还可以实现对 &amp;&amp; 和 || 操作符的兼容</span></span><br><span class="line"><span class="keyword">if</span>(x <span class="keyword">is</span> String &amp;&amp; x.length &gt; <span class="number">0</span>) <span class="keyword">return</span><span class="comment">//对于 &amp;&amp; 后面数据类型自动转换</span></span><br><span class="line"><span class="keyword">if</span>(x !<span class="keyword">is</span> String || x.length == <span class="number">0</span>) <span class="keyword">return</span><span class="comment">//对于 || 后面数据类型自动转换</span></span><br></pre></td></tr></table></figure>
 <p>kotlin 也有显式的转换操作符  <strong><code>as</code></strong>，如果对象不是目标类型，那么常规类型转换可能会导致 ClassCastException</p>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//类型不匹配，会抛出异常</span></div><div class="line"><span class="keyword">val</span> x: String = y <span class="keyword">as</span> String</div><div class="line"><span class="comment">//上述代码中，如果 y 为空，也会抛出异常，所以必须对空安全兼容</span></div><div class="line"><span class="keyword">val</span> x: String? = y <span class="keyword">as</span> String?</div></pre></td></tr></table></figure>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//类型不匹配，会抛出异常</span></span><br><span class="line"><span class="keyword">val</span> x: String = y <span class="keyword">as</span> String</span><br><span class="line"><span class="comment">//上述代码中，如果 y 为空，也会抛出异常，所以必须对空安全兼容</span></span><br><span class="line"><span class="keyword">val</span> x: String? = y <span class="keyword">as</span> String?</span><br></pre></td></tr></table></figure>
 <p>当然，这种不安全的调用形式 kotlin 并不提倡，类似于空安全操作符，kotlin 提供了一种安全的转换操作符  <strong><code>as?</code></strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">val x:String? = y as? String //如果类型不匹配，则返回 null，所以 x 必须是可空变量，此时强转类型就不必是可空类型了</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">val x:String? = y as? String //如果类型不匹配，则返回 null，所以 x 必须是可空变量，此时强转类型就不必是可空类型了</span><br></pre></td></tr></table></figure>
 <h2 id="简洁性"><a href="#简洁性" class="headerlink" title="简洁性"></a>简洁性</h2><h3 id="高级类"><a href="#高级类" class="headerlink" title="高级类"></a>高级类</h3><p>Kotlin 提供了许多高级方法类，目的就是为了简化编程复杂度</p>
 <h4 id="data-class-数据类"><a href="#data-class-数据类" class="headerlink" title="data class 数据类"></a>data class 数据类</h4><p>Kotlin 将 Java 中专门用于存放数据的类用 data 关键字标记</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">data class User(val name: String, val age: Int)</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data class User(val name: String, val age: Int)</span><br></pre></td></tr></table></figure>
 <p>数据类会由编译器自动从主构造函数中声明的所有属性导出以下成员</p>
 <ul>
 <li><p>equals()/hashCode()</p>
@@ -410,24 +394,24 @@
 <li><p>toString() 格式是 “User(name=John, age=42)”</p>
 </li>
 <li><p>componentN() 解构声明 按声明顺序对应于所有属性</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">val name = person.component1()</div><div class="line">val age = person.component2()</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">val name = person.component1()</span><br><span class="line">val age = person.component2()</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 <p>componentN() 函数运用于解构声明，一种类似于 python 里元组的操作方式，每个对应的属性都有一个对应的函数，按顺序叠加，是 kotlin 广泛使用的约定原则</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">  val jane = User(&quot;Jane&quot;, 35)val (name, age) = janeprintln(&quot;$name, $age years of age&quot;) // 输出 &quot;Jane, 35 years of age&quot;</div></pre></td></tr></table></figure>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">  val jane = User(&quot;Jane&quot;, 35)val (name, age) = janeprintln(&quot;$name, $age years of age&quot;) // 输出 &quot;Jane, 35 years of age&quot;</span><br></pre></td></tr></table></figure>
 <p>  在上述代码中，name 和 age 是调用 component1() 和 component2() 的返回值</p>
 <ul>
 <li>copy() 函数</li>
 </ul>
 <p>复制函数应用于快速生成只有部分属性不同的相似对象，其实现类似于</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">fun copy(name: String = this.name, age: Int = this.age) = User(name, age)</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fun copy(name: String = this.name, age: Int = this.age) = User(name, age)</span><br></pre></td></tr></table></figure>
 <p>我们可以实现</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">val jack = User(name = &quot;Jack&quot;, age = 1)val olderJack = jack.copy(age = 2)</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">val jack = User(name = &quot;Jack&quot;, age = 1)val olderJack = jack.copy(age = 2)</span><br></pre></td></tr></table></figure>
 <p>当然，这种方式是浅拷贝</p>
 <h4 id="object-单例修饰关键字"><a href="#object-单例修饰关键字" class="headerlink" title="object 单例修饰关键字"></a>object 单例修饰关键字</h4><p>单例类可以由关键字 object 修饰实现，直接调用即可<br>顺带一提，Kotlin 并没有提供静态方法和属性，我们需要通过伴生对象 companion object 实现静态调用</p>
 <h4 id="enum-class-枚举类和-sealed-class-密封类"><a href="#enum-class-枚举类和-sealed-class-密封类" class="headerlink" title="enum class 枚举类和 sealed class 密封类"></a>enum class 枚举类和 sealed class 密封类</h4><p>枚举类（enum class）与 Java 中的枚举差距不大，密封类（sealed class）在某种程度上是枚举类的一种扩展，和枚举一样，密封类的值是有限集中的类型、而不能有任何其他类型，只是每个枚举常量只存在一个实例，而密封类的一个子类可以有可包含状态的多个实例</p>
 <h3 id="Type-extension-函数扩展和属性扩展"><a href="#Type-extension-函数扩展和属性扩展" class="headerlink" title="Type.extension 函数扩展和属性扩展"></a>Type.extension 函数扩展和属性扩展</h3><p>扩展一个类的新功能而无需继承该类或使用像装饰者这样的任何类型的设计模式。这通过叫做扩展的特殊声明完成</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">// 扩展方法不可以覆盖原有方法</div><div class="line">fun MutableList&lt;Int&gt;.swap(index1: Int, index2: Int) &#123;</div><div class="line">    val tmp = this[index1] // “this”对应该列表</div><div class="line">    this[index1] = this[index2]</div><div class="line">    this[index2] = tmp</div><div class="line">&#125;</div><div class="line">// 扩展方法调用</div><div class="line">val list = mutableListOf(1, 2, 3)</div><div class="line">list.swap(0, 1)</div><div class="line">println(list)</div><div class="line">// 输出结果: [2, 1, 3]</div><div class="line"></div><div class="line"></div><div class="line">// 扩展属性不可以设值操作</div><div class="line">val Int.isOdd: Boolean</div><div class="line">    get() = this and 1 == 1    </div><div class="line">// 扩展属性调用</div><div class="line">val n = 3</div><div class="line">println(n.isOdd)</div><div class="line">// 输出结果: true</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">// 扩展方法不可以覆盖原有方法</span><br><span class="line">fun MutableList&lt;Int&gt;.swap(index1: Int, index2: Int) &#123;</span><br><span class="line">    val tmp = this[index1] // “this”对应该列表</span><br><span class="line">    this[index1] = this[index2]</span><br><span class="line">    this[index2] = tmp</span><br><span class="line">&#125;</span><br><span class="line">// 扩展方法调用</span><br><span class="line">val list = mutableListOf(1, 2, 3)</span><br><span class="line">list.swap(0, 1)</span><br><span class="line">println(list)</span><br><span class="line">// 输出结果: [2, 1, 3]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// 扩展属性不可以设值操作</span><br><span class="line">val Int.isOdd: Boolean</span><br><span class="line">    get() = this and 1 == 1    </span><br><span class="line">// 扩展属性调用</span><br><span class="line">val n = 3</span><br><span class="line">println(n.isOdd)</span><br><span class="line">// 输出结果: true</span><br></pre></td></tr></table></figure>
 <p>对于传统的工具类完全可以是用扩展的方法代替，而且 ide 提供了智能联想功能，Android 开发中的 kotlin-android-extensions 库也是利用了这个原理</p>
 <h3 id="操作符重载"><a href="#操作符重载" class="headerlink" title="操作符重载"></a>操作符重载</h3><p>可以先从相等性说起，Kotlin 中有两种类型的相等性:</p>
 <ul>
@@ -438,7 +422,7 @@
 <li>结构相等(用 equals() 检查)</li>
 </ul>
 <p>结构相等由 <strong><code>==</code></strong> (以及其否定形式 <strong><code>!=</code></strong>)操作判断。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">a == b 相当于 a?.equals(b) ?: (b === null)</div><div class="line">// 因为 == 可能会出现 null == null 的情况，所以会出现额外的空判断</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">a == b 相当于 a?.equals(b) ?: (b === null)</span><br><span class="line">// 因为 == 可能会出现 null == null 的情况，所以会出现额外的空判断</span><br></pre></td></tr></table></figure>
 <p>当 a == null 这种判断会被直接翻译成 a === null</p>
 <p>Kotlin 允许我们为自己的类型提供预定义的一组操作符的实现。这些操作符具有固定的符号表示（如 + 或 *）和固定的优先级。为实现这样的操作符，我们为相应的类型（即二元操作符左侧的类型和一元操作符的参数类型）提供了一个固定名字的成员函数或扩展函数。 重载操作符的函数需要用 operator 修饰符标记</p>
 <p>比如说一元的操作符 <strong><code>++</code></strong> ，a++ 和 ++a 都可以翻译为 a.inc()，当然也保留了前后缀的区别。<br>后缀 a++ 的过程是</p>
@@ -455,9 +439,9 @@
 <p>可见 kotlin 对特定操作符有做额外的判断，不仅仅是调用重载方法，就比如说对 == 操作符的 null 判断的额外处理</p>
 <p>二元操作符 <strong><code>+</code></strong>，a + b 类似于 a.plus(b) …</p>
 <p>这种重载方法在对象中以 operator 修饰。当然，如果对象没有实现重载方法怎么办？当然是可以实现函数扩展啊，只要记得带上 operator</p>
-<p>在这里还有更多更详细的关于操作符重载的知识<br><a href="https://www.kotlincn.net/docs/reference/operator-overloading.html" target="_blank" rel="external">https://www.kotlincn.net/docs/reference/operator-overloading.html</a></p>
+<p>在这里还有更多更详细的关于操作符重载的知识<br><a href="https://www.kotlincn.net/docs/reference/operator-overloading.html" target="_blank" rel="noopener">https://www.kotlincn.net/docs/reference/operator-overloading.html</a></p>
 <h3 id="委托"><a href="#委托" class="headerlink" title="委托"></a>委托</h3><h4 id="类委托"><a href="#类委托" class="headerlink" title="类委托"></a>类委托</h4><p>委托模式是在 Android 源码中广泛使用的模式，认为是实现继承的一个很好的代替模式，当无法或不想直接访问某个对象时就可以通过一个代理对象来间接访问。Kotlin 可以零样板代码地原生支持 它。 类 Derived 可以继承一个接口 Base ，并将其所有共有的方法委托给一个指定的对象:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">interface Base &#123;    fun print() </div><div class="line">&#125;</div><div class="line">class BaseImpl(val x: Int) : Base &#123;    override fun print() &#123; print(x) &#125;&#125;</div><div class="line">class Derived(b: Base) : Base by b</div><div class="line">fun main(args: Array&lt;String&gt;) &#123; </div><div class="line">    val b = BaseImpl(10) </div><div class="line">    Derived(b).print() // 输出 10&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">interface Base &#123;    fun print() </span><br><span class="line">&#125;</span><br><span class="line">class BaseImpl(val x: Int) : Base &#123;    override fun print() &#123; print(x) &#125;&#125;</span><br><span class="line">class Derived(b: Base) : Base by b</span><br><span class="line">fun main(args: Array&lt;String&gt;) &#123; </span><br><span class="line">    val b = BaseImpl(10) </span><br><span class="line">    Derived(b).print() // 输出 10&#125;</span><br></pre></td></tr></table></figure>
 <p><strong><code>by</code></strong> 关键字声明了 Derived 中将存储 b 变量，并且编译器将会把所有的 Base 接口方法都转发到 b 中执行</p>
 <h4 id="属性委托"><a href="#属性委托" class="headerlink" title="属性委托"></a>属性委托</h4><p>Kotlin 同时支持属性的委托</p>
 <p>语法：<code>val/var &lt;property name&gt;: &lt;Type&gt; by &lt;expression&gt;</code></p>
@@ -468,13 +452,13 @@
 <li>expression：代理类</li>
 </ul>
 <p>在 <strong><code>by</code></strong> 关键字后面的表达式是具体代理类， 因为属性对应的 getter ( 对于可变属性来说还有 setter 方法 ) 会被委托给它的 getValue() 和 setValue() 方法。 属性的委托不必实现任何的接口，但是需要提供一个 getValue() 函数( 和 setValue() )。 例如:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">class Example &#123;    var p: String by Delegate()&#125;</div><div class="line"></div><div class="line"></div><div class="line">class Delegate &#123;    operator fun getValue(thisRef: Any?, property: KProperty&lt;*&gt;): String &#123;        return &quot;$thisRef, thank you for delegating &apos;$&#123;property.name&#125;&apos; to me!&quot;    &#125;</div><div class="line">        operator fun setValue(thisRef: Any?, property: KProperty&lt;*&gt;, value: String) &#123; </div><div class="line">        println(&quot;$value has been assigned to &apos;$&#123;property.name&#125; in $thisRef.&apos;&quot;)    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">class Example &#123;    var p: String by Delegate()&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class Delegate &#123;    operator fun getValue(thisRef: Any?, property: KProperty&lt;*&gt;): String &#123;        return &quot;$thisRef, thank you for delegating &apos;$&#123;property.name&#125;&apos; to me!&quot;    &#125;</span><br><span class="line">        operator fun setValue(thisRef: Any?, property: KProperty&lt;*&gt;, value: String) &#123; </span><br><span class="line">        println(&quot;$value has been assigned to &apos;$&#123;property.name&#125; in $thisRef.&apos;&quot;)    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>如此的话，p 变量的赋值与取值都会被代理了。<br>当我们从委托到一个 Delegate 实例的 p 读取时，将调用 Delegate 中的 getValue() 函 数， 所以它第一个参数是读出 p 的对象、第二个参数保存了对 p 自身的描述 (例如你可以取它的名字)</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">val e = Example()println(e.p)</div><div class="line"></div><div class="line">输出结果：</div><div class="line">Example@33a17727, thank you for delegating ‘p’ to me!</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">val e = Example()println(e.p)</span><br><span class="line"></span><br><span class="line">输出结果：</span><br><span class="line">Example@33a17727, thank you for delegating ‘p’ to me!</span><br></pre></td></tr></table></figure>
 <p>类似地，当我们给 p 赋值时，将调用 setValue() 函数。前两个参数相同，第三个参数保存 将要被赋 的值</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">e.p = &quot;NEW&quot;</div><div class="line"></div><div class="line">输出结果：</div><div class="line">NEW has been assigned to ‘p’ in Example@33a17727.</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">e.p = &quot;NEW&quot;</span><br><span class="line"></span><br><span class="line">输出结果：</span><br><span class="line">NEW has been assigned to ‘p’ in Example@33a17727.</span><br></pre></td></tr></table></figure>
 <p>当然 kotlin 中标准库中包含了可以实现包含所需 operator 方法的 ReadOnlyProperty（val） 或 ReadWriteProperty（var） 接口，我们只需要继承实现对应方法即可</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">interface ReadOnlyProperty&lt;in R, out T&gt; &#123;    operator fun getValue(thisRef: R, property: KProperty&lt;*&gt;): T&#125;</div><div class="line">interface ReadWriteProperty&lt;in R, T&gt; &#123;    operator fun getValue(thisRef: R, property: KProperty&lt;*&gt;): T    operator fun setValue(thisRef: R, property: KProperty&lt;*&gt;, value: T)&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">interface ReadOnlyProperty&lt;in R, out T&gt; &#123;    operator fun getValue(thisRef: R, property: KProperty&lt;*&gt;): T&#125;</span><br><span class="line">interface ReadWriteProperty&lt;in R, T&gt; &#123;    operator fun getValue(thisRef: R, property: KProperty&lt;*&gt;): T    operator fun setValue(thisRef: R, property: KProperty&lt;*&gt;, value: T)&#125;</span><br></pre></td></tr></table></figure>
 <p>另外 kotlin 标准库提供了几种常用方法的工厂方法</p>
 <ul>
 <li>延迟属性(lazy properties): 其值只在首次访问时计算</li>
@@ -483,7 +467,7 @@
 </ul>
 <h2 id="用过的人都说“真TM爽”"><a href="#用过的人都说“真TM爽”" class="headerlink" title="用过的人都说“真TM爽”"></a>用过的人都说“真TM爽”</h2><p>如果你想从 Java 的角度去看 kotlin 的语法糖，那么你可以通过以下方法：</p>
 <p>在 Intellij IDEA 或者 Android Studio 中选择 .kt 文件，然后通过 tools -&gt; Kotlin -&gt; Show Koltin ByteCode 弹窗查看编译后的字节码，你可以通过 Decompile 按钮查看 Java 代码</p>
-<p><a href="https://www.kotlincn.net/docs/reference/" target="_blank" rel="external">kotlin 语言中文站</a><br><a href="https://zhuanlan.zhihu.com/LearningKotlin" target="_blank" rel="external">Kotlin 学习之路</a></p>
+<p><a href="https://www.kotlincn.net/docs/reference/" target="_blank" rel="noopener">kotlin 语言中文站</a><br><a href="https://zhuanlan.zhihu.com/LearningKotlin" target="_blank" rel="noopener">Kotlin 学习之路</a></p>
 
       
     </div>
