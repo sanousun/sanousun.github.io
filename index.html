@@ -1072,7 +1072,7 @@ NavigatorNa
         
           
           Android 测量，布局，绘制流程解析前言Android 中自定义 View 常常需要覆写 onMeasure, onDraw 方法，而自定义 ViewGroup 则还需要覆写 onLayout 方法，那么这三者之间到底是如何调用的呢
-本文源码基于 Android 7.1
+源码解析基于 Android 7.1
 测量，布局，绘制流程解析
           ...
           <!--noindex-->
@@ -1199,7 +1199,7 @@ NavigatorNa
       
         
           
-          内存优化 —— bitmap pool前言图片是 Android 中占用内存比较大的模块，对于一张使用 ARGB_8888（一个像素低占用32位，即4个字节），480 x 800 大小的 bitmap 来说，内存就要占用 480 x 800 x 8 / 1024 = 1500kb 的内存大小，就算使
+          内存优化 —— bitmap pool前言图片是 Android 中占用内存比较大的模块，对于一张使用 ARGB_8888（一个像素低占用32位，即4个字节），480 x 800 大小的 bitmap 来说，内存就要占用 480 x 800 x 4 / 1024 = 600kb 的内存大小，就算使用
           ...
           <!--noindex-->
           <div class="post-button text-center">

@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="内存优化 —— bitmap pool前言图片是 Android 中占用内存比较大的模块，对于一张使用 ARGB_8888（一个像素低占用32位，即4个字节），480 x 800 大小的 bitmap 来说，内存就要占用 480 x 800 x 8 / 1024 = 1500kb 的内存大小，就算使用 RGB_565 也还是需要 750kb 的内存，而且失去了透明度和一些细节。尤其是针对一些图片列">
+<meta name="description" content="内存优化 —— bitmap pool前言图片是 Android 中占用内存比较大的模块，对于一张使用 ARGB_8888（一个像素低占用32位，即4个字节），480 x 800 大小的 bitmap 来说，内存就要占用 480 x 800 x 4 / 1024 = 600kb 的内存大小，就算使用 RGB_565 也还是需要 300kb 的内存，而且失去了透明度和一些细节。尤其是针对一些图片列表">
 <meta name="keywords" content="Glide,内存优化,集合框架">
 <meta property="og:type" content="article">
 <meta property="og:title" content="内存优化 —— bitmap pool">
 <meta property="og:url" content="http://sanousun.github.io/2018/04/03/内存优化 —— bitmap pool/index.html">
 <meta property="og:site_name" content="sanousun">
-<meta property="og:description" content="内存优化 —— bitmap pool前言图片是 Android 中占用内存比较大的模块，对于一张使用 ARGB_8888（一个像素低占用32位，即4个字节），480 x 800 大小的 bitmap 来说，内存就要占用 480 x 800 x 8 / 1024 = 1500kb 的内存大小，就算使用 RGB_565 也还是需要 750kb 的内存，而且失去了透明度和一些细节。尤其是针对一些图片列">
+<meta property="og:description" content="内存优化 —— bitmap pool前言图片是 Android 中占用内存比较大的模块，对于一张使用 ARGB_8888（一个像素低占用32位，即4个字节），480 x 800 大小的 bitmap 来说，内存就要占用 480 x 800 x 4 / 1024 = 600kb 的内存大小，就算使用 RGB_565 也还是需要 300kb 的内存，而且失去了透明度和一些细节。尤其是针对一些图片列表">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-05-28T04:05:39.889Z">
+<meta property="og:updated_time" content="2019-05-04T04:41:07.519Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="内存优化 —— bitmap pool">
-<meta name="twitter:description" content="内存优化 —— bitmap pool前言图片是 Android 中占用内存比较大的模块，对于一张使用 ARGB_8888（一个像素低占用32位，即4个字节），480 x 800 大小的 bitmap 来说，内存就要占用 480 x 800 x 8 / 1024 = 1500kb 的内存大小，就算使用 RGB_565 也还是需要 750kb 的内存，而且失去了透明度和一些细节。尤其是针对一些图片列">
+<meta name="twitter:description" content="内存优化 —— bitmap pool前言图片是 Android 中占用内存比较大的模块，对于一张使用 ARGB_8888（一个像素低占用32位，即4个字节），480 x 800 大小的 bitmap 来说，内存就要占用 480 x 800 x 4 / 1024 = 600kb 的内存大小，就算使用 RGB_565 也还是需要 300kb 的内存，而且失去了透明度和一些细节。尤其是针对一些图片列表">
 
 
 
@@ -310,7 +310,7 @@
       
 
       
-        <h1 id="内存优化-——-bitmap-pool"><a href="#内存优化-——-bitmap-pool" class="headerlink" title="内存优化 —— bitmap pool"></a>内存优化 —— bitmap pool</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>图片是 Android 中占用内存比较大的模块，对于一张使用 ARGB_8888（一个像素低占用32位，即4个字节），480 x 800 大小的 bitmap 来说，内存就要占用 480 x 800 x 8 / 1024 = 1500kb 的内存大小，就算使用 RGB_565 也还是需要 750kb 的内存，而且失去了透明度和一些细节。尤其是针对一些图片列表，图片的缓存尤其重要。</p>
+        <h1 id="内存优化-——-bitmap-pool"><a href="#内存优化-——-bitmap-pool" class="headerlink" title="内存优化 —— bitmap pool"></a>内存优化 —— bitmap pool</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>图片是 Android 中占用内存比较大的模块，对于一张使用 ARGB_8888（一个像素低占用32位，即4个字节），480 x 800 大小的 bitmap 来说，内存就要占用 480 x 800 x 4 / 1024 = 600kb 的内存大小，就算使用 RGB_565 也还是需要 300kb 的内存，而且失去了透明度和一些细节。尤其是针对一些图片列表，图片的缓存尤其重要。</p>
 <p>通常我们知道那些著名的第三方图片加载框架用 LRU Cache 来缓存图片，防止对一张已经加载过的图片又加载一遍，但是很少有人关心过当图片移出 Cache 之后发生了什么。当加载场景是一个无限滑动的图片列表时，基本不会出现图片的复用，系统开始频繁创建销毁 bitmap 资源对象，造成了比较大的内存抖动。所以拥有一个可以复用的对象池可以极大地优化上述现象，介于 bitmap 的特殊性，这个需要特殊定制优化，以 Glide 为例。</p>
 <p>本文基于 Glide 4.3.1 代码</p>
 <h2 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h2><p>Android 官方有一篇关于 Bitmap 内存管理的文章 <a href="https://developer.android.com/topic/performance/graphics/manage-memory" target="_blank" rel="noopener">Managing Bitmap Memory</a></p>
