@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="拆轮子,ARouter,组件化,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="ARouter 解析前言ARouter 是阿里开源的一款 Android 端路由框架，在近几年掀起的组件化改造浪潮中异军突起，成为了最受开发者欢迎的组件化路由框架。 项目配置项目结构除去项目中的示例代码，ARouter 主要分为了四个模块 arouter-annotation定义注解，包括常用的 Route、Autowired 等，注解的保留时长均为 RetentionPolicy.CLASS，意">
+<meta name="keywords" content="拆轮子,ARouter,组件化">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ARouter 解析">
+<meta property="og:url" content="http://sanousun.github.io/2019/07/23/ARouter 解析/index.html">
+<meta property="og:site_name" content="sanousun">
+<meta property="og:description" content="ARouter 解析前言ARouter 是阿里开源的一款 Android 端路由框架，在近几年掀起的组件化改造浪潮中异军突起，成为了最受开发者欢迎的组件化路由框架。 项目配置项目结构除去项目中的示例代码，ARouter 主要分为了四个模块 arouter-annotation定义注解，包括常用的 Route、Autowired 等，注解的保留时长均为 RetentionPolicy.CLASS，意">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-07-25T02:17:37.827Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ARouter 解析">
+<meta name="twitter:description" content="ARouter 解析前言ARouter 是阿里开源的一款 Android 端路由框架，在近几年掀起的组件化改造浪潮中异军突起，成为了最受开发者欢迎的组件化路由框架。 项目配置项目结构除去项目中的示例代码，ARouter 主要分为了四个模块 arouter-annotation定义注解，包括常用的 Route、Autowired 等，注解的保留时长均为 RetentionPolicy.CLASS，意">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://sanousun.github.io/2019/07/23/ARouter 解析/">
+
+
+
+
+
+  <title>ARouter 解析 | sanousun</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">sanousun</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">sanousun的博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://sanousun.github.io/2019/07/23/ARouter 解析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sanousun">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="sanousun">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">ARouter 解析</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-23T10:17:10+08:00">
+                2019-07-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="ARouter-解析"><a href="#ARouter-解析" class="headerlink" title="ARouter 解析"></a>ARouter 解析</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><a href="https://github.com/alibaba/ARouter" target="_blank" rel="noopener">ARouter</a> 是阿里开源的一款 Android 端路由框架，在近几年掀起的组件化改造浪潮中异军突起，成为了最受开发者欢迎的组件化路由框架。</p>
+<h2 id="项目配置"><a href="#项目配置" class="headerlink" title="项目配置"></a>项目配置</h2><h2 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构"></a>项目结构</h2><p>除去项目中的示例代码，ARouter 主要分为了四个模块</p>
+<h3 id="arouter-annotation"><a href="#arouter-annotation" class="headerlink" title="arouter-annotation"></a>arouter-annotation</h3><p>定义注解，包括常用的 Route、Autowired 等，注解的保留时长均为 RetentionPolicy.CLASS，意味着这些注解将会在编译期间通过注解处理器处理，与 butterknife 这个框架的原理类似</p>
+<h3 id="arouter-compiler"><a href="#arouter-compiler" class="headerlink" title="arouter-compiler"></a>arouter-compiler</h3><p>注解处理器，在 gradle 中通过 annotationProcessor 引入，在编译期间通过 Processor 处理对应的注解生成相应的类文件，在 Android Studio 中可以在 module 下 generatedJava 文件夹内可以看到生成的目标类文件</p>
+<h3 id="arouter-api"><a href="#arouter-api" class="headerlink" title="arouter-api"></a>arouter-api</h3><p>对外提供的核心 API，框架实际运行的逻辑代码，包括了对生成代码的反射调用</p>
+<h3 id="arouter-gradle-plugin"><a href="#arouter-gradle-plugin" class="headerlink" title="arouter-gradle-plugin"></a>arouter-gradle-plugin</h3><p>一个锦上添花的 gradle 插件，通过 gradle 的 Transform API 插入一些代码，可以优化 ARouter 初始化时比较多的一些遍历操作，这些都会在编辑期间生成的代码里完成</p>
+<h2 id="Compile"><a href="#Compile" class="headerlink" title="Compile"></a>Compile</h2><p>一般而言编译器注解会通过 annotationProcessor 生成所需的类，在运行时通过反射实例化，达到目标代码调用的目的。<br>ARouter 除了被 Deprecated 掉的 Param，还有 Autowired（类似于 Butterknife 的 BindView，自动化注入），Interceptor（用于路由跳转拦截）以及 Route（这个核心，用于标记需要跳转的 Activity,Fragment,Service），在 arouter-compiler 有这三个注解的注解处理器，以最重要的 RouteProcessor 为例</p>
+<p>在 process 方法中收集所有的 Route.class 修饰的元素，进过 parseRoutes 方法生成需要的类，我们可以在 generatedJava 目录下查看，由于生成的代码过长且比较繁琐，所以就大致说明一下流程。</p>
+<p>每个元素会生成一个 RouteMeta，根据元素路由路径中的 group 存放到 groupMap 全局变量中（ Map&lt;String, Set<routemeta>&gt;，key 是 group 名称，value 这是元素的集合），接着会进行遍历时首先会根据 group 名生成 <code>ARouter$$Group$${group}</code> 类，遍历玩车后根据 module 名生成 <code>ARouter$$Root$${module}</code> 类作为 group 的引导类。同时，遍历时有注意收集 iProvider 的信息，遍历结束后会生成 <code>ARouter$$Providers$${module}</code> 类作为通过接口查找实例的容器</routemeta></p>
+<p>InterceptorProcessor 会生成包含所有 Interceptor 的 <code>ARouter$$Interceptors$$app</code> 类，AutowiredProcessor 则会在对应包目录下生成 <code>{target}$$ARouter$$Autowired</code> 类，在运行时通过 <code>ARouter.getInstance().inject(this)</code> 注入，原理类似于 butterknife</p>
+<h2 id="API"><a href="#API" class="headerlink" title="API"></a>API</h2><p>api 模块主要提供对外接口和逻辑实现，这里就主要介绍两个方法，一个是初始化 init 方法，还有一个则是跳转 navigation </p>
+<h3 id="ARouter-init"><a href="#ARouter-init" class="headerlink" title="ARouter.init"></a>ARouter.init</h3><p>ARouter 是一个装饰类，具体的实现都是由 _ARouter 实现，_ARouter 的 init 方法中，除了 handler 之类的初始化，最重要的则是 LogisticsCenter 的初始化工作了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line">public synchronized static void init(Context context, ThreadPoolExecutor tpe) throws HandlerException &#123;</span><br><span class="line">    mContext = context;</span><br><span class="line">    // excutor 可以供异步调用实现，比如说拦截器的代码执行</span><br><span class="line">    executor = tpe;</span><br><span class="line"></span><br><span class="line">    try &#123;</span><br><span class="line">        long startInit = System.currentTimeMillis();</span><br><span class="line">        </span><br><span class="line">        // 这个通过 gradle plugin 做了优化工作，下文会讲到</span><br><span class="line">        loadRouterMap();</span><br><span class="line">        if (registerByPlugin) &#123;</span><br><span class="line">            logger.info(TAG, &quot;Load router map by arouter-auto-register plugin.&quot;);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            // 没有注册 gradle plugin 则会走这个初始化流程</span><br><span class="line">            Set&lt;String&gt; routerMap;</span><br><span class="line"></span><br><span class="line">            // 这里是通过分析整个 apk 文件获取 ARouter 生成的类， 这是一个非常耗时的操作，</span><br><span class="line">            // 所以这个会有个缓存策略，根据存储在本地的版本和版本号确定，测试环境的话则需要每次都重新生成</span><br><span class="line">            if (ARouter.debuggable() || PackageUtils.isNewVersion(context)) &#123;</span><br><span class="line">                logger.info(TAG, &quot;Run with debug mode or new install, rebuild router map.&quot;);</span><br><span class="line">                // 这些 class 文件都是由 arouter-compiler 生成，遍历 apk 文件中的 dex 查找</span><br><span class="line">                routerMap = ClassUtils.getFileNameByPackageName(mContext, ROUTE_ROOT_PAKCAGE);</span><br><span class="line">                if (!routerMap.isEmpty()) &#123;</span><br><span class="line">                    context.getSharedPreferences(AROUTER_SP_CACHE_KEY, Context.MODE_PRIVATE).edit().putStringSet(AROUTER_SP_KEY_MAP, routerMap).apply();</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                PackageUtils.updateVersion(context);    // Save new version name when router map update finishes.</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                logger.info(TAG, &quot;Load router map from cache.&quot;);</span><br><span class="line">                routerMap = new HashSet&lt;&gt;(context.getSharedPreferences(AROUTER_SP_CACHE_KEY, Context.MODE_PRIVATE).getStringSet(AROUTER_SP_KEY_MAP, new HashSet&lt;String&gt;()));</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            logger.info(TAG, &quot;Find router map finished, map size = &quot; + routerMap.size() + &quot;, cost &quot; + (System.currentTimeMillis() - startInit) + &quot; ms.&quot;);</span><br><span class="line">            startInit = System.currentTimeMillis();</span><br><span class="line"></span><br><span class="line">            // 将生成的类实例化，通过 loadInto 方法存入到 Warehouse 类里</span><br><span class="line">            for (String className : routerMap) &#123;</span><br><span class="line">                if (className.startsWith(ROUTE_ROOT_PAKCAGE + DOT + SDK_NAME + SEPARATOR + SUFFIX_ROOT)) &#123;</span><br><span class="line">                    // This one of root elements, load root.</span><br><span class="line">                    ((IRouteRoot) (Class.forName(className).getConstructor().newInstance())).loadInto(Warehouse.groupsIndex);</span><br><span class="line">                &#125; else if (className.startsWith(ROUTE_ROOT_PAKCAGE + DOT + SDK_NAME + SEPARATOR + SUFFIX_INTERCEPTORS)) &#123;</span><br><span class="line">                    // Load interceptorMeta</span><br><span class="line">                    ((IInterceptorGroup) (Class.forName(className).getConstructor().newInstance())).loadInto(Warehouse.interceptorsIndex);</span><br><span class="line">                &#125; else if (className.startsWith(ROUTE_ROOT_PAKCAGE + DOT + SDK_NAME + SEPARATOR + SUFFIX_PROVIDERS)) &#123;</span><br><span class="line">                    // Load providerIndex</span><br><span class="line">                    ((IProviderGroup) (Class.forName(className).getConstructor().newInstance())).loadInto(Warehouse.providersIndex);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        logger.info(TAG, &quot;Load root element finished, cost &quot; + (System.currentTimeMillis() - startInit) + &quot; ms.&quot;);</span><br><span class="line"></span><br><span class="line">        if (Warehouse.groupsIndex.size() == 0) &#123;</span><br><span class="line">            logger.error(TAG, &quot;No mapping files were found, check your configuration please!&quot;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if (ARouter.debuggable()) &#123;</span><br><span class="line">            logger.debug(TAG, String.format(Locale.getDefault(), &quot;LogisticsCenter has already been loaded, GroupIndex[%d], InterceptorIndex[%d], ProviderIndex[%d]&quot;, Warehouse.groupsIndex.size(), Warehouse.interceptorsIndex.size(), Warehouse.providersIndex.size()));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; catch (Exception e) &#123;</span><br><span class="line">        throw new HandlerException(TAG + &quot;ARouter init logistics center exception! [&quot; + e.getMessage() + &quot;]&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>初始化的主要工作就是扫描安装包，查找生成 compile 生成的类，实例化之后存入到 warehouse 中。虽然做了缓存优化，还是存在着初次加载耗时的问题，所以后期也做了通过编译时代码插入的优化</p>
+<p>Warehouse 类里面是一些静态变量，存储着一些路由缓存，以 groupsIndex 为例，ARouter 初始化时就会以 group 为单位存入生成的类，实际路由时才会加载对应的具体的路径 - RouteMeta 键值对</p>
+<p>初始化完成之后会执行 afterInit，初始化 interceptorService 这个静态对象，它是所有的拦截器的根实现，过程类似于责任链的模式，可以追踪 /arouter/service/interceptor 这个路径查看实现类，有些可以注意的点，比如说 interceptorsIndex 是一个 TreeMap 可以根据 priority 排序，保证重要性高的先执行，比如说InterceptorServiceImpl.doInterceptions 方法中通过 CancelableCountDownLatch 实现了超时返回</p>
+<h3 id="navigation"><a href="#navigation" class="headerlink" title="navigation"></a>navigation</h3><p>ARouter.build 通过一个路径生成一个 Postcard 实例，Postcard 继承自 RouteMeta，会暂存一些参数等额外信息，通过调用 navigation 方法实现跳转，里面是的实现则是调用了<br>ARouter 中 <code>Object navigation(final Context context, final Postcard postcard, final int requestCode, final NavigationCallback callback)</code> 这个方法</p>
+<p>方法里的代码流程也是十分清晰的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line">protected Object navigation(final Context context, final Postcard postcard, final int requestCode, final NavigationCallback callback) &#123;</span><br><span class="line">    // 预处理的服务，只要项目中存在实现该接口的类即可</span><br><span class="line">    PretreatmentService pretreatmentService = ARouter.getInstance().navigation(PretreatmentService.class);</span><br><span class="line">    if (null != pretreatmentService &amp;&amp; !pretreatmentService.onPretreatment(context, postcard)) &#123;</span><br><span class="line">        // Pretreatment failed, navigation canceled.</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    try &#123;</span><br><span class="line">        // 这里是关键，现在的 postcard 只有路径信息，通过这个方法的处理，可以通过路径分析获取到额外的信息</span><br><span class="line">        LogisticsCenter.completion(postcard);</span><br><span class="line">    &#125; catch (NoRouteFoundException ex) &#123;</span><br><span class="line">        // 未获取到跳转目标的处理</span><br><span class="line">        logger.warning(Consts.TAG, ex.getMessage());</span><br><span class="line"></span><br><span class="line">        if (debuggable()) &#123;</span><br><span class="line">            // Show friendly tips for user.</span><br><span class="line">            runInMainThread(new Runnable() &#123;</span><br><span class="line">                @Override</span><br><span class="line">                public void run() &#123;</span><br><span class="line">                    Toast.makeText(mContext, &quot;There&apos;s no route matched!\n&quot; +</span><br><span class="line">                            &quot; Path = [&quot; + postcard.getPath() + &quot;]\n&quot; +</span><br><span class="line">                            &quot; Group = [&quot; + postcard.getGroup() + &quot;]&quot;, Toast.LENGTH_LONG).show();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if (null != callback) &#123;</span><br><span class="line">            callback.onLost(postcard);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            // No callback for this invoke, then we use the global degrade service.</span><br><span class="line">            DegradeService degradeService = ARouter.getInstance().navigation(DegradeService.class);</span><br><span class="line">            if (null != degradeService) &#123;</span><br><span class="line">                degradeService.onLost(context, postcard);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if (null != callback) &#123;</span><br><span class="line">        callback.onFound(postcard);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 这里是拦截器的设置，由 interceptorService 实现拦截流程</span><br><span class="line">    if (!postcard.isGreenChannel()) &#123;   // It must be run in async thread, maybe interceptor cost too mush time made ANR.</span><br><span class="line">        interceptorService.doInterceptions(postcard, new InterceptorCallback() &#123;</span><br><span class="line">            /**</span><br><span class="line">             * Continue process</span><br><span class="line">             *</span><br><span class="line">             * @param postcard route meta</span><br><span class="line">             */</span><br><span class="line">            @Override</span><br><span class="line">            public void onContinue(Postcard postcard) &#123;</span><br><span class="line">                _navigation(context, postcard, requestCode, callback);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            /**</span><br><span class="line">             * Interrupt process, pipeline will be destory when this method called.</span><br><span class="line">             *</span><br><span class="line">             * @param exception Reson of interrupt.</span><br><span class="line">             */</span><br><span class="line">            @Override</span><br><span class="line">            public void onInterrupt(Throwable exception) &#123;</span><br><span class="line">                if (null != callback) &#123;</span><br><span class="line">                    callback.onInterrupt(postcard);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                logger.info(Consts.TAG, &quot;Navigation failed, termination by interceptor : &quot; + exception.getMessage());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        return _navigation(context, postcard, requestCode, callback);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个方法的关键是通过 LogisticsCenter.completion(postcard) 方法通过路径去获取 RouteMeta，这些 RouteMeta 由 compile 生成，注册到 Warehouse 里，在这里才会实例化加载进缓存中，以供这次及以后的调用，而后交由真正的 _navigation 方法执行路由操作，通过 postcard.getType() 获取到的类型执行真正的操作，activity 之类的会进行跳转，其他的会返回实例</p>
+<h2 id="Gradle-Plugin"><a href="#Gradle-Plugin" class="headerlink" title="Gradle Plugin"></a>Gradle Plugin</h2><p>配置代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">apply plugin: &apos;com.alibaba.arouter&apos;</span><br><span class="line"></span><br><span class="line">buildscript &#123;</span><br><span class="line">    repositories &#123;</span><br><span class="line">        jcenter()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    dependencies &#123;</span><br><span class="line">        // Replace with the latest version</span><br><span class="line">        classpath &quot;com.alibaba:arouter-register:?&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>ARouter 的 init 方法最终会调用 LogisticsCenter 的 init 方法用来初始化，目的就是将生成的相关类实例化，将其中的界面跳转数据以及调用实例之类的存放到 Warehouse 对应的静态容器中，以供后来调转或者调用时查找。</p>
+<p>在默认的实现中，会遍历 apk 文件中所有的 dex，查找所有的生成类，但这个过程不仅耗时，还存在不确定性的风险。对于一个全局性的框架来说是不可接受的。</p>
+<p>这个插件就是为了解决这个问题而诞生的，Gradle Transform API 可以使工程在编译期间就能找到所有的生成类，然后将这些类实例化注册的代码插入到 LogisticsCenter 的 loadRouterMap 方法中，这个方法则是在 init 方法中会被调用，从而跳过分析 apk 文件来查询 ARouter 的生成类，达到相同的效果。</p>
+<h3 id="Gradle-Transform-API"><a href="#Gradle-Transform-API" class="headerlink" title="Gradle Transform API"></a>Gradle Transform API</h3><p>Android 项目编译时，Gradle 提供了 Transform API 可以让开发者在编译时产生 Class 文件后，并在生成 Dex 之前做一些处理，Transform 会接收 inputs 输入(编译产生的Class文件), 并向已经产生的输入中添加一些东西替换掉这些输入产物，outputs 输出给下一个 Transform 处理，ProGuardTransform 就是系统实现的一个 Transform</p>
+<p>ARouter gradlew plugin 的实现原理大致为：</p>
+<p>在 AppExtension 里中注册 RegisterTransform 用于处理需求，在 transform 方法中，先遍历 jarInputs 和 directoryInputs（前者为工程 jar 包中的类，包括引用的 aouter-api，后者则为工程中的类），会找到 com/alibaba/android/arouter/core/LogisticsCenter.class 这个类，以及所有 com/alibaba/android/arouter/routes/ 包下的类，即我们生成的存放信息的类，通过 ScanClassVisitor 检查类继承的接口后分类存放。</p>
+<p>收集完成后 registerList 会存放所有的相关类路径，遍历时通过 RegisterCodeGenerator 的 insertInitCodeTo 方法将注册方法代码写入到 LogisticsCenter 的 loadRouterMap 方法中，具体的代码如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">void visitInsn(int opcode) &#123;</span><br><span class="line">    //generate code before return</span><br><span class="line">    if ((opcode &gt;= Opcodes.IRETURN &amp;&amp; opcode &lt;= Opcodes.RETURN)) &#123;</span><br><span class="line">        extension.classList.each &#123; name -&gt;</span><br><span class="line">            name = name.replaceAll(&quot;/&quot;, &quot;.&quot;)</span><br><span class="line">            mv.visitLdcInsn(name)//类名</span><br><span class="line">            // generate invoke register method into LogisticsCenter.loadRouterMap()</span><br><span class="line">            mv.visitMethodInsn(Opcodes.INVOKESTATIC</span><br><span class="line">                    , ScanSetting.GENERATE_TO_CLASS_NAME</span><br><span class="line">                    , ScanSetting.REGISTER_METHOD_NAME</span><br><span class="line">                    , &quot;(Ljava/lang/String;)V&quot;</span><br><span class="line">                    , false)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    super.visitInsn(opcode)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过 ASM 的语法，将每个生成类都转换成 register(String className) 方法的调用，追踪一下不难发现，该方法做的是类实例化，存放路由信息，与上文利用 apk 查找类实例的结果一至，同时最后会将 registerByPlugin 标志置为 tru，使得框架初始化时跳过原上文的注册方式</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>ARouter 的源码阅读并不太难，但是设计的十分优秀，而后又经过了数次迭代优化，行成了如今这个优秀的组件化路由框架</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/拆轮子/" rel="tag"># 拆轮子</a>
+          
+            <a href="/tags/ARouter/" rel="tag"># ARouter</a>
+          
+            <a href="/tags/组件化/" rel="tag"># 组件化</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/12/12/flutter - 路由/" rel="next" title="flutter - 路由">
+                <i class="fa fa-chevron-left"></i> flutter - 路由
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">sanousun</p>
+              <p class="site-description motion-element" itemprop="description">随便写写，随缘</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">29</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#ARouter-解析"><span class="nav-number">1.</span> <span class="nav-text">ARouter 解析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#项目配置"><span class="nav-number">1.2.</span> <span class="nav-text">项目配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#项目结构"><span class="nav-number">1.3.</span> <span class="nav-text">项目结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#arouter-annotation"><span class="nav-number">1.3.1.</span> <span class="nav-text">arouter-annotation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#arouter-compiler"><span class="nav-number">1.3.2.</span> <span class="nav-text">arouter-compiler</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#arouter-api"><span class="nav-number">1.3.3.</span> <span class="nav-text">arouter-api</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#arouter-gradle-plugin"><span class="nav-number">1.3.4.</span> <span class="nav-text">arouter-gradle-plugin</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Compile"><span class="nav-number">1.4.</span> <span class="nav-text">Compile</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#API"><span class="nav-number">1.5.</span> <span class="nav-text">API</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ARouter-init"><span class="nav-number">1.5.1.</span> <span class="nav-text">ARouter.init</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#navigation"><span class="nav-number">1.5.2.</span> <span class="nav-text">navigation</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Gradle-Plugin"><span class="nav-number">1.6.</span> <span class="nav-text">Gradle Plugin</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Gradle-Transform-API"><span class="nav-number">1.6.1.</span> <span class="nav-text">Gradle Transform API</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">1.7.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">sanousun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
